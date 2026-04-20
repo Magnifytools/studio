@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Magnify Content Studio</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='65 52 155 178'%3E%3Crect x='65' y='52' width='155' height='178' fill='%23FFD600'/%3E%3Cpolygon fill='%230A0A0A' points='141.7,77.7 97.6,224.7 71,224.7 133.9,57.9 141.7,57.9 149.5,57.9 212.3,224.7 185.7,224.7'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
@@ -105,6 +106,41 @@
   .err strong { color:#FF8080; font-weight:600; }
   .err code { font-family:'SF Mono', monospace; font-size:12px; color:#FFD0D0; background:rgba(255,80,80,0.12); padding:1px 5px; border-radius:3px; }
 
+  /* Image uploads: only rendered for content types that support images (see TYPE_META.supportsImages). Images are embedded as data URIs in state, referenced from the textarea as img1, img2… */
+  .uploads { display:none; }
+  .uploads.on { display:block; }
+  .uploads-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:12px; }
+  .uploads-head label { margin-bottom:0 !important; }
+  .uploads-head .hint-inline { font-size:11.5px; color:#888; letter-spacing:0; text-transform:none; font-weight:400; }
+  .uploads-head .hint-inline code { font-family:'SF Mono', monospace; font-size:11px; color:var(--yellow); background:rgba(255,214,0,0.08); padding:1px 5px; border-radius:3px; }
+  .upload-drop { border:1px dashed #333; border-radius:8px; padding:18px 14px; text-align:center; color:#999; font-size:12px; cursor:pointer; transition:all 0.15s; user-select:none; }
+  .upload-drop u { color:#ccc; text-decoration:underline; }
+  .upload-drop:hover, .upload-drop.drag { border-color:var(--yellow); color:#ddd; background:rgba(255,214,0,0.04); }
+  .upload-thumbs { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-top:10px; }
+  .upload-thumb { position:relative; aspect-ratio:1/1; background:#1a1a1a; border-radius:6px; overflow:hidden; border:1px solid #2a2a2a; }
+  .upload-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+  .upload-thumb .id { position:absolute; top:4px; left:4px; background:var(--yellow); color:var(--bg); font-size:10px; font-weight:700; padding:2px 6px; border-radius:3px; letter-spacing:0.04em; font-family:'SF Mono', monospace; }
+  .upload-thumb .rm { position:absolute; top:4px; right:4px; background:rgba(0,0,0,0.75); color:#fff; width:20px; height:20px; border-radius:50%; border:none; cursor:pointer; font-size:12px; line-height:1; padding:0; display:flex; align-items:center; justify-content:center; }
+  .upload-thumb .rm:hover { background:#c33; }
+
+  /* Color selector: appears only for variants that declare `colors`. Segmented-control look. */
+  .color-bar { display:none; align-items:center; gap:10px; padding:14px 24px 0; }
+  .color-bar.on { display:flex; }
+  .color-bar .color-label { font-size:11px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:#BBB; }
+  .color-btn {
+    display:inline-flex; align-items:center; gap:8px;
+    background:#1a1a1a; border:1px solid #2a2a2a; border-radius:999px;
+    padding:6px 14px 6px 8px; color:#bbb; font-family:var(--sans); font-size:12px; font-weight:500;
+    cursor:pointer; transition:all 0.15s;
+  }
+  .color-btn:hover { border-color:#555; color:#ddd; }
+  .color-btn .swatch { width:16px; height:16px; border-radius:50%; border:1px solid rgba(255,255,255,0.15); flex-shrink:0; }
+  .color-btn[data-color="dark"] .swatch { background:#0A0A0A; }
+  .color-btn[data-color="light"] .swatch { background:#FFFFFF; border-color:rgba(0,0,0,0.15); }
+  .color-btn[data-color="yellow"] .swatch { background:#FFD600; border-color:rgba(0,0,0,0.15); }
+  .color-btn.on { background:var(--yellow); color:var(--bg); border-color:var(--yellow); }
+  .color-btn.on .swatch { border-color:rgba(10,10,10,0.3); }
+
   /* Variant gallery: shown when a type has multiple sub-variants. User picks one, then edits. */
   .variant-intro { font-size:13px; color:#C8C8C8; line-height:1.5; margin-bottom:14px; }
   .variant-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
@@ -117,7 +153,8 @@
   .variant-card.on { border-color:var(--yellow); background:rgba(255,214,0,0.06); }
   .variant-card .vn { font-family:var(--serif); font-size:17px; color:#F0F0F0; line-height:1.1; }
   .variant-card .vd { font-size:11.5px; color:#999; line-height:1.4; }
-  .variant-back { font-size:12px; color:#888; cursor:pointer; margin-bottom:12px; display:inline-flex; align-items:center; gap:6px; }
+  /* Back link must sit on its own line (above the "Formato:" hint block), so display:flex + width:fit-content over the previous inline-flex which was flowing inline with the following text. */
+  .variant-back { font-size:12px; color:#888; cursor:pointer; margin-bottom:16px; display:flex; width:fit-content; align-items:center; gap:6px; padding:4px 2px; }
   .variant-back:hover { color:var(--yellow); }
 
   /* Buttons */
@@ -226,6 +263,51 @@
   .t1 .watermark .logo-svg.ic { height:420px; width:auto; }
   .t1 h2 { font-family:var(--serif); font-size:86px; font-weight:400; line-height:1.04; letter-spacing:-2px; color:var(--h1); margin-top:32px; max-width:1000px; }
   .t1 .attr { font-size:26px; color:var(--body-dk); margin-top:56px; letter-spacing:0.02em; max-width:900px; line-height:1.5; }
+  /* Quote color variants: the three surfaces in the Magnify brand system. Light/yellow invert the titular + body + watermark colors to keep contrast without leaving brand. */
+  .frame.lt .t1 h2 { color:var(--bg); }
+  .frame.lt .t1 .attr { color:var(--body-lt); }
+  .frame.yl .t1 h2 { color:var(--bg); }
+  .frame.yl .t1 .attr { color:rgba(10,10,10,0.7); }
+
+  /* Stats Hero color variants: the big numeral keeps yellow on dark/light but flips to black on yellow surface (yellow-on-yellow would vanish). Supporting text inverts accordingly. */
+  .frame.lt .t3 .t3-desc { color:var(--bg); }
+  .frame.lt .t3 .t3-meta { color:rgba(0,0,0,0.5); }
+  .frame.yl .t3 .t3-num { color:var(--bg); }
+  .frame.yl .t3 .t3-desc { color:var(--bg); }
+  .frame.yl .t3 .t3-meta { color:rgba(0,0,0,0.55); }
+
+  /* Framework color variants: row dividers and text need to follow the surface. Yellow numbers are preserved on dark/light, but on yellow surface they flip to black (legibility). */
+  .frame.dk .t4 h2 { color:var(--h1); }
+  .frame.dk .t4-item { border-bottom-color:rgba(255,255,255,0.12); }
+  .frame.dk .t4-item:first-child { border-top-color:rgba(255,255,255,0.12); }
+  .frame.dk .t4-item h3 { color:var(--h2); }
+  .frame.dk .t4-item p { color:var(--body-dk); }
+  .frame.yl .t4 h2 { color:var(--bg); }
+  .frame.yl .t4-n { color:var(--bg); }
+  .frame.yl .t4-item h3 { color:var(--bg); }
+  .frame.yl .t4-item p { color:rgba(10,10,10,0.65); }
+  .frame.yl .t4-item { border-bottom-color:rgba(10,10,10,0.15); }
+  .frame.yl .t4-item:first-child { border-top-color:rgba(10,10,10,0.15); }
+
+  /* Quote Landscape color variants: titular + attribution + divider line follow the surface. */
+  .frame.dk .t7-l h2 { color:var(--h1); }
+  .frame.dk .t7-r { border-left-color:rgba(255,255,255,0.15); }
+  .frame.dk .t7-r p { color:var(--body-dk); }
+  .frame.yl .t7-l h2 { color:var(--bg); }
+  .frame.yl .t7-r { border-left-color:rgba(10,10,10,0.2); }
+  .frame.yl .t7-r p { color:rgba(10,10,10,0.7); }
+
+  /* T-IMG — Carousel Image: full-bleed photo + lower gradient overlay with caption. Height reserves the 120px footer so the photo never overlaps the brand bar. */
+  .t-img { height:calc(100% - 120px); position:relative; overflow:hidden; background:#222; }
+  .t-img .photo { position:absolute; inset:0; background-size:cover; background-position:center; }
+  .t-img .photo.empty { display:flex; align-items:center; justify-content:center; color:#666; font-size:18px; letter-spacing:0.1em; text-transform:uppercase; background:repeating-linear-gradient(45deg, #1a1a1a 0 24px, #222 24px 48px); }
+  .t-img .shade { position:absolute; left:0; right:0; bottom:0; height:62%; background:linear-gradient(to bottom, rgba(10,10,10,0) 0%, rgba(10,10,10,0.35) 40%, rgba(10,10,10,0.9) 100%); }
+  .t-img .copy { position:absolute; left:80px; right:80px; bottom:56px; }
+  .t-img .copy .eb { font-family:var(--sans); font-size:24px; font-weight:700; letter-spacing:2.8px; text-transform:uppercase; color:var(--yellow); margin-bottom:20px; }
+  .t-img .copy h2 { font-family:var(--serif); font-size:64px; color:var(--h1); line-height:1.08; letter-spacing:-1.2px; max-width:920px; font-weight:400; }
+  .t-img .dots { position:absolute; bottom:24px; right:80px; display:flex; gap:8px; }
+  .t-img .dots .d { width:40px; height:4px; background:rgba(250,250,250,0.35); border-radius:2px; }
+  .t-img .dots .d.on { background:var(--yellow); }
   /* T2 — Stats Grid */
   .t2 { padding:100px; display:flex; flex-direction:column; height:calc(100% - 80px); }
   .t2-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px; background:rgba(0,0,0,0.12); margin-top:48px; flex:1; border-radius:2px; overflow:hidden; }
@@ -244,14 +326,15 @@
   .t3-meta { font-size:14px; font-weight:500; color:rgba(255,255,255,0.45); margin-top:28px; letter-spacing:2px; text-transform:uppercase; }
   /* T4 — Framework */
   .t4 { padding:100px; height:calc(100% - 96px); display:flex; flex-direction:column; }
-  .t4 h2 { font-family:var(--serif); font-size:52px; font-weight:400; color:var(--bg); line-height:1.15; margin-top:28px; letter-spacing:-1px; max-width:900px; }
-  .t4-list { margin-top:48px; flex:1; display:flex; flex-direction:column; justify-content:center; }
-  .t4-item { display:flex; align-items:baseline; padding:28px 0; border-bottom:1px solid rgba(0,0,0,0.08); gap:8px; }
+  .t4 h2 { font-family:var(--serif); font-size:64px; font-weight:400; color:var(--bg); line-height:1.12; margin-top:28px; letter-spacing:-1.4px; max-width:940px; }
+  .t4-list { margin-top:52px; flex:1; display:flex; flex-direction:column; justify-content:center; }
+  /* Bumped: at 1200×1200 scaled down for LinkedIn feed (~550px wide on desktop, ~360px mobile), 28/22px title/body became unreadable. 42/30 gives a comfortable 72dpi-equivalent size on mobile feed. */
+  .t4-item { display:flex; align-items:baseline; padding:34px 0; border-bottom:1px solid rgba(0,0,0,0.08); gap:16px; }
   .t4-item:first-child { border-top:1px solid rgba(0,0,0,0.08); }
-  .t4-n { font-family:var(--serif); font-size:48px; color:var(--yellow); width:90px; flex-shrink:0; line-height:1; font-feature-settings:"tnum"; }
+  .t4-n { font-family:var(--serif); font-size:64px; color:var(--yellow); width:108px; flex-shrink:0; line-height:1; font-feature-settings:"tnum"; }
   .t4-item > div { flex:1; }
-  .t4-item h3 { font-size:28px; font-weight:500; color:var(--bg); margin-bottom:8px; letter-spacing:-0.2px; }
-  .t4-item p { font-size:22px; color:var(--body-lt); line-height:1.5; }
+  .t4-item h3 { font-size:42px; font-weight:500; color:var(--bg); margin-bottom:14px; letter-spacing:-0.4px; line-height:1.15; }
+  .t4-item p { font-size:30px; color:var(--body-lt); line-height:1.4; }
   /* T5 — Servicio */
   .t5 { display:flex; flex-direction:column; height:calc(100% - 96px); position:relative; }
   .t5-body { flex:1; padding:100px 100px 60px; display:flex; flex-direction:column; justify-content:center; }
@@ -729,9 +812,22 @@
         <label>Pega tu contenido</label>
         <textarea class="main" id="content" spellcheck="false" placeholder="Pega el texto estructurado..."></textarea>
       </div>
+      <div class="uploads" id="uploads">
+        <div class="uploads-head">
+          <label>Imágenes</label>
+          <span class="hint-inline">Referencia en tu texto como <code>img1</code>, <code>img2</code>…</span>
+        </div>
+        <div class="upload-drop" id="upload-drop">
+          Arrastra imágenes aquí o <u>pulsa para subir</u>
+          <input type="file" id="upload-input" accept="image/*" multiple style="display:none">
+        </div>
+        <div class="upload-thumbs" id="upload-thumbs"></div>
+      </div>
       <div class="hint" id="hint"></div>
       <div class="err" id="err"></div>
     </div>
+
+    <div class="color-bar" id="color-bar"></div>
 
     <div class="actions">
       <button class="btn btn-primary" onclick="generate()">Generar Preview</button>
@@ -757,6 +853,14 @@
 // ── STATE ──
 let currentType = 'linkedin-post';
 let renderedFrames = [];
+// Uploaded images: { img1: 'data:image/...', img2: '...' }. Referenced from the textarea as img1, img2…
+// Persists across type switches so the user can switch between post/carousel without losing their upload.
+let uploadedImages = {};
+let uploadCounter = 0;
+// Active color for the current variant. null when the variant doesn't support color modes.
+// Renderers read `d.color` first (explicit override in textarea) and fall back to this state.
+let currentColor = null;
+let currentVariantColors = null;
 
 // ── TYPE DEFINITIONS ──
 const TYPE_META = {
@@ -779,12 +883,15 @@ atribucion: \u2014 Insight de nuestro trabajo con +50 marcas B2B`
     title: 'LinkedIn Carousel',
     desc: 'Carousel de m\u00faltiples slides (1080\u00d71350)',
     exportLabel: 'Descargar Carousel (PDF + PNGs)',
+    supportsImages: true,
     hint: `<strong>Formato:</strong><br><br>
 Cada slide separado por <code>---</code><br><br>
 <strong>Portada (primer slide):</strong><br>
 <code>eyebrow:</code> Etiqueta &nbsp; <code>titular:</code> Headline &nbsp; <code>subtitulo:</code> Texto<br><br>
 <strong>Slides de contenido:</strong><br>
 <code>eyebrow:</code> PRINCIPIO 01 &nbsp; <code>titular:</code> Headline &nbsp; <code>cuerpo:</code> P\u00e1rrafo<br><br>
+<strong>Slide imagen:</strong><br>
+<code>plantilla: imagen</code> &nbsp; <code>imagen:</code> img1 (tras subirla arriba) &nbsp; <code>eyebrow:</code> opcional &nbsp; <code>titular:</code> caption<br><br>
 <strong>Slide CTA (cierre):</strong><br>
 <code>plantilla: cta</code><br>
 <code>titular:</code> Mensaje / pregunta (arriba, serif)<br>
@@ -797,6 +904,11 @@ subtitulo: Descubre si tu marca est\u00e1 construida sobre una base s\u00f3lida.
 eyebrow: SE\u00d1AL #1
 titular: Tu equipo no sabe explicar qu\u00e9 os hace [diferentes]
 cuerpo: Si preguntas a 5 personas "\u00bfqu\u00e9 nos diferencia?", obtienes 5 respuestas distintas.
+---
+plantilla: imagen
+imagen: img1
+eyebrow: EJEMPLO
+titular: Lo que el mercado [realmente] percibe
 ---
 eyebrow: SE\u00d1AL #2
 titular: Tu web dice lo mismo que la de tu [competencia]
@@ -1058,7 +1170,12 @@ link: https://magnify.ing/agendar`
 const VARIANTS = {
   'linkedin-post': [
     { id: 'quote', name: 'Quote',
-      desc: 'Cita o insight con atribución. Editorial, serif grande.',
+      desc: 'Cita o insight con atribución. Editorial, serif grande. Tres modos de color.',
+      colors: [
+        { id: 'dark', label: 'Oscuro' },
+        { id: 'light', label: 'Claro' },
+        { id: 'yellow', label: 'Amarillo' },
+      ],
       example: `plantilla: quote
 eyebrow: DIAGNÓSTICO DE MARCA
 titular: Las marcas que no se [miden], no se mejoran. Se improvisan.
@@ -1078,6 +1195,11 @@ n4: 3x
 l4: velocidad de decisión interna` },
     { id: 'stats-hero', name: 'Stats Hero',
       desc: 'Una stat dominante centrada. Para un insight potente.',
+      colors: [
+        { id: 'dark', label: 'Oscuro' },
+        { id: 'light', label: 'Claro' },
+        { id: 'yellow', label: 'Amarillo' },
+      ],
       example: `plantilla: stats-hero
 eyebrow: DATO CLAVE
 numero: 73
@@ -1086,6 +1208,11 @@ descripcion: de marcas B2B no puede articular qué las [diferencia]
 atribucion: Encuesta interna · +50 líderes de marketing` },
     { id: 'framework', name: 'Framework',
       desc: 'Lista numerada de pasos. Para procesos o metodologías.',
+      colors: [
+        { id: 'light', label: 'Claro' },
+        { id: 'dark', label: 'Oscuro' },
+        { id: 'yellow', label: 'Amarillo' },
+      ],
       example: `plantilla: framework
 eyebrow: CÓMO LO HACEMOS
 titular: Diagnóstico en [3 fases]
@@ -1116,6 +1243,11 @@ b3: Roadmap de 90 días
 b4: KPIs medibles de marca` },
     { id: 'quote-landscape', name: 'Quote Landscape',
       desc: 'Quote con imagen/espacio lateral. Editorial ancho.',
+      colors: [
+        { id: 'light', label: 'Claro' },
+        { id: 'dark', label: 'Oscuro' },
+        { id: 'yellow', label: 'Amarillo' },
+      ],
       example: `plantilla: quote-landscape
 eyebrow: CLIENTES
 titular: Tenemos la marca más limpia del sector y nadie lo sabe.
@@ -1334,6 +1466,96 @@ url: magnify.ing` }
   ]
 };
 
+// ── COLOR SELECTOR ──
+// Renders a segmented control when the active variant declares `colors`. Clicking a button updates state
+// and re-runs generate() if a preview already exists so the user sees the change instantly.
+function renderColorBar(colors) {
+  const bar = document.getElementById('color-bar');
+  if (!colors || !colors.length) {
+    bar.classList.remove('on');
+    bar.innerHTML = '';
+    currentColor = null;
+    currentVariantColors = null;
+    return;
+  }
+  currentVariantColors = colors;
+  if (!currentColor || !colors.find(c => c.id === currentColor)) {
+    currentColor = colors[0].id;
+  }
+  bar.innerHTML = `<span class="color-label">Color</span>` + colors.map(c =>
+    `<button class="color-btn${c.id === currentColor ? ' on' : ''}" data-color="${c.id}" onclick="setColor('${c.id}')">
+      <span class="swatch"></span>${c.label}
+    </button>`
+  ).join('');
+  bar.classList.add('on');
+}
+
+function setColor(color) {
+  currentColor = color;
+  document.querySelectorAll('.color-btn').forEach(b => b.classList.toggle('on', b.dataset.color === color));
+  // Re-render if a preview already exists so the change is visible immediately.
+  if (renderedFrames.length) generate();
+}
+
+// ── IMAGE UPLOADS ──
+// ~5MB per image cap: larger files produce data URIs that make the HTML and exports sluggish. LinkedIn compresses anyway.
+const MAX_IMG_BYTES = 5 * 1024 * 1024;
+
+function handleImageFiles(files) {
+  const list = Array.from(files || []).filter(f => f.type.startsWith('image/'));
+  if (!list.length) return;
+  list.forEach(file => {
+    if (file.size > MAX_IMG_BYTES) {
+      toast(`${file.name}: supera los 5MB`);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      uploadCounter += 1;
+      const id = 'img' + uploadCounter;
+      uploadedImages[id] = reader.result;
+      renderImageThumbs();
+    };
+    reader.onerror = () => toast('Error leyendo ' + file.name);
+    reader.readAsDataURL(file);
+  });
+}
+
+function removeUploadedImage(id) {
+  delete uploadedImages[id];
+  renderImageThumbs();
+}
+
+function renderImageThumbs() {
+  const host = document.getElementById('upload-thumbs');
+  if (!host) return;
+  const ids = Object.keys(uploadedImages);
+  host.innerHTML = ids.map(id => `
+    <div class="upload-thumb">
+      <img src="${uploadedImages[id]}" alt="${id}">
+      <span class="id">${id}</span>
+      <button class="rm" title="Eliminar" onclick="removeUploadedImage('${id}')">×</button>
+    </div>
+  `).join('');
+}
+
+function wireUploadZone() {
+  const drop = document.getElementById('upload-drop');
+  const input = document.getElementById('upload-input');
+  if (!drop || !input) return;
+  drop.addEventListener('click', () => input.click());
+  input.addEventListener('change', e => { handleImageFiles(e.target.files); input.value = ''; });
+  ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => {
+    e.preventDefault(); e.stopPropagation(); drop.classList.add('drag');
+  }));
+  ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => {
+    e.preventDefault(); e.stopPropagation();
+    if (ev === 'dragleave' && e.target !== drop) return;
+    drop.classList.remove('drag');
+  }));
+  drop.addEventListener('drop', e => handleImageFiles(e.dataTransfer.files));
+}
+
 // ── SIDEBAR / TYPE SELECTION ──
 function selectType(type) {
   currentType = type;
@@ -1345,6 +1567,11 @@ function selectType(type) {
   document.getElementById('panel-desc').textContent = meta.desc;
   document.getElementById('btn-export').textContent = meta.exportLabel;
   document.getElementById('btn-export').disabled = true;
+
+  // Show/hide upload zone based on whether this type supports images.
+  document.getElementById('uploads').classList.toggle('on', !!meta.supportsImages);
+  // Hide color bar by default; variants re-show it via selectVariant.
+  renderColorBar(null);
 
   // If this type has multiple variants, show the variant picker gallery first.
   const variants = VARIANTS[type];
@@ -1389,6 +1616,9 @@ function selectVariant(type, variantId) {
   contentEl.value = v.example;
   // Hint: show a "back to gallery" link + the type-level format hint
   document.getElementById('hint').innerHTML = `<div class="variant-back" onclick="selectType('${type}')">\u2190 Ver otras plantillas</div>${meta.hint}`;
+  // Color bar: show only if this variant declares `colors`. Reset currentColor so each variant starts on its default.
+  currentColor = null;
+  renderColorBar(v.colors || null);
   // Auto-generate preview so user sees the variant immediately
   generate();
 }
@@ -1406,6 +1636,8 @@ function parseBlock(text) {
   const lines = text.trim().split('\n');
   let currentKey = null;
   for (const line of lines) {
+    // Comment lines (# ...) are ignored outright — they neither open a new key nor append to the previous one.
+    if (/^\s*#/.test(line)) { continue; }
     const m = line.match(/^(\w+(?:[-_]\w+)*):\s*(.*)$/);
     if (m) {
       currentKey = m[1].toLowerCase();
@@ -1424,12 +1656,12 @@ function wordmark(color) { return `<svg class="logo-svg wm" viewBox="348 620 214
 function icon(color) { return `<svg class="logo-svg ic" viewBox="65 52 155 178" xmlns="http://www.w3.org/2000/svg"><polygon fill="${color}" points="${ICON_POINTS}"/></svg>`; }
 
 function applyHighlights(text) {
-  // Commas and periods stay OUTSIDE the yellow highlight (cleaner, more editorial).
-  // Strip trailing punctuation from [brackets] and emit it after </span>; also don't consume punctuation after ].
-  return text.replace(/\[([^\]]+)\]/g, (_, inner) => {
-    const m = inner.match(/^(.*?)([.,;:!?]+)$/);
-    if (m) return `<span class="hl">${m[1]}</span>${m[2]}`;
-    return `<span class="hl">${inner}</span>`;
+  // Include trailing punctuation (.,;:!?) INSIDE the yellow highlight so "[realidades]." reads as one visual unit.
+  // The previous behavior left punctuation outside, which — combined with the 0.22em side-padding on .hl — produced
+  // a visible gap ("realidades ."). Pulling punctuation inside both removes the gap and reads as a single editorial beat.
+  // Inner-trailing punctuation ([word.]) is kept inside too (same rule).
+  return text.replace(/\[([^\]]+)\]([.,;:!?]*)/g, (_, inner, trailing) => {
+    return `<span class="hl">${inner}${trailing}</span>`;
   });
 }
 
@@ -1469,12 +1701,21 @@ function ftrCLt() {
 // ════════════════════════════════════════════
 
 function renderQuote(d) {
-  return `<div class="frame sq dk"><div class="t1">
-    <div class="watermark">${icon('#FAFAFA')}</div>
-    ${eyebrowBlock(d.eyebrow, 'eyebrow-yl', 'accent-yl')}
+  // color: dark (default) | light | yellow — three surfaces of the Magnify brand system.
+  // Priority: explicit `color:` in textarea > active color-bar button > default 'dark'.
+  const color = (d.color || currentColor || 'dark').toLowerCase().trim();
+  const frameClass = color === 'light' ? 'lt' : color === 'yellow' ? 'yl' : 'dk';
+  const wmColor = color === 'dark' ? '#FAFAFA' : '#0A0A0A';
+  const eyebrowClass = color === 'dark' ? 'eyebrow-yl' : 'eyebrow-lt';
+  // On yellow surface the yellow accent disappears — switch to the dark accent.
+  const accentClass = color === 'yellow' ? 'accent-dk' : 'accent-yl';
+  const footer = color === 'dark' ? ftrDk() : ftrLt();
+  return `<div class="frame sq ${frameClass}"><div class="t1">
+    <div class="watermark">${icon(wmColor)}</div>
+    ${eyebrowBlock(d.eyebrow, eyebrowClass, accentClass)}
     <h2>${applyHighlights(d.titular || 'Tu headline aqu\u00ed')}</h2>
     <p class="attr">${d.atribucion || ''}</p>
-  </div>${ftrDk()}</div>`;
+  </div>${footer}</div>`;
 }
 
 function renderStatsGrid(d) {
@@ -1494,30 +1735,40 @@ function renderStatsGrid(d) {
 }
 
 function renderStatsHero(d) {
+  const color = (d.color || currentColor || 'dark').toLowerCase().trim();
+  const frameClass = color === 'light' ? 'lt' : color === 'yellow' ? 'yl' : 'dk';
+  const eyebrowClass = color === 'dark' ? 'eyebrow-yl' : 'eyebrow-lt';
+  const accentClass = color === 'yellow' ? 'accent-dk' : 'accent-yl';
+  const footer = color === 'dark' ? ftrDk() : ftrLt();
   const num = d.numero || d.stat || '73';
   const suffix = d.sufijo || d.suffix || '%';
-  return `<div class="frame sq dk"><div class="t3">
-    ${eyebrowBlock(d.eyebrow, 'eyebrow-yl', 'accent-yl', 'margin:20px auto 0')}
+  return `<div class="frame sq ${frameClass}"><div class="t3">
+    ${eyebrowBlock(d.eyebrow, eyebrowClass, accentClass, 'margin:20px auto 0')}
     <div class="t3-num">${num}<sup>${suffix}</sup></div>
     <p class="t3-desc">${d.descripcion || d.cuerpo || ''}</p>
     <p class="t3-meta">${d.meta || ''}</p>
-  </div>${ftrDk()}</div>`;
+  </div>${footer}</div>`;
 }
 
 function renderFramework(d) {
+  const color = (d.color || currentColor || 'light').toLowerCase().trim();
+  const frameClass = color === 'light' ? 'lt' : color === 'yellow' ? 'yl' : 'dk';
+  const eyebrowClass = color === 'dark' ? 'eyebrow-yl' : 'eyebrow-lt';
+  const accentClass = color === 'yellow' ? 'accent-dk' : 'accent-yl';
+  const footer = color === 'dark' ? ftrDk() : ftrLt();
   const items = [];
   for (let i = 1; i <= 6; i++) {
     const title = d['titulo' + i] || d['item' + i] || '';
     const desc = d['desc' + i] || d['descripcion' + i] || '';
     if (title) items.push({ title, desc });
   }
-  return `<div class="frame sq lt"><div class="t4">
-    ${eyebrowBlock(d.eyebrow, 'eyebrow-lt', 'accent-yl')}
+  return `<div class="frame sq ${frameClass}"><div class="t4">
+    ${eyebrowBlock(d.eyebrow, eyebrowClass, accentClass)}
     <h2>${applyHighlights(d.titular || 'Tu framework')}</h2>
     <div class="t4-list">
       ${items.map((it, i) => `<div class="t4-item"><span class="t4-n">0${i + 1}</span><div><h3>${it.title}</h3><p>${it.desc}</p></div></div>`).join('')}
     </div>
-  </div>${ftrLt()}</div>`;
+  </div>${footer}</div>`;
 }
 
 function renderServicio(d) {
@@ -1554,13 +1805,21 @@ function renderAntesDepues(d) {
 }
 
 function renderQuoteLandscape(d) {
-  return `<div class="frame ls lt"><div class="t7">
+  const color = (d.color || currentColor || 'light').toLowerCase().trim();
+  const frameClass = color === 'light' ? 'lt' : color === 'yellow' ? 'yl' : 'dk';
+  const eyebrowClass = color === 'dark' ? 'eyebrow-yl' : 'eyebrow-lt';
+  const accentClass = color === 'yellow' ? 'accent-dk' : 'accent-yl';
+  // Footer here is a custom 68px bar (landscape is short), so we inline the class + swatches per surface.
+  const footer = color === 'dark'
+    ? `<div class="ftr ftr-dk" style="height:68px;padding:0 100px">${wordmark('#FAFAFA')}<span class="url url-dk">magnify.<span class="ing-ap">ing</span></span></div>`
+    : `<div class="ftr ftr-lt" style="height:68px;padding:0 100px">${wordmark('#0A0A0A')}<span class="url url-lt">magnify.<span class="ing-ap">ing</span></span></div>`;
+  return `<div class="frame ls ${frameClass}"><div class="t7">
     <div class="t7-l">
-      ${eyebrowBlock(d.eyebrow, 'eyebrow-lt', 'accent-yl')}
+      ${eyebrowBlock(d.eyebrow, eyebrowClass, accentClass)}
       <h2>${applyHighlights(d.titular || 'Tu headline')}</h2>
     </div>
     <div class="t7-r"><p>${d.sidebar || d.descripcion || ''}</p></div>
-  </div><div class="ftr ftr-lt" style="height:68px;padding:0 100px">${wordmark('#0A0A0A')}<span class="url url-lt">magnify.<span class="ing-ap">ing</span></span></div></div>`;
+  </div>${footer}</div>`;
 }
 
 function renderCuadrante(d) {
@@ -1682,6 +1941,29 @@ function renderCarouselSplit(d, slideNum, totalSlides) {
       <p>${d.cuerpo || ''}</p>
     </div>
   </div><div class="ftr-c ftr-lt" style="background:#fff">${icon('#0A0A0A')}<span class="url url-lt">magnify.<span class="ing-ap">ing</span></span></div></div>`;
+}
+
+function renderCarouselImage(d, slideNum, totalSlides) {
+  // Full-bleed photo slide with lower gradient + caption. Image is referenced by its uploaded ID (img1, img2…);
+  // if the ID doesn't resolve (user forgot to upload or typo'd), we render a diagonal-stripe placeholder so the
+  // user sees immediately that the reference is broken without the preview blowing up.
+  const imgRef = (d.imagen || d.image || '').trim().toLowerCase();
+  const dataUrl = uploadedImages[imgRef];
+  const photoHtml = dataUrl
+    ? `<div class="photo" style="background-image:url('${dataUrl}')"></div>`
+    : `<div class="photo empty">Sin imagen — sube una y referénciala como <code style="margin:0 .3em">${imgRef || 'img1'}</code></div>`;
+  const dots = Array.from({ length: totalSlides }, (_, i) =>
+    `<div class="d${i + 1 === slideNum ? ' on' : ''}"></div>`
+  ).join('');
+  return `<div class="frame cr dk"><div class="t-img">
+    ${photoHtml}
+    <div class="shade"></div>
+    <div class="copy">
+      ${d.eyebrow ? `<div class="eb">${d.eyebrow}</div>` : ''}
+      <h2>${applyHighlights(d.titular || '')}</h2>
+    </div>
+    <div class="dots">${dots}</div>
+  </div>${ftrCDk()}</div>`;
 }
 
 function renderCarouselCTA(d) {
@@ -2817,6 +3099,8 @@ function generateCarousel(raw, preview, renderC) {
       html = renderCarouselCover(data);
     } else if (plantilla === 'cta' || (data.cta && !data.titular && !data.cuerpo)) {
       html = renderCarouselCTA(data);
+    } else if (plantilla === 'imagen' || plantilla === 'image' || plantilla === 'foto') {
+      html = renderCarouselImage(data, idx, totalContent);
     } else if (plantilla === 'stat' || data.stat || data.numero) {
       html = renderCarouselSplit(data, idx, totalContent);
     } else {
@@ -3042,6 +3326,7 @@ async function exportAll() {
 
 // ── INIT ──
 document.getElementById('sidebar-logo').innerHTML = icon('#FAFAFA');
+wireUploadZone();
 selectType('linkedin-post');
 </script>
 </body>
