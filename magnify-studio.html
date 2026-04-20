@@ -1,0 +1,3048 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Magnify Content Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js" integrity="sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha384-+mbV2IY1Zk/X1p/nWllGySJSUN8uMs+gUAN10Or95UBH0fpj6GfKgPmgC5EXieXG" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js" integrity="sha384-Cck14aA9cifjYolcnjebXRfWGkz5ltHMBiG4px/j8GS+xQcb7OhNQWZYyWjQ+UwQ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<style>
+  @font-face { font-family: 'NM'; src: url('fonts/PPNeueMontreal-Book.woff2') format('woff2'); font-weight: 400; }
+  @font-face { font-family: 'NM'; src: url('fonts/PPNeueMontreal-Medium.woff2') format('woff2'); font-weight: 500; }
+  @font-face { font-family: 'NM'; src: url('fonts/PPNeueMontreal-Bold.woff2') format('woff2'); font-weight: 700; }
+
+  :root {
+    --bg: #0A0A0A; --yellow: #FFD600; --h1: #F0F0F0; --h2: #FAFAFA;
+    --body-dk: #999999; --body-lt: #444444;
+    --border-dk: rgba(255,255,255,0.1); --border-lt: rgba(0,0,0,0.1);
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'NM', system-ui, sans-serif;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: #0A0A0A; font-family: var(--sans); color: var(--h2);
+    -webkit-font-smoothing: antialiased; height:100vh; overflow:hidden;
+  }
+
+  /* ── LAYOUT ── */
+  .layout { display:flex; height:100vh; }
+
+  /* ── SIDEBAR ── */
+  /* Sidebar: icon + label row. Wide enough to show what each template is without guessing ASCII symbols. */
+  .sidebar {
+    width:220px; min-width:220px; background:#0D0D0D;
+    border-right:1px solid var(--border-dk);
+    display:flex; flex-direction:column;
+    padding:20px 12px; gap:2px;
+  }
+  .sidebar-logo {
+    height:36px; display:flex; align-items:center; padding:0 12px;
+    margin-bottom:24px;
+  }
+  .sidebar-logo img, .sidebar-logo .logo-svg.ic { height:24px; width:auto; }
+  .sidebar-item {
+    width:100%; min-height:44px; padding:10px 14px;
+    display:flex; align-items:center; gap:14px;
+    border-radius:8px; cursor:pointer; transition:background 0.15s, color 0.15s;
+    position:relative; color:#888; border:none; background:transparent; text-align:left;
+    font-family:var(--sans); font-size:14px; font-weight:500; line-height:1.2;
+  }
+  .sidebar-item .ic {
+    flex-shrink:0; width:22px; height:22px; display:flex; align-items:center; justify-content:center;
+    font-size:18px; font-family:var(--sans); font-weight:700; color:inherit; opacity:0.85;
+  }
+  .sidebar-item:hover { background:rgba(255,255,255,0.05); color:#DDD; }
+  .sidebar-item.on { color:var(--yellow); background:rgba(255,214,0,0.08); }
+  .sidebar-item.on .ic { opacity:1; }
+  .sidebar-item.on::before {
+    content:''; position:absolute; left:-12px; top:10px; bottom:10px;
+    width:3px; background:var(--yellow); border-radius:0 3px 3px 0;
+  }
+
+  /* ── CENTER PANEL ── */
+  .panel {
+    width:400px; min-width:400px; background:#111;
+    border-right:1px solid var(--border-dk);
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  .panel-head {
+    padding:20px 24px 16px; border-bottom:1px solid var(--border-dk);
+  }
+  .panel-head h2 { font-size:18px; font-weight:600; color:#F0F0F0; margin-bottom:6px; }
+  .panel-head p { font-size:13px; color:#999; line-height:1.4; }
+
+  /* Textarea */
+  .input-area { flex:1; padding:16px 24px; overflow-y:auto; display:flex; flex-direction:column; gap:14px; }
+  .input-area label {
+    font-size:12px; font-weight:600; letter-spacing:1.5px;
+    text-transform:uppercase; color:#BBB; display:block; margin-bottom:8px;
+  }
+  .input-area textarea {
+    width:100%; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:8px;
+    color:#EEE; font-family:'SF Mono', 'Fira Code', monospace; font-size:13px;
+    padding:14px; line-height:1.7; resize:none; outline:none; transition: border-color 0.2s;
+  }
+  .input-area textarea:focus { border-color:var(--yellow); }
+  .input-area textarea.main { flex:1; min-height:200px; }
+  /* Hint: bigger + much higher contrast. 14px light grey on #111 bg = 8:1 contrast ratio (AAA). */
+  .hint { font-size:13px; color:#C8C8C8; line-height:1.65; }
+  .hint strong { color:#F0F0F0; }
+  .hint code { color:var(--yellow); font-family:'SF Mono', monospace; font-size:12px; background:rgba(255,214,0,0.08); padding:2px 6px; border-radius:3px; }
+
+  /* Error panel: persistent, inline in the input column (not a transient toast) so the user can read the parser complaint while they edit. */
+  .err {
+    display:none; background:rgba(255,80,80,0.08); border:1px solid rgba(255,80,80,0.4);
+    border-radius:8px; padding:12px 14px; font-size:13px; color:#FFB4B4; line-height:1.5;
+  }
+  .err.show { display:block; }
+  .err strong { color:#FF8080; font-weight:600; }
+  .err code { font-family:'SF Mono', monospace; font-size:12px; color:#FFD0D0; background:rgba(255,80,80,0.12); padding:1px 5px; border-radius:3px; }
+
+  /* Variant gallery: shown when a type has multiple sub-variants. User picks one, then edits. */
+  .variant-intro { font-size:13px; color:#C8C8C8; line-height:1.5; margin-bottom:14px; }
+  .variant-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+  .variant-card {
+    background:#1a1a1a; border:1px solid #2a2a2a; border-radius:8px;
+    padding:12px 14px; cursor:pointer; transition:all 0.15s; text-align:left;
+    display:flex; flex-direction:column; gap:4px;
+  }
+  .variant-card:hover { border-color:var(--yellow); background:#1f1f1f; }
+  .variant-card.on { border-color:var(--yellow); background:rgba(255,214,0,0.06); }
+  .variant-card .vn { font-family:var(--serif); font-size:17px; color:#F0F0F0; line-height:1.1; }
+  .variant-card .vd { font-size:11.5px; color:#999; line-height:1.4; }
+  .variant-back { font-size:12px; color:#888; cursor:pointer; margin-bottom:12px; display:inline-flex; align-items:center; gap:6px; }
+  .variant-back:hover { color:var(--yellow); }
+
+  /* Buttons */
+  .actions { padding:16px 24px; border-top:1px solid var(--border-dk); display:flex; flex-direction:column; gap:8px; }
+  .btn {
+    width:100%; padding:12px; border:none; border-radius:8px; font-family:var(--sans);
+    font-size:13px; font-weight:500; cursor:pointer; transition: all 0.15s; letter-spacing:0.02em;
+  }
+  .btn-primary { background:var(--yellow); color:var(--bg); }
+  .btn-primary:hover { background:#ffe640; }
+  .btn-secondary { background:#1a1a1a; color:#aaa; border:1px solid #2a2a2a; }
+  .btn-secondary:hover { border-color:#444; color:#ddd; }
+  .btn:disabled { opacity:0.4; cursor:not-allowed; }
+
+  /* ── RIGHT: PREVIEW ── */
+  .preview-area {
+    flex:1; overflow:auto; padding:40px;
+    display:flex; flex-wrap:wrap; gap:32px; align-content:flex-start; justify-content:center;
+  }
+  .preview-card {
+    position:relative; box-shadow:0 4px 24px rgba(0,0,0,0.4);
+    border-radius:4px; overflow:hidden; transition: box-shadow 0.2s;
+  }
+  .preview-card:hover { box-shadow:0 4px 32px rgba(255,214,0,0.15); }
+  .preview-card.paper {
+    box-shadow: 0 2px 20px rgba(0,0,0,0.5), 0 0 60px rgba(0,0,0,0.3);
+    border-radius:2px;
+  }
+  .slide-label {
+    position:absolute; top:-28px; left:0; font-size:11px; font-weight:500;
+    letter-spacing:1.2px; text-transform:uppercase; color:#555;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    background:#111; color:#ddd; font-family:var(--sans); font-size:13px; font-weight:500;
+    padding:12px 24px; border-radius:50px; border:1px solid var(--border-dk);
+    box-shadow:0 8px 32px rgba(0,0,0,0.5); opacity:0; transition:opacity 0.3s;
+    pointer-events:none; z-index:200;
+  }
+  .toast.show { opacity:1; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    flex:1; display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:16px; color:#333; text-align:center;
+  }
+  .empty-state p { font-size:15px; max-width:400px; line-height:1.6; }
+
+  /* ════════════════════════════════════════════
+     TEMPLATE STYLES — LinkedIn (T1-T11)
+     ════════════════════════════════════════════ */
+  .frame { position:relative; overflow:hidden; }
+  .frame.sq { width:1200px; height:1200px; }
+  .frame.ls { width:1200px; height:628px; }
+  .frame.cr { width:1080px; height:1350px; }
+  .frame.ps { width:1920px; height:1080px; }
+  .frame.dk { background:var(--bg); }
+  .frame.lt { background:#FFFFFF; }
+  .frame.yl { background:var(--yellow); }
+
+  /* Unified footer height across all templates for visual consistency (carousel .t8-bar, .ftr-c, and .ftr all = 120px). */
+  .ftr { position:absolute; bottom:0; left:0; right:0; display:flex; align-items:center; justify-content:space-between; padding:0 80px; height:120px; }
+  .ftr.ftr-dk { border-top:1px solid var(--border-dk); }
+  .ftr.ftr-lt { border-top:1px solid var(--border-lt); }
+  .ftr img, .ftr .logo-svg.wm { height:40px; width:auto; display:block; }
+  .ftr .logo-svg.ic { height:48px; width:auto; display:block; }
+  .ftr .url { font-size:22px; letter-spacing:0.12em; font-weight:500; }
+  .ftr .url-dk { color:rgba(255,255,255,0.55); }
+  .ftr .url-dk .ing-ap { color:var(--yellow); font-weight:500; }
+  .ftr .url-lt { color:rgba(0,0,0,0.55); }
+  .ftr .url-lt .ing-ap { color:var(--yellow); font-weight:500; }
+
+  .ftr-c { position:absolute; bottom:0; left:0; right:0; display:flex; align-items:center; justify-content:space-between; padding:0 80px; height:120px; }
+  .ftr-c.ftr-dk { border-top:1px solid var(--border-dk); }
+  .ftr-c.ftr-lt { border-top:1px solid var(--border-lt); }
+  .ftr-c img, .ftr-c .logo-svg.wm { height:48px; width:auto; display:block; }
+  .ftr-c .logo-svg.ic { height:58px; width:auto; display:block; }
+  .ftr-c .url { font-size:28px; letter-spacing:0.12em; font-weight:500; }
+  .ftr-c .url-dk { color:rgba(255,255,255,0.6); }
+  .ftr-c .url-dk .ing-ap { color:var(--yellow); font-weight:500; }
+  .ftr-c .url-lt { color:rgba(0,0,0,0.6); }
+  .ftr-c .url-lt .ing-ap { color:var(--yellow); font-weight:500; }
+
+  .eyebrow { font-family:var(--sans); font-size:26px; font-weight:700; letter-spacing:2.8px; text-transform:uppercase; }
+  .eyebrow-dk { color:var(--body-dk); }
+  .eyebrow-yl { color:var(--yellow); }
+  .eyebrow-lt { color:#1a1a1a; }
+  .eyebrow .ing-ap { color:var(--yellow); font-weight:700; }
+  .eyebrow.eyebrow-yl .ing-ap { color:#FFFFFF; font-weight:700; }
+  .eyebrow.eyebrow-lt .ing-ap { color:var(--bg); background:var(--yellow); padding:2px 6px; border-radius:2px; margin-left:1px; }
+
+  /* Highlight uses linear-gradient with explicit background-size so the yellow band stays ~x-height + buffer, never overflowing into adjacent lines — critical for serif display fonts with tall ascenders (DM Serif Display) set at tight line-heights (1.0-1.1). */
+  .hl { background-image:linear-gradient(var(--yellow), var(--yellow)); background-size:100% 0.92em; background-position:0 55%; background-repeat:no-repeat; color:var(--bg); padding:0 0.22em; display:inline; box-decoration-break:clone; -webkit-box-decoration-break:clone; border-radius:2px; }
+  .frame.yl .hl { background-image:linear-gradient(var(--bg), var(--bg)); color:var(--yellow); }
+  .ing { color:var(--yellow); }
+  .ing-dk { color:var(--bg); }
+  .accent { width:56px; height:3px; margin-top:20px; }
+  .accent-yl { background:var(--yellow); }
+  .accent-dk { background:#1a1a1a; }
+
+  /* T1 — Quote */
+  .t1 { padding:100px; display:flex; flex-direction:column; justify-content:center; height:calc(100% - 96px); position:relative; overflow:hidden; }
+  .t1 .watermark { position:absolute; top:40px; right:60px; opacity:0.04; pointer-events:none; }
+  .t1 .watermark .logo-svg.ic { height:420px; width:auto; }
+  .t1 h2 { font-family:var(--serif); font-size:86px; font-weight:400; line-height:1.04; letter-spacing:-2px; color:var(--h1); margin-top:32px; max-width:1000px; }
+  .t1 .attr { font-size:26px; color:var(--body-dk); margin-top:56px; letter-spacing:0.02em; max-width:900px; line-height:1.5; }
+  /* T2 — Stats Grid */
+  .t2 { padding:100px; display:flex; flex-direction:column; height:calc(100% - 80px); }
+  .t2-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px; background:rgba(0,0,0,0.12); margin-top:48px; flex:1; border-radius:2px; overflow:hidden; }
+  .t2-cell { background:#FFFFFF; padding:56px; display:flex; flex-direction:column; justify-content:flex-end; position:relative; }
+  .t2-cell::before { content:""; position:absolute; top:56px; left:56px; width:28px; height:2px; background:rgba(0,0,0,0.15); }
+  .t2-cell:first-child::before { background:var(--yellow); }
+  .t2-num { font-family:var(--serif); font-size:112px; color:var(--bg); line-height:1; margin-bottom:18px; letter-spacing:-2px; font-feature-settings:"tnum"; }
+  .t2-num-yl { color:var(--yellow); }
+  .t2-lbl { font-size:24px; color:var(--body-lt); line-height:1.45; max-width:360px; }
+  /* T3 — Stats Hero */
+  .t3 { display:flex; flex-direction:column; align-items:center; justify-content:center; height:calc(100% - 96px); text-align:center; padding:100px; }
+  .t3 .eyebrow { font-size:22px; }
+  .t3-num { font-family:var(--serif); font-size:320px; color:var(--yellow); line-height:0.85; letter-spacing:-10px; margin-top:44px; font-feature-settings:"tnum"; }
+  .t3-num sup { font-size:96px; opacity:0.65; letter-spacing:0; top:-0.55em; margin-left:-0.05em; }
+  .t3-desc { font-size:32px; color:var(--h2); margin-top:44px; max-width:760px; line-height:1.45; font-weight:400; }
+  .t3-meta { font-size:14px; font-weight:500; color:rgba(255,255,255,0.45); margin-top:28px; letter-spacing:2px; text-transform:uppercase; }
+  /* T4 — Framework */
+  .t4 { padding:100px; height:calc(100% - 96px); display:flex; flex-direction:column; }
+  .t4 h2 { font-family:var(--serif); font-size:52px; font-weight:400; color:var(--bg); line-height:1.15; margin-top:28px; letter-spacing:-1px; max-width:900px; }
+  .t4-list { margin-top:48px; flex:1; display:flex; flex-direction:column; justify-content:center; }
+  .t4-item { display:flex; align-items:baseline; padding:28px 0; border-bottom:1px solid rgba(0,0,0,0.08); gap:8px; }
+  .t4-item:first-child { border-top:1px solid rgba(0,0,0,0.08); }
+  .t4-n { font-family:var(--serif); font-size:48px; color:var(--yellow); width:90px; flex-shrink:0; line-height:1; font-feature-settings:"tnum"; }
+  .t4-item > div { flex:1; }
+  .t4-item h3 { font-size:28px; font-weight:500; color:var(--bg); margin-bottom:8px; letter-spacing:-0.2px; }
+  .t4-item p { font-size:22px; color:var(--body-lt); line-height:1.5; }
+  /* T5 — Servicio */
+  .t5 { display:flex; flex-direction:column; height:calc(100% - 96px); position:relative; }
+  .t5-body { flex:1; padding:100px 100px 60px; display:flex; flex-direction:column; justify-content:center; }
+  .t5-body h2 { font-family:var(--serif); font-size:84px; font-weight:400; color:var(--bg); line-height:1.04; margin-top:28px; letter-spacing:-2px; max-width:980px; }
+  .t5-desc { font-size:30px; color:var(--body-lt); line-height:1.45; margin-top:40px; max-width:880px; font-weight:400; }
+  .t5-cta-bar { display:flex; align-items:center; justify-content:space-between; background:var(--yellow); color:var(--bg); padding:42px 100px; font-size:28px; font-weight:500; letter-spacing:-0.3px; text-decoration:none; font-family:var(--sans); }
+  .t5-cta-bar .t5-cta-ar { font-size:32px; }
+  /* T6 — Antes/Despues */
+  .t6 { display:flex; height:calc(100% - 96px); position:relative; }
+  .t6-col { flex:1; padding:80px 72px; display:flex; flex-direction:column; }
+  .t6-div { width:2px; background:linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.18) 20%, var(--yellow) 50%, rgba(255,255,255,0.18) 80%, transparent 100%); }
+  .t6-ul { list-style:none; flex:1; display:flex; flex-direction:column; justify-content:center; gap:0; }
+  .t6-ul li { font-size:25px; line-height:1.4; padding:24px 0 24px 44px; position:relative; border-bottom:1px solid rgba(255,255,255,0.08); }
+  .t6-ul li:last-child { border-bottom:none; }
+  .t6-ul-antes li { color:var(--body-dk); }
+  .t6-ul-antes li::before { content:"\00D7"; position:absolute; left:0; top:20px; color:rgba(255,255,255,0.35); font-size:24px; font-weight:300; line-height:1; }
+  .t6-ul-despues li { color:var(--h2); font-weight:400; }
+  .t6-ul-despues li::before { content:"\2713"; position:absolute; left:0; top:22px; color:var(--yellow); font-size:20px; font-weight:700; line-height:1; }
+  /* T7 — Quote Landscape */
+  .t7 { padding:56px 100px 0; display:flex; align-items:center; height:calc(100% - 96px); gap:80px; }
+  .t7-l { flex:1; }
+  .t7-l h2 { font-family:var(--serif); font-size:50px; font-weight:400; color:var(--bg); line-height:1.18; margin-top:24px; max-width:640px; letter-spacing:-0.8px; }
+  .t7-r { flex-shrink:0; max-width:300px; border-left:2px solid rgba(0,0,0,0.08); padding-left:28px; }
+  .t7-r p { font-size:22px; text-align:left; color:var(--body-lt); line-height:1.55; }
+  /* T-CUAD — Cuadrante 2x2 */
+  .tcq { padding:80px 80px 0; height:calc(100% - 120px); display:flex; flex-direction:column; }
+  .tcq-head { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:44px; }
+  .tcq-head h2 { font-family:var(--serif); font-size:56px; font-weight:400; color:var(--bg); line-height:1.1; max-width:840px; letter-spacing:-1.2px; margin-top:14px; }
+  .tcq-grid { flex:1; display:grid; grid-template-columns: 80px 1fr 1fr; grid-template-rows: 1fr 1fr 64px; gap:0; position:relative; }
+  .tcq-axis-y { grid-row:1 / span 2; grid-column:1; display:flex; flex-direction:column; justify-content:space-between; align-items:center; padding:24px 0; border-right:2px solid var(--bg); }
+  /* Vertical axis labels: rotate -90deg so text reads bottom-to-top with upright letters (chart-axis convention, tilt head LEFT to read). transform: rotate is the most reliable cross-browser approach. display:inline-block is required for transform to apply. white-space:nowrap prevents wrapping. */
+  .tcq-axis-y .lbl, .tcq-axis-y .tip { display:inline-block; transform:rotate(-90deg); transform-origin:center; white-space:nowrap; writing-mode:horizontal-tb; }
+  .tcq-axis-y .lbl { font-size:16px; font-weight:700; letter-spacing:0.2em; color:var(--bg); text-transform:uppercase; }
+  .tcq-axis-y .tip { font-size:14px; color:rgba(0,0,0,0.55); letter-spacing:0.15em; text-transform:uppercase; font-weight:600; }
+  .tcq-axis-x { grid-row:3; grid-column:2 / span 2; display:flex; justify-content:space-between; align-items:center; padding:20px 0 0; border-top:2px solid var(--bg); }
+  .tcq-axis-x .lbl { font-size:16px; font-weight:700; letter-spacing:0.2em; color:var(--bg); text-transform:uppercase; }
+  .tcq-axis-x .tip { font-size:14px; color:rgba(0,0,0,0.55); letter-spacing:0.15em; text-transform:uppercase; font-weight:600; }
+  .tcq-axis-x .mid { flex:1; text-align:center; }
+  .tcq-cell { padding:36px 32px; display:flex; flex-direction:column; justify-content:space-between; border:1px solid rgba(0,0,0,0.1); background:#FAFAFA; transition:all 0.2s; }
+  .tcq-cell.q1 { grid-row:1; grid-column:2; }
+  .tcq-cell.q2 { grid-row:1; grid-column:3; border-left:none; }
+  .tcq-cell.q3 { grid-row:2; grid-column:2; border-top:none; }
+  .tcq-cell.q4 { grid-row:2; grid-column:3; border-top:none; border-left:none; }
+  .tcq-cell.hl { background:var(--yellow); border-color:var(--bg); z-index:2; box-shadow:0 0 0 2px var(--bg); }
+  .tcq-cell.dim { opacity:0.5; background:#F5F5F5; }
+  .tcq-cell .nm { font-family:var(--serif); font-size:32px; line-height:1.08; color:var(--bg); margin-bottom:16px; letter-spacing:-0.4px; }
+  .tcq-cell .ds { font-size:20px; color:var(--body-lt); line-height:1.4; max-width:380px; }
+  .tcq-cell.hl .ds { color:rgba(10,10,10,0.8); }
+  .tcq-cell .tg { font-size:15px; font-weight:700; color:var(--bg); letter-spacing:0.08em; margin-top:20px; text-transform:uppercase; }
+  .tcq-cell.dim .tg { color:rgba(10,10,10,0.55); }
+  /* T8 — Carousel Cover */
+  /* COVER: the .ing url next to the wordmark was redundant (two logos / two brand cues fighting). Removed. Wordmark alone at top breathes. Eyebrow becomes the dominant "category" marker at cover scale. */
+  .t8 { display:flex; flex-direction:column; padding:80px; height:100%; position:relative; }
+  .t8-brand { position:absolute; top:72px; left:80px; display:flex; align-items:center; }
+  .t8-brand img, .t8-brand .logo-svg.wm { height:44px; width:auto; display:block; }
+  .t8-top { flex:1; display:flex; flex-direction:column; justify-content:center; gap:0; }
+  .t8-top .t8-eyebrow-wrap { display:flex; align-items:center; gap:32px; margin-bottom:40px; }
+  .t8-top .t8-eyebrow-wrap .ln { width:72px; height:3px; background:var(--yellow); flex-shrink:0; }
+  /* MANIFIESTO/eyebrow in DM Serif Display italic — editorial section-header treatment, matches the brand serif voice. */
+  .t8-top .t8-eyebrow { font-family:var(--serif); font-size:72px; font-weight:400; font-style:italic; letter-spacing:-1px; color:var(--yellow); line-height:1; }
+  .t8-top h2 { font-family:var(--serif); font-size:86px; font-weight:400; color:var(--h1); line-height:1.04; max-width:920px; letter-spacing:-2px; }
+  /* Sub: bumped to 44px + max-width wider so it reads with zero effort on 1080px canvas. */
+  .t8-top .sub { font-size:44px; color:#E5E5E5; margin-top:52px; max-width:920px; line-height:1.35; font-weight:400; }
+  /* Bottom bar: matches the 120px footer height of the rest of the carousel for perfect consistency across slides. */
+  .t8-bar { background:var(--yellow); margin:0 -80px -80px; height:120px; padding:0 80px; display:flex; align-items:center; justify-content:flex-end; }
+  .t8-bar .arr { font-size:40px; color:var(--bg); font-weight:500; line-height:1; }
+  /* T9 — Carousel Text */
+  .t9 { padding:80px; height:calc(100% - 88px); display:flex; flex-direction:column; }
+  .t9-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:48px; }
+  .t9-head .eyebrow { margin:0; font-size:26px; letter-spacing:3px; }
+  .t9-big { font-family:var(--serif); font-size:96px; color:var(--bg); opacity:0.14; line-height:1; letter-spacing:-2px; font-feature-settings:"tnum"; }
+  .t9-content { flex:1; display:flex; flex-direction:column; justify-content:center; max-width:940px; }
+  .t9-title { font-family:var(--serif); font-size:68px; font-weight:400; color:var(--bg); line-height:1.08; margin-bottom:36px; letter-spacing:-1.2px; }
+  .t9-body { font-size:40px; color:var(--body-lt); line-height:1.4; max-width:960px; }
+  .t9-dots { display:flex; gap:10px; margin-top:auto; }
+  .t9-dot { width:44px; height:4px; background:#ddd; border-radius:2px; }
+  .t9-dot.on { background:var(--yellow); }
+  /* T10 — Carousel Split */
+  .t10 { height:calc(100% - 108px); display:flex; flex-direction:column; }
+  .t10-top { flex:1; background:var(--bg); padding:80px; display:flex; flex-direction:column; justify-content:center; border-bottom:4px solid var(--yellow); position:relative; }
+  .t10-top .eyebrow { margin-bottom:28px; font-size:26px; }
+  .t10-stat { font-family:var(--serif); font-size:180px; color:var(--yellow); line-height:0.9; margin-bottom:28px; letter-spacing:-5px; font-feature-settings:"tnum"; }
+  .t10-stat sup { font-size:72px; opacity:0.65; letter-spacing:0; top:-0.55em; margin-left:-0.05em; }
+  .t10-sl { font-size:32px; color:var(--h2); max-width:860px; line-height:1.45; font-weight:400; }
+  .t10-bot { padding:72px 80px; flex:1; display:flex; flex-direction:column; justify-content:center; background:#FFF; }
+  .t10-bot h3 { font-family:var(--serif); font-size:52px; font-weight:400; color:var(--bg); margin-bottom:24px; line-height:1.12; letter-spacing:-0.5px; }
+  .t10-bot p { font-size:30px; color:var(--body-lt); line-height:1.45; max-width:860px; }
+  /* T11 — Carousel CTA */
+  /* CTA: title + wordmark lockup centered in upper 2/3. URL pinned to the actual slide bottom as footer. */
+  .t11 { display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; padding:80px 80px 220px; text-align:center; position:relative; }
+  .t11 h2 { font-family:var(--serif); font-size:84px; font-weight:400; color:var(--bg); line-height:1.06; max-width:920px; margin-bottom:56px; letter-spacing:-1.8px; }
+  .t11-ln { width:72px; height:4px; background:var(--bg); margin-bottom:48px; }
+  .t11 .logo-area { display:flex; flex-direction:column; align-items:center; }
+  .t11 .logo-area .logo-svg.wm { height:60px; }
+  /* URL pinned to exact bottom of the 1350px frame. Not margin-top — absolute at bottom:72px so it sits in the footer zone, far from the wordmark. */
+  .t11 .url { position:absolute; bottom:72px; left:0; right:0; text-align:center; font-size:30px; color:rgba(10,10,10,0.8); letter-spacing:0.14em; font-weight:500; margin:0; }
+  .t11 .url .ing-ap { color:var(--bg); font-weight:700; }
+
+  /* ════════════════════════════════════════════
+     BANNER STYLES
+     ════════════════════════════════════════════ */
+  /* Banner sizes:
+     - bn: OG/post-share (1200x630)
+     - bn-li: LinkedIn profile banner (1584x396)
+     - bn-co: LinkedIn company page cover (1128x191)
+     - bn-lg: Square logo / thumbnail (400x400) for LinkedIn company logo, avatar, favicon */
+  .frame.bn { width:1200px; height:630px; }
+  .frame.bn-li { width:1584px; height:396px; }
+  .frame.bn-co { width:1128px; height:191px; }
+  .frame.bn-lg { width:400px; height:400px; }
+
+  .bn { position:relative; overflow:hidden; }
+  .bn-wm { position:absolute; right:-60px; bottom:-80px; opacity:0.05; pointer-events:none; }
+  .bn-wm .logo-svg.ic { height:360px; width:auto; }
+
+  .bn-statement { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; height:calc(100% - 96px); text-align:center; padding:40px 120px; }
+  .bn-statement h2 { font-family:var(--serif); font-size:72px; font-weight:400; color:var(--h1); line-height:1.08; max-width:1000px; letter-spacing:-1.4px; }
+  .bn-statement .sub { font-size:28px; color:var(--body-dk); margin-top:28px; line-height:1.5; max-width:820px; }
+
+  .bn-data { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; height:calc(100% - 96px); text-align:center; padding:40px 120px; }
+  .bn-data .big-num { font-family:var(--serif); font-size:220px; color:var(--yellow); line-height:0.88; letter-spacing:-7px; font-feature-settings:"tnum"; display:flex; align-items:flex-start; justify-content:center; }
+  .bn-data .big-num sup { font-size:72px; opacity:0.55; letter-spacing:0; top:0.08em; margin-left:4px; font-weight:400; }
+  .bn-data .context { font-size:30px; color:var(--body-dk); margin-top:26px; max-width:780px; line-height:1.4; }
+  .bn-data .meta { font-size:17px; font-weight:500; color:rgba(255,255,255,0.55); margin-top:22px; letter-spacing:2px; text-transform:uppercase; }
+
+  .bn-minimal { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:28px; }
+  .bn-minimal .logo-svg.wm { height:96px; width:auto; }
+  .bn-minimal .ln { width:72px; height:3px; background:var(--yellow); }
+  .bn-minimal .tagline { font-size:19px; color:var(--body-dk); letter-spacing:0.22em; text-transform:uppercase; font-weight:500; }
+
+  /* Wordmark-only: pure black bg, centered wordmark. Scales to any frame size. Perfect for LinkedIn profile banner. */
+  .bn-wmark { position:relative; display:flex; align-items:center; justify-content:center; height:100%; }
+  .bn-wmark .logo-svg.wm { height:22%; width:auto; max-height:140px; }
+  /* For very short/wide linkedin profile banner, scale the wordmark relative to height. */
+  .frame.bn-li .bn-wmark .logo-svg.wm { height:52%; max-height:none; }
+  .frame.bn-co .bn-wmark .logo-svg.wm { height:56%; max-height:none; }
+
+  /* Icon-only: A-mark positioning varies by format.
+     - Horizontal banners (bn, bn-li, bn-co): bottom-right corner (signature style)
+     - Square logo (bn-lg): CENTERED (because LinkedIn crops it circular for avatars/company logos) */
+  .bn-imark { position:relative; width:100%; height:100%; display:block; }
+  .bn-imark .bn-imark-img { position:absolute; width:auto; display:block; }
+  .frame.bn .bn-imark .bn-imark-img { height:220px; right:72px; bottom:88px; }
+  .frame.bn-li .bn-imark .bn-imark-img { height:170px; right:80px; bottom:64px; }
+  .frame.bn-co .bn-imark .bn-imark-img { height:110px; right:45px; bottom:24px; }
+  .frame.bn-lg .bn-imark .bn-imark-img { height:240px; top:50%; left:50%; right:auto; bottom:auto; transform:translate(-50%, -50%); }
+
+  /* Wordmark centered — add a specific rule for square logo so it fills proportionally without being tiny. */
+  .frame.bn-lg .bn-wmark .logo-svg.wm { height:auto; width:72%; max-height:none; }
+
+  /* ════════════════════════════════════════════
+     CASE STUDY STYLES (A4)
+     ════════════════════════════════════════════ */
+  .frame.a4 { width:794px; height:1123px; }
+
+  .cs { display:flex; flex-direction:column; height:100%; background:#FFFFFF; }
+  .cs-header { background:var(--bg); padding:48px 56px 40px; }
+  .cs-header-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; }
+  .cs-header img, .cs-header .logo-svg.wm { height:16px; width:auto; }
+  .cs-header .cs-eyebrow { font-family:var(--sans); font-size:11px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:var(--yellow); }
+  .cs-client { font-family:var(--serif); font-size:36px; color:var(--h1); line-height:1.15; }
+  .cs-meta { font-size:13px; color:var(--body-dk); margin-top:8px; }
+
+  .cs-body { flex:1; padding:40px 56px; display:flex; flex-direction:column; gap:32px; }
+  .cs-section h3 { font-family:var(--sans); font-size:12px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:var(--body-lt); margin-bottom:12px; }
+  .cs-section p { font-size:15px; color:#333; line-height:1.7; }
+  .cs-section .cs-sol-item { display:flex; align-items:flex-start; gap:14px; margin-bottom:14px; }
+  .cs-section .cs-sol-num { font-family:var(--serif); font-size:28px; color:var(--yellow); line-height:1; min-width:28px; }
+  .cs-section .cs-sol-text { font-size:15px; color:#333; line-height:1.6; padding-top:4px; }
+
+  .cs-stats { display:flex; gap:1px; background:var(--border-lt); margin:8px 0; }
+  .cs-stat-card { flex:1; background:#FFF; padding:28px 24px; text-align:center; }
+  .cs-stat-num { font-family:var(--serif); font-size:42px; color:var(--bg); line-height:1; margin-bottom:8px; }
+  .cs-stat-label { font-size:12px; color:var(--body-dk); line-height:1.4; text-transform:lowercase; }
+
+  .cs-quote { padding:28px 0; border-top:1px solid var(--border-lt); margin-top:auto; }
+  .cs-quote blockquote { font-family:var(--serif); font-style:italic; font-size:18px; color:#333; line-height:1.5; margin-bottom:12px; }
+  .cs-quote cite { font-size:13px; color:var(--body-dk); font-style:normal; }
+
+  .cs-footer { padding:16px 56px; border-top:1px solid var(--border-lt); display:flex; align-items:center; justify-content:space-between; }
+  .cs-footer img, .cs-footer .logo-svg.wm { height:14px; width:auto; }
+  .cs-footer .url { font-size:15px; letter-spacing:0.12em; color:rgba(0,0,0,0.5); font-weight:500; }
+  .cs-footer .url .ing-ap { color:var(--yellow); font-weight:500; }
+
+  /* ════════════════════════════════════════════
+     CASE STUDY MULTI-PAGE & PROPUESTA (A4)
+     ════════════════════════════════════════════ */
+  .doc-page { width:794px; height:1123px; background:#FFF; display:flex; flex-direction:column; position:relative; overflow:hidden; }
+  .doc-header { display:flex; justify-content:space-between; align-items:center; padding:32px 56px 0; }
+  .doc-header .doc-wm { height:16px; }
+  .doc-header .doc-eyebrow { font-family:var(--sans); font-size:13px; font-weight:600; letter-spacing:2.4px; text-transform:uppercase; color:var(--yellow); }
+  .doc-sep { height:2px; background:var(--yellow); margin:14px 56px 0; }
+  .doc-footer { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:20px 56px; font-size:11px; color:rgba(0,0,0,0.4); letter-spacing:0.1em; border-top:1px solid var(--border-lt); }
+  .doc-footer .ing-ap { color:var(--yellow); font-weight:500; }
+  .doc-content { flex:1; padding:56px 56px 80px; overflow:hidden; }
+
+  /* Portada oscura compartida */
+  .doc-portada { width:794px; height:1123px; background:var(--bg); color:var(--h1); position:relative; padding:80px 64px; display:flex; flex-direction:column; }
+  .doc-portada .pt-wm { height:28px; margin-bottom:auto; }
+  /* Editorial eyebrow — serif italic, matches carousel cover .t8-eyebrow. Establishes a system across all "cover" slides (carousel cover, case study portada, propuesta portada). */
+  .doc-portada .pt-eyebrow { font-family:var(--serif); font-size:22px; font-weight:400; font-style:italic; letter-spacing:-0.3px; color:var(--yellow); margin-bottom:20px; }
+  .doc-portada h1 { font-family:var(--serif); font-size:60px; font-weight:400; line-height:1.06; letter-spacing:-1.2px; color:var(--h1); max-width:640px; }
+  .doc-portada .pt-sub { font-size:22px; color:#E5E5E5; margin-top:30px; line-height:1.45; max-width:560px; }
+  .doc-portada .pt-accent { width:40px; height:2px; background:var(--yellow); margin:32px 0; }
+  .doc-portada .pt-meta { font-size:14px; color:rgba(255,255,255,0.45); line-height:1.8; margin-top:auto; }
+  .doc-portada .pt-meta strong { color:var(--h1); font-weight:500; }
+  .doc-portada .pt-bottom { position:absolute; bottom:56px; left:64px; right:64px; display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(255,255,255,0.3); letter-spacing:0.1em; }
+  .doc-portada .pt-bottom .ing-ap { color:var(--yellow); }
+
+  /* Case Study pages */
+  .cs-page-title { font-family:var(--serif); font-size:42px; font-weight:400; color:var(--bg); line-height:1.1; margin-bottom:10px; letter-spacing:-0.8px; }
+  .cs-page-title-accent { width:40px; height:2px; background:var(--yellow); margin-bottom:28px; }
+  .cs-page-body { font-size:15px; color:#333; line-height:1.75; margin-bottom:28px; }
+  .cs-inline-stats { display:flex; gap:20px; margin-top:24px; }
+  .cs-inline-stat { flex:1; padding:22px 20px; background:#FAFAFA; border-left:3px solid var(--yellow); }
+  .cs-inline-stat .n { font-family:var(--serif); font-size:38px; color:var(--bg); line-height:1; margin-bottom:8px; letter-spacing:-0.8px; }
+  .cs-inline-stat .l { font-size:12px; color:var(--body-dk); line-height:1.45; }
+  .cs-steps { display:flex; flex-direction:column; gap:0; margin-top:8px; }
+  .cs-step { display:flex; gap:24px; padding:24px 0; border-bottom:1px solid var(--border-lt); }
+  .cs-step:last-child { border-bottom:none; }
+  .cs-step-n { font-family:var(--serif); font-size:36px; color:var(--yellow); line-height:1; flex-shrink:0; width:56px; letter-spacing:-1px; }
+  .cs-step-body h4 { font-family:var(--sans); font-size:18px; font-weight:500; color:var(--bg); margin-bottom:8px; letter-spacing:-0.2px; }
+  .cs-step-body p { font-size:14px; color:#444; line-height:1.65; }
+  .cs-results-hero { display:grid; grid-template-columns:repeat(3, 1fr); gap:2px; margin:16px 0 32px; background:var(--bg); padding:2px; }
+  .cs-result { background:var(--bg); padding:36px 22px; text-align:center; color:var(--h1); position:relative; }
+  .cs-result::before { content:""; position:absolute; top:0; left:0; width:24px; height:2px; background:var(--yellow); }
+  .cs-result .n { font-family:var(--serif); font-size:52px; color:var(--yellow); line-height:1; margin-bottom:10px; letter-spacing:-1.5px; font-feature-settings:"tnum"; }
+  .cs-result .l { font-size:12px; color:rgba(250,250,250,0.6); line-height:1.45; }
+  .cs-narrativa { font-size:15px; color:#333; line-height:1.75; }
+
+  /* Case Study - Quote page */
+  .cs-bigquote { padding:40px 20px; text-align:left; max-width:600px; margin:0 auto; position:relative; }
+  .cs-bigquote .qmark { font-family:var(--serif); font-size:160px; color:var(--yellow); line-height:0.9; margin-bottom:-30px; margin-left:-12px; }
+  .cs-bigquote blockquote { font-family:var(--serif); font-style:italic; font-size:28px; color:var(--bg); line-height:1.35; margin-bottom:32px; letter-spacing:-0.3px; }
+  .cs-bigquote .qline { width:40px; height:2px; background:var(--yellow); margin-bottom:16px; }
+  .cs-bigquote cite { font-family:var(--sans); font-size:12px; color:var(--bg); font-style:normal; letter-spacing:0.1em; text-transform:uppercase; font-weight:500; }
+  .cs-bigquote cite .role { color:var(--body-dk); font-weight:400; margin-left:6px; }
+
+  /* Case Study - Cierre page */
+  .cs-cierre { padding:20px 0; max-width:620px; margin:0 auto; }
+  .cs-cierre h2 { font-family:var(--serif); font-size:44px; color:var(--bg); margin-bottom:16px; letter-spacing:-1px; line-height:1.1; }
+  .cs-cierre .cs-cierre-accent { width:40px; height:2px; background:var(--yellow); margin-bottom:24px; }
+  .cs-cierre p { font-size:16px; color:#444; line-height:1.7; margin-bottom:32px; }
+  .cs-cierre-cta { background:var(--yellow); padding:32px 36px; display:flex; justify-content:space-between; align-items:center; gap:24px; }
+  .cs-cierre-cta .txt { font-family:var(--serif); font-size:22px; color:var(--bg); line-height:1.2; letter-spacing:-0.4px; }
+  .cs-cierre-cta .url { font-family:var(--sans); font-size:14px; color:var(--bg); font-weight:600; letter-spacing:0.08em; display:flex; align-items:center; gap:10px; white-space:nowrap; }
+  .cs-cierre-cta .url .arrow { font-size:18px; }
+
+  /* Propuesta pages */
+  .pr-page-title { font-family:var(--serif); font-size:42px; font-weight:400; color:var(--bg); line-height:1.1; margin-bottom:10px; letter-spacing:-0.8px; }
+  .pr-page-title-accent { width:40px; height:2px; background:var(--yellow); margin-bottom:28px; }
+  .pr-body p { font-size:17px; color:#333; line-height:1.7; margin-bottom:18px; }
+  .pr-body p:last-child { margin-bottom:0; }
+  .pr-fases { display:flex; flex-direction:column; gap:18px; margin-top:4px; }
+  .pr-fase { padding:22px 24px; border:1px solid var(--border-lt); border-left:3px solid var(--yellow); background:#FAFAFA; }
+  .pr-fase-head { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
+  .pr-fase-etiqueta { font-family:var(--sans); font-size:11px; font-weight:600; letter-spacing:2.4px; text-transform:uppercase; color:var(--bg); }
+  .pr-fase-etiqueta .ing { color:var(--bg); background:var(--yellow); padding:2px 6px; border-radius:2px; margin-left:1px; }
+  .pr-fase-duracion { font-size:12px; color:var(--body-dk); letter-spacing:0.04em; }
+  .pr-fase h3 { font-family:var(--serif); font-size:22px; color:var(--bg); line-height:1.2; margin-bottom:8px; font-weight:400; letter-spacing:-0.4px; }
+  .pr-fase p { font-size:16px; color:#333; line-height:1.6; }
+  .pr-timeline { display:flex; flex-direction:column; gap:14px; margin-top:8px; }
+  .pr-tl-row { display:flex; align-items:center; gap:16px; }
+  .pr-tl-label { flex-shrink:0; width:180px; font-size:13px; font-weight:500; color:var(--bg); letter-spacing:-0.1px; }
+  .pr-tl-bar-wrap { flex:1; background:#F5F5F0; height:34px; position:relative; }
+  .pr-tl-bar { background:var(--yellow); height:100%; display:flex; align-items:center; padding-left:14px; font-size:12px; color:var(--bg); font-weight:500; letter-spacing:0.03em; }
+  .pr-inversion { margin-top:8px; }
+  .pr-inv-row { display:flex; justify-content:space-between; align-items:center; padding:20px 0; border-bottom:1px solid var(--border-lt); gap:24px; }
+  .pr-inv-row:first-child { border-top:1px solid var(--border-lt); }
+  .pr-inv-concepto { font-size:17px; color:#222; }
+  .pr-inv-precio { font-family:var(--serif); font-size:24px; color:var(--bg); letter-spacing:-0.4px; white-space:nowrap; }
+  .pr-inv-total { margin-top:28px; padding:24px 28px; background:var(--bg); color:var(--h1); display:flex; justify-content:space-between; align-items:center; gap:24px; }
+  .pr-inv-total .lbl { font-size:11px; letter-spacing:2.2px; text-transform:uppercase; color:var(--yellow); font-weight:600; }
+  .pr-inv-total .val { font-family:var(--serif); font-size:28px; color:var(--h1); letter-spacing:-0.6px; white-space:nowrap; }
+  .pr-cta { margin-top:16px; padding:32px 36px; background:var(--yellow); display:flex; justify-content:space-between; align-items:center; gap:24px; text-align:left; }
+  .pr-cta .txt { font-family:var(--serif); font-size:22px; color:var(--bg); margin:0; line-height:1.2; letter-spacing:-0.4px; }
+  .pr-cta .url { font-family:var(--sans); font-size:14px; color:var(--bg); font-weight:600; letter-spacing:0.08em; display:flex; align-items:center; gap:10px; white-space:nowrap; }
+  .pr-cta .url .arrow { font-size:18px; }
+
+  /* ════════════════════════════════════════════
+     REPORT COVER STYLES (A4)
+     ════════════════════════════════════════════ */
+  .rc { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:var(--bg); position:relative; text-align:center; padding:80px; overflow:hidden; }
+  .rc-watermark { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); opacity:0.04; pointer-events:none; }
+  .rc-watermark .logo-svg.ic { height:480px; width:auto; }
+  .rc-top { position:absolute; top:56px; left:56px; right:56px; display:flex; justify-content:space-between; align-items:center; }
+  .rc-top .logo-svg.wm { height:20px; width:auto; }
+  .rc-body { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; }
+  /* Same editorial serif italic eyebrow system as carousel cover + doc portadas. */
+  .rc-eyebrow { font-family:var(--serif); font-size:24px; font-weight:400; font-style:italic; letter-spacing:-0.3px; color:var(--yellow); margin-bottom:28px; }
+  .rc-accent { width:40px; height:2px; background:var(--yellow); margin-bottom:32px; }
+  .rc-client { font-family:var(--serif); font-size:56px; color:var(--h1); line-height:1.15; margin-bottom:18px; letter-spacing:-1.2px; }
+  .rc-date { font-size:14px; color:rgba(255,255,255,0.45); letter-spacing:0.1em; text-transform:uppercase; font-weight:500; }
+  .rc-badge { font-size:10px; font-weight:600; letter-spacing:2.2px; text-transform:uppercase; color:var(--yellow); border:1px solid var(--yellow); padding:6px 14px; }
+  .rc-bottom { position:absolute; bottom:56px; left:0; right:0; display:flex; flex-direction:column; align-items:center; gap:12px; }
+  .rc-bottom .url { font-size:12px; letter-spacing:0.2em; color:rgba(255,255,255,0.4); text-transform:uppercase; font-weight:500; }
+  .rc-bottom .url .ing-ap { color:var(--yellow); font-weight:600; }
+
+  /* ════════════════════════════════════════════
+     EMAIL SIGNATURE STYLES
+     ════════════════════════════════════════════ */
+  .frame.sig { width:600px; min-height:140px; background:#FFFFFF; }
+  .sig-inner { display:flex; align-items:stretch; padding:28px 32px; font-family:var(--sans); gap:24px; border-left:3px solid var(--yellow); }
+  .sig-icon { width:44px; flex-shrink:0; display:flex; align-items:flex-start; justify-content:center; padding-top:2px; }
+  .sig-icon .logo-svg.ic { height:36px; width:auto; }
+  .sig-info { flex:1; }
+  .sig-name { font-size:15px; font-weight:700; color:var(--bg); margin-bottom:3px; letter-spacing:-0.1px; }
+  .sig-role { font-size:13px; color:var(--body-dk); margin-bottom:14px; }
+  .sig-divider { width:40px; height:1px; background:var(--border-lt); margin-bottom:12px; }
+  .sig-url { font-size:12px; color:rgba(0,0,0,0.45); letter-spacing:0.12em; text-transform:uppercase; font-weight:500; }
+  .sig-url .ing-ap { color:var(--bg); background:var(--yellow); padding:1px 5px; border-radius:2px; margin-left:1px; font-weight:600; }
+  .sig-link { display:inline-flex; align-items:center; gap:6px; margin-top:10px; font-size:13px; color:var(--bg); font-weight:600; text-decoration:none; letter-spacing:0.02em; }
+  .sig-link .arrow { font-size:14px; }
+
+  /* ── PRESENTACION (slides 1920x1080) ── */
+  .ps-slide { position:relative; width:100%; height:100%; padding:100px 120px; display:flex; flex-direction:column; }
+  .ps-slide.dk { background:var(--bg); color:var(--h1); }
+  .ps-slide.lt { background:#FFFFFF; color:var(--bg); }
+  .ps-slide.yl { background:var(--yellow); color:var(--bg); }
+  .ps-wm { position:absolute; top:60px; left:120px; }
+  .ps-wm svg { height:40px; }
+  .ps-footer { position:absolute; bottom:50px; left:120px; right:120px; display:flex; justify-content:space-between; align-items:center; font-size:20px; letter-spacing:0.1em; }
+  .ps-footer .url-dk { color:rgba(255,255,255,0.35); }
+  .ps-footer .url-lt { color:rgba(0,0,0,0.35); }
+  .ps-footer .ing-ap { color:var(--yellow); font-weight:500; }
+  .ps-footer svg { height:28px; }
+  .ps-bar-yl { width:120px; height:10px; background:var(--yellow); }
+
+  /* portada */
+  .ps-portada { justify-content:center; }
+  .ps-portada h1 { font-family:var(--serif); font-size:130px; line-height:1.02; letter-spacing:-2px; color:var(--h1); max-width:1500px; }
+  .ps-portada .sub { font-size:32px; color:#E5E5E5; margin-top:44px; max-width:1280px; line-height:1.4; }
+  .ps-portada .bar { margin-top:60px; }
+
+  /* divisor */
+  .ps-divisor .num { font-family:var(--serif); font-size:260px; line-height:0.9; color:var(--bg); }
+  .ps-divisor h2 { font-family:var(--serif); font-size:96px; line-height:1.05; margin-top:40px; color:var(--bg); max-width:1400px; }
+
+  /* contenido */
+  .ps-contenido .eyebrow { font-size:20px; letter-spacing:2px; color:var(--yellow); text-transform:uppercase; font-weight:500; }
+  .ps-contenido .bar { width:60px; height:4px; background:var(--yellow); margin:16px 0 28px; }
+  .ps-contenido h2 { font-family:var(--serif); font-size:72px; line-height:1.1; color:var(--bg); max-width:1500px; margin-bottom:48px; }
+  .ps-contenido ul { list-style:none; display:flex; flex-direction:column; gap:24px; }
+  .ps-contenido li { display:flex; align-items:flex-start; gap:24px; font-size:30px; line-height:1.4; color:var(--bg); }
+  .ps-contenido li::before { content:''; width:14px; height:14px; background:var(--yellow); flex-shrink:0; margin-top:16px; }
+
+  /* stat */
+  .ps-stat { align-items:center; justify-content:center; text-align:center; }
+  .ps-stat .num { font-family:var(--serif); font-size:380px; line-height:0.9; color:var(--yellow); letter-spacing:-8px; }
+  .ps-stat .num sup { font-size:120px; opacity:0.6; }
+  .ps-stat .desc { font-size:36px; color:var(--h1); max-width:1200px; margin-top:40px; line-height:1.4; }
+  .ps-stat .meta { font-size:20px; color:var(--body-dk); margin-top:24px; letter-spacing:0.05em; }
+
+  /* quote */
+  .ps-quote { justify-content:center; }
+  .ps-quote .mark { font-family:var(--serif); font-size:280px; color:var(--yellow); line-height:0.8; position:absolute; top:80px; left:100px; opacity:0.9; }
+  .ps-quote blockquote { font-family:var(--serif); font-style:italic; font-size:70px; line-height:1.2; color:var(--bg); max-width:1500px; position:relative; z-index:2; }
+  .ps-quote .author { font-size:26px; color:var(--body-lt); margin-top:48px; letter-spacing:0.04em; }
+
+  /* comparacion */
+  .ps-comp { flex-direction:row; gap:0; padding:100px 80px; }
+  .ps-comp .col { flex:1; padding:40px 60px; display:flex; flex-direction:column; gap:24px; }
+  .ps-comp .col .eb { font-size:18px; letter-spacing:2px; text-transform:uppercase; font-weight:500; }
+  .ps-comp .col .eb.a { color:var(--body-lt); }
+  .ps-comp .col .eb.b { color:var(--yellow); }
+  .ps-comp .col .bar { width:60px; height:4px; }
+  .ps-comp .col .bar.a { background:#ccc; }
+  .ps-comp .col .bar.b { background:var(--yellow); }
+  .ps-comp .col.a ul li { color:var(--body-lt); }
+  .ps-comp .col.b ul li { color:var(--bg); }
+  .ps-comp .col ul { list-style:none; display:flex; flex-direction:column; gap:20px; margin-top:20px; }
+  .ps-comp .col ul li { font-size:26px; line-height:1.35; }
+  .ps-comp .sep { width:3px; background:var(--yellow); margin:40px 0; }
+
+  /* cuadrante */
+  .ps-cua .head { margin-bottom:30px; }
+  .ps-cua .head .eb { font-size:18px; color:var(--body-lt); letter-spacing:2px; text-transform:uppercase; }
+  .ps-cua .head h2 { font-family:var(--serif); font-size:44px; color:var(--bg); margin-top:10px; }
+  .ps-cua .mat { flex:1; display:grid; grid-template-columns:80px 1fr 1fr; grid-template-rows:1fr 1fr 60px; gap:8px; }
+  .ps-cua .yax { grid-column:1; grid-row:1/3; display:flex; flex-direction:column; justify-content:space-between; align-items:center; font-size:16px; color:var(--body-lt); }
+  .ps-cua .yax .lbl { transform:rotate(-90deg); letter-spacing:2px; text-transform:uppercase; font-weight:500; }
+  .ps-cua .xax { grid-column:2/4; grid-row:3; display:flex; justify-content:space-between; align-items:center; padding:0 20px; font-size:16px; color:var(--body-lt); letter-spacing:2px; text-transform:uppercase; font-weight:500; }
+  .ps-cua .cell { border:2px solid #eee; padding:36px; display:flex; flex-direction:column; justify-content:space-between; background:#FFFFFF; }
+  .ps-cua .cell.hl { background:var(--yellow); border-color:var(--yellow); }
+  .ps-cua .cell.dim { opacity:0.35; background:#FAFAFA; }
+  .ps-cua .cell .nm { font-family:var(--serif); font-size:34px; color:var(--bg); line-height:1.15; letter-spacing:-0.5px; }
+  .ps-cua .cell .ds { font-size:20px; color:var(--body-lt); margin-top:12px; line-height:1.4; }
+  .ps-cua .cell.hl .ds { color:rgba(10,10,10,0.7); }
+  .ps-cua .cell .tg { font-size:13px; color:var(--body-lt); letter-spacing:2px; text-transform:uppercase; margin-top:16px; font-weight:600; }
+  .ps-cua .cell.hl .tg { color:var(--bg); background:var(--bg); color:var(--yellow); padding:6px 10px; display:inline-block; align-self:flex-start; }
+
+  /* timeline */
+  .ps-tl h2 { font-family:var(--serif); font-size:68px; color:var(--bg); margin-bottom:60px; line-height:1.05; letter-spacing:-1px; }
+  .ps-tl .fases { display:flex; gap:40px; flex:1; align-items:flex-start; }
+  .ps-tl .fase { flex:1; display:flex; flex-direction:column; gap:14px; }
+  .ps-tl .fase .et { font-size:18px; font-weight:600; letter-spacing:2.2px; color:var(--bg); text-transform:uppercase; }
+  .ps-tl .fase .et .ing { color:var(--bg); background:var(--yellow); padding:2px 8px; border-radius:2px; margin-left:2px; }
+  .ps-tl .fase .ti { font-family:var(--serif); font-size:36px; color:var(--bg); line-height:1.15; letter-spacing:-0.5px; }
+  .ps-tl .fase .du { font-size:18px; color:var(--body-lt); letter-spacing:0.02em; }
+  .ps-tl .fase .b { height:6px; background:var(--yellow); margin-top:12px; width:60px; }
+
+  /* imagen */
+  .ps-img { justify-content:center; align-items:center; }
+  .ps-img .ph { width:72%; height:62%; background:#F0F0F0; display:flex; align-items:center; justify-content:center; font-size:24px; color:#AAA; letter-spacing:4px; font-weight:500; position:relative; border:2px dashed #DDD; }
+  .ps-img .ph::before { content:""; position:absolute; top:0; left:0; width:60px; height:4px; background:var(--yellow); }
+  .ps-img .cap { font-size:18px; color:var(--body-lt); margin-top:32px; letter-spacing:2.5px; text-transform:uppercase; font-weight:500; }
+
+  /* siguiente-paso */
+  .ps-sig { justify-content:center; align-items:center; text-align:center; }
+  .ps-sig h2 { font-family:var(--serif); font-size:140px; line-height:1.04; color:var(--bg); max-width:1500px; letter-spacing:-3px; }
+  .ps-sig h2 .hl { background:var(--bg); color:var(--yellow); padding:0.08em 0.22em 0.14em; }
+  .ps-sig .cta { margin-top:72px; background:var(--bg); color:#fff; font-size:30px; font-weight:500; padding:28px 56px; letter-spacing:0.04em; display:inline-flex; align-items:center; gap:18px; }
+  .ps-sig .cta .arrow { color:var(--yellow); font-size:32px; }
+
+  /* Print CSS for A4 */
+  /* ── Print CSS for A4 ── */
+  @media print {
+    body { background:#fff; }
+    .layout { display:block; }
+    .sidebar, .panel, .toast { display:none; }
+    .preview-area { padding:0; }
+    .preview-card { box-shadow:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo" id="sidebar-logo"></div>
+    <button class="sidebar-item on" onclick="selectType('linkedin-post')" data-type="linkedin-post">
+      <span class="ic" style="font-family:var(--serif)">in</span>
+      <span>Post LinkedIn</span>
+    </button>
+    <button class="sidebar-item" onclick="selectType('linkedin-carousel')" data-type="linkedin-carousel">
+      <span class="ic">&#9641;&#9641;</span>
+      <span>Carousel LinkedIn</span>
+    </button>
+    <button class="sidebar-item" onclick="selectType('banner')" data-type="banner">
+      <span class="ic">&#9644;</span>
+      <span>Banner / Logo</span>
+    </button>
+    <button class="sidebar-item" onclick="selectType('case-study')" data-type="case-study">
+      <span class="ic">&#9634;</span>
+      <span>Caso de Estudio</span>
+    </button>
+    <button class="sidebar-item" onclick="selectType('propuesta')" data-type="propuesta">
+      <span class="ic">&#9783;</span>
+      <span>Propuesta</span>
+    </button>
+    <button class="sidebar-item" onclick="selectType('report-cover')" data-type="report-cover">
+      <span class="ic">&#9635;</span>
+      <span>Portada Informe</span>
+    </button>
+    <button class="sidebar-item" onclick="selectType('presentacion')" data-type="presentacion">
+      <span class="ic">&#9707;</span>
+      <span>Presentación</span>
+    </button>
+    <button class="sidebar-item" onclick="selectType('email-sig')" data-type="email-sig">
+      <span class="ic">&#9993;</span>
+      <span>Firma Email</span>
+    </button>
+  </div>
+
+  <!-- CENTER PANEL -->
+  <div class="panel">
+    <div class="panel-head">
+      <h2 id="panel-title">LinkedIn Post</h2>
+      <p id="panel-desc">Post individual con plantilla de marca</p>
+    </div>
+
+    <div class="input-area">
+      <div>
+        <label>Pega tu contenido</label>
+        <textarea class="main" id="content" spellcheck="false" placeholder="Pega el texto estructurado..."></textarea>
+      </div>
+      <div class="hint" id="hint"></div>
+      <div class="err" id="err"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="generate()">Generar Preview</button>
+      <button class="btn btn-secondary" id="btn-export" onclick="exportAll()" disabled>Exportar</button>
+    </div>
+  </div>
+
+  <!-- RIGHT: PREVIEW -->
+  <div class="preview-area" id="preview">
+    <div class="empty-state">
+      <p style="font-size:32px; opacity:0.15; font-family:var(--serif);">M</p>
+      <p>Selecciona un tipo de contenido, pega el texto y pulsa <strong>Generar Preview</strong></p>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden render container -->
+<div id="render-container" style="position:fixed; left:-9999px; top:0;"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STATE ──
+let currentType = 'linkedin-post';
+let renderedFrames = [];
+
+// ── TYPE DEFINITIONS ──
+const TYPE_META = {
+  'linkedin-post': {
+    title: 'LinkedIn Post',
+    desc: 'Post individual con plantilla de marca',
+    exportLabel: 'Descargar PNG',
+    hint: `<strong>Formato:</strong><br><br>
+<code>plantilla:</code> quote | stats-grid | stats-hero | framework | servicio | antes-despues | quote-landscape | cuadrante<br>
+<code>eyebrow:</code> Etiqueta superior<br>
+<code>titular:</code> Headline con [palabra destacada]<br>
+<code>atribucion:</code> Texto de atribuci\u00f3n<br><br>
+Palabras entre <code>[corchetes]</code> se destacan en amarillo.`,
+    example: `plantilla: quote
+eyebrow: DIAGN\u00d3STICO DE MARCA
+titular: Las marcas que no se [miden], no se mejoran. Se improvisan.
+atribucion: \u2014 Insight de nuestro trabajo con +50 marcas B2B`
+  },
+  'linkedin-carousel': {
+    title: 'LinkedIn Carousel',
+    desc: 'Carousel de m\u00faltiples slides (1080\u00d71350)',
+    exportLabel: 'Descargar Carousel (PDF + PNGs)',
+    hint: `<strong>Formato:</strong><br><br>
+Cada slide separado por <code>---</code><br><br>
+<strong>Portada (primer slide):</strong><br>
+<code>eyebrow:</code> Etiqueta &nbsp; <code>titular:</code> Headline &nbsp; <code>subtitulo:</code> Texto<br><br>
+<strong>Slides de contenido:</strong><br>
+<code>eyebrow:</code> PRINCIPIO 01 &nbsp; <code>titular:</code> Headline &nbsp; <code>cuerpo:</code> P\u00e1rrafo<br><br>
+<strong>Slide CTA (cierre):</strong><br>
+<code>plantilla: cta</code><br>
+<code>titular:</code> Mensaje / pregunta (arriba, serif)<br>
+<code>url:</code> URL footer \u2014 opcional, default <code>magnify.ing</code><br><br>
+<strong>Export:</strong> PDF multi-p\u00e1gina (LinkedIn Document Post) + ZIP de PNGs 1080\u00d71350 (posts individuales / Instagram).`,
+    example: `eyebrow: GU\u00cdA PR\u00c1CTICA
+titular: 5 se\u00f1ales de que tu marca necesita un [diagn\u00f3stico]
+subtitulo: Descubre si tu marca est\u00e1 construida sobre una base s\u00f3lida.
+---
+eyebrow: SE\u00d1AL #1
+titular: Tu equipo no sabe explicar qu\u00e9 os hace [diferentes]
+cuerpo: Si preguntas a 5 personas "\u00bfqu\u00e9 nos diferencia?", obtienes 5 respuestas distintas.
+---
+eyebrow: SE\u00d1AL #2
+titular: Tu web dice lo mismo que la de tu [competencia]
+cuerpo: Cambia el logo y nadie nota la diferencia. Eso es un problema de posicionamiento.
+---
+plantilla: cta
+titular: \u00bfTu marca est\u00e1 construida para crecer \u2014 o para [sobrevivir?]
+url: magnify.ing`
+  },
+  'banner': {
+    title: 'Banner',
+    desc: 'Hero, OG image, LinkedIn profile/company/logo',
+    exportLabel: 'Descargar PNG',
+    hint: `<strong>Formato (canvas):</strong><br>
+<code>formato: og</code> \u2014 1200\u00d7630 (post-share, OG image) \u2014 default<br>
+<code>formato: linkedin-profile</code> \u2014 1584\u00d7396 (banner de perfil)<br>
+<code>formato: linkedin-company</code> \u2014 1128\u00d7191 (company page cover)<br>
+<code>formato: logo</code> \u2014 400\u00d7400 (logo LinkedIn company, avatar, favicon) \u2014 icono centrado<br><br>
+<strong>Plantilla:</strong><br>
+<code>statement</code> \u2014 titular + subt\u00edtulo (solo formato og)<br>
+<code>data</code> \u2014 n\u00famero + descripci\u00f3n (solo formato og)<br>
+<code>minimal</code> \u2014 wordmark + l\u00ednea + tagline<br>
+<code>wordmark</code> \u2014 solo wordmark centrado sobre negro<br>
+<code>icon</code> \u2014 A-mark (esquina inferior derecha en horizontales, centrado en logo)<br><br>
+<strong>Ejemplos:</strong><br>
+Banner de perfil LinkedIn: <code>formato: linkedin-profile</code> + <code>plantilla: icon</code><br>
+Logo LinkedIn company: <code>formato: logo</code> + <code>plantilla: icon</code>`,
+    example: `formato: logo
+plantilla: icon`
+  },
+  'case-study': {
+    title: 'Caso de Estudio',
+    desc: 'Documento multi-p\u00e1gina PDF (A4)',
+    exportLabel: 'Descargar PDF',
+    hint: `<strong>Formato:</strong> bloque global + secciones separadas por <code>---</code><br><br>
+<code>tipo: case-study</code> &nbsp; <code>cliente:</code> &nbsp; <code>industria:</code> &nbsp; <code>fecha:</code><br><br>
+<strong>Secciones:</strong><br>
+<code>seccion: portada</code> \u2192 titular + subtitulo<br>
+<code>seccion: reto</code> \u2192 titulo + cuerpo + stat1/stat2 (formato "valor / etiqueta")<br>
+<code>seccion: solucion</code> \u2192 titulo + paso1_titulo/paso1_desc (hasta 4)<br>
+<code>seccion: resultados</code> \u2192 titular + stat1/stat2/stat3 + narrativa<br>
+<code>seccion: quote</code> \u2192 cita + autor<br>
+<code>seccion: cierre</code> \u2192 titulo + cuerpo`,
+    example: `tipo: case-study
+cliente: TechCorp
+industria: SaaS B2B
+fecha: Marzo 2026
+---
+seccion: portada
+titular: C\u00f3mo TechCorp multiplic\u00f3 por [2.4] su engagement
+subtitulo: Diagn\u00f3stico y reposicionamiento en 8 semanas
+---
+seccion: reto
+titulo: El Reto
+cuerpo: TechCorp ten\u00eda un posicionamiento gen\u00e9rico que no les diferenciaba de 15 competidores directos.
+stat1: 15 / competidores directos
+stat2: 0% / diferenciaci\u00f3n percibida
+---
+seccion: solucion
+titulo: La Soluci\u00f3n
+paso1_titulo: Auditor\u00eda de percepci\u00f3n
+paso1_desc: Entrevistas con 30 stakeholders internos y externos.
+paso2_titulo: Redefinici\u00f3n del territorio
+paso2_desc: Nueva narrativa diferencial basada en datos de mercado.
+paso3_titulo: Implementaci\u00f3n
+paso3_desc: Rollout en todos los touchpoints digitales.
+---
+seccion: resultados
+titular: Impacto medible
+stat1: 73% / mejora en coherencia
+stat2: 2.4x / engagement
+stat3: +45% / leads cualificados
+narrativa: Los n\u00fameros reflejan un cambio profundo en c\u00f3mo el mercado percibe a TechCorp.
+---
+seccion: quote
+cita: Magnify no solo diagnostic\u00f3 el problema, nos dio un framework accionable para resolverlo.
+autor: Mar\u00eda L\u00f3pez, CMO TechCorp
+---
+seccion: cierre
+titulo: Siguiente paso
+cuerpo: \u00bfTu marca necesita un diagn\u00f3stico similar? Agenda una llamada en magnify.ing/agendar`
+  },
+  'propuesta': {
+    title: 'Propuesta',
+    desc: 'Propuesta comercial multi-p\u00e1gina PDF (A4)',
+    exportLabel: 'Descargar PDF',
+    hint: `<strong>Formato:</strong> bloque global + secciones separadas por <code>---</code><br><br>
+<code>tipo: propuesta</code> &nbsp; <code>cliente:</code> &nbsp; <code>fecha:</code> &nbsp; <code>validez:</code><br><br>
+<strong>Secciones:</strong> <code>portada</code>, <code>contexto</code>, <code>aproximacion</code> (fase1_etiqueta/fase1_titulo/fase1_desc/fase1_duracion hasta 4), <code>timeline</code>, <code>inversion</code> (concepto1/precio1 hasta 5 + total), <code>siguiente-paso</code> (cuerpo + cta).`,
+    example: `tipo: propuesta
+cliente: TechCorp
+fecha: Abril 2026
+validez: 30 d\u00edas
+---
+seccion: portada
+titular: Propuesta de [Diagn\u00f3stico] y Posicionamiento
+subtitulo: Para TechCorp
+---
+seccion: contexto
+titulo: Contexto
+cuerpo: TechCorp opera en un mercado saturado donde la diferenciaci\u00f3n percibida es cr\u00edtica. Tras conversaciones iniciales, identificamos tres \u00e1reas de oportunidad clave.
+---
+seccion: aproximacion
+titulo: Nuestra aproximaci\u00f3n
+fase1_etiqueta: DIAGNOS.ING
+fase1_titulo: Auditor\u00eda 360
+fase1_desc: Percepci\u00f3n interna y externa, an\u00e1lisis competitivo, audit de touchpoints.
+fase1_duracion: 2 semanas
+fase2_etiqueta: PRIORITIZ.ING
+fase2_titulo: 5 prioridades
+fase2_desc: Framework de priorizaci\u00f3n con impacto vs. esfuerzo.
+fase2_duracion: 1 semana
+fase3_etiqueta: IMPLEMENT.ING
+fase3_titulo: Ejecuci\u00f3n
+fase3_desc: Rollout con acompa\u00f1amiento semanal.
+fase3_duracion: 6 semanas
+---
+seccion: timeline
+titulo: Timeline
+---
+seccion: inversion
+titulo: Inversi\u00f3n
+concepto1: Diagn\u00f3stico completo
+precio1: 6.000 \u20ac
+concepto2: Acompa\u00f1amiento estrat\u00e9gico (3 meses)
+precio2: 2.500 \u20ac/mes
+total: 6.000 \u20ac + 7.500 \u20ac (3 meses)
+---
+seccion: siguiente-paso
+titulo: \u00bfSiguiente paso?
+cuerpo: Agenda el kickoff esta semana y empezamos en 7 d\u00edas.
+cta: magnify.ing/agendar`
+  },
+  'report-cover': {
+    title: 'Portada Informe',
+    desc: 'Cover para audit deliverables A4 (794\u00d71123)',
+    exportLabel: 'Descargar PNG',
+    hint: `<strong>Formato:</strong><br><br>
+<code>cliente:</code> Nombre de empresa<br>
+<code>subtitulo:</code> Auditor\u00eda de Visibilidad<br>
+<code>fecha:</code> Mes A\u00f1o<br>
+<code>confidencial:</code> si (opcional)`,
+    example: `cliente: TechCorp
+subtitulo: Auditor\u00eda de Visibilidad
+fecha: Marzo 2026
+confidencial: si`
+  },
+  'presentacion': {
+    title: 'Presentaci\u00f3n',
+    desc: 'Slides 16:9 exportables a PPTX editable',
+    exportLabel: 'Descargar PPTX',
+    hint: `<strong>Formato:</strong> bloque global + slides separados por <code>---</code><br><br>
+<code>tipo: presentacion</code> &nbsp; <code>titulo:</code> &nbsp; <code>autor:</code> &nbsp; <code>fecha:</code><br><br>
+<strong>Tipos de slide (<code>slide:</code>):</strong><br>
+<code>portada</code> \u2014 titular + subtitulo<br>
+<code>divisor</code> \u2014 numero + titulo (fondo amarillo)<br>
+<code>contenido</code> \u2014 titular + bullet1..6 (+ eyebrow)<br>
+<code>stat</code> \u2014 numero + sufijo + descripcion + meta<br>
+<code>quote</code> \u2014 cita + autor<br>
+<code>comparacion</code> \u2014 label_a/label_b + a1..5 + b1..5<br>
+<code>cuadrante</code> \u2014 ejes + q1..4 (highlight/dimmed)<br>
+<code>timeline</code> \u2014 fase1..4_etiqueta/titulo/duracion<br>
+<code>imagen</code> \u2014 caption + alt (placeholder)<br>
+<code>siguiente-paso</code> \u2014 titular + cta<br><br>
+<strong>Speaker notes:</strong> a\u00f1ade <code>notas:</code> a cualquier slide \u2014 van al panel de notas del PPTX (no se imprimen en la slide).<br><br>
+<strong>Nota:</strong> los <code>[highlights]</code> en titulares deben caber en una sola linea \u2014 si wrappean, el highlight se desplazara.`,
+    example: `tipo: presentacion
+titulo: Diagnostico de Marca
+autor: Magnify
+fecha: Abril 2026
+---
+slide: portada
+titular: Diagnostico de [Marca]
+subtitulo: TechCorp \u00b7 Abril 2026
+notas: Abrir con la pregunta: si cerramos los ojos, que es esta empresa en una frase? Pausar 3 segundos antes de avanzar.
+---
+slide: divisor
+numero: 01
+titulo: Donde estamos hoy
+---
+slide: contenido
+eyebrow: HALLAZGOS
+titular: Tres patrones que se [repiten]
+bullet1: Mensajes inconsistentes entre canales
+bullet2: Sin narrativa diferencial clara
+bullet3: Decisiones de marca por intuicion
+notas: Insistir en que no es critica; es diagnostico. Los tres patrones aparecen en 9 de 10 empresas similares en etapa seed-B.
+---
+slide: stat
+numero: 73
+sufijo: %
+descripcion: de tu equipo no puede articular que os diferencia
+meta: Encuesta interna, n=30
+notas: Este 73% incluye C-level. Si el comite no puede articularlo, nadie en el equipo comercial podra.
+---
+slide: quote
+cita: Tenemos la marca mas limpia del sector y nadie lo sabe.
+autor: CMO, TechCorp
+---
+slide: comparacion
+label_a: ANTES
+label_b: DESPUES
+a1: Mensaje fragmentado
+a2: Diferenciacion ambigua
+a3: Decisiones reactivas
+b1: Narrativa unificada
+b2: Posicionamiento documentado
+b3: Framework basado en datos
+---
+slide: cuadrante
+eyebrow: CUADRANTE MAGNIFY
+subtitulo: Donde esta tu marca
+eje_x: VISIBILIDAD
+eje_y: FORTALEZA
+q1_nombre: JOYA ESCONDIDA
+q1_desc: Buena marca, poca visibilidad
+q1_tag: Necesitas visibilidad
+q2_nombre: MARCA CONECTADA
+q2_highlight: si
+q3_nombre: INVISIBLE
+q3_dimmed: si
+q4_nombre: MUCHO RUIDO
+---
+slide: timeline
+fase1_etiqueta: DIAGNOS.ING
+fase1_titulo: Auditoria
+fase1_duracion: 2 semanas
+fase2_etiqueta: PRIORITIZ.ING
+fase2_titulo: 5 prioridades
+fase2_duracion: 1 semana
+fase3_etiqueta: IMPLEMENT.ING
+fase3_titulo: Ejecucion
+fase3_duracion: 6 semanas
+---
+slide: imagen
+caption: Customer journey actual
+alt: Diagrama de touchpoints
+---
+slide: siguiente-paso
+titular: Empezamos
+cta: magnify.ing/agendar`
+  },
+  'email-sig': {
+    title: 'Firma de Email',
+    desc: 'Bloque HTML para firma (600px)',
+    exportLabel: 'Copiar HTML',
+    hint: `<strong>Formato:</strong><br><br>
+<code>nombre:</code> Tu nombre completo<br>
+<code>cargo:</code> Tu cargo<br>
+<code>link:</code> URL para agendar (opcional)`,
+    example: `nombre: David Carrasco
+cargo: Founder & SEO Strategist
+link: https://magnify.ing/agendar`
+  }
+};
+
+// ── VARIANT DEFINITIONS ──
+// Types with sub-variants show a picker gallery first. Each variant has its own example + short description.
+const VARIANTS = {
+  'linkedin-post': [
+    { id: 'quote', name: 'Quote',
+      desc: 'Cita o insight con atribución. Editorial, serif grande.',
+      example: `plantilla: quote
+eyebrow: DIAGNÓSTICO DE MARCA
+titular: Las marcas que no se [miden], no se mejoran. Se improvisan.
+atribucion: Insight de nuestro trabajo con +50 marcas B2B` },
+    { id: 'stats-grid', name: 'Stats Grid',
+      desc: 'Grilla 2x2 de stats. Ideal para 4 métricas clave.',
+      example: `plantilla: stats-grid
+eyebrow: RESULTADOS TÍPICOS
+titular: Lo que moves en 90 días
+n1: 73%
+l1: mejora en coherencia de mensaje
+n2: 2.4x
+l2: engagement en LinkedIn
+n3: +45%
+l3: leads cualificados
+n4: 3x
+l4: velocidad de decisión interna` },
+    { id: 'stats-hero', name: 'Stats Hero',
+      desc: 'Una stat dominante centrada. Para un insight potente.',
+      example: `plantilla: stats-hero
+eyebrow: DATO CLAVE
+numero: 73
+sufijo: %
+descripcion: de marcas B2B no puede articular qué las [diferencia]
+atribucion: Encuesta interna · +50 líderes de marketing` },
+    { id: 'framework', name: 'Framework',
+      desc: 'Lista numerada de pasos. Para procesos o metodologías.',
+      example: `plantilla: framework
+eyebrow: CÓMO LO HACEMOS
+titular: Diagnóstico en [3 fases]
+t1: Auditoría de percepción
+d1: Entrevistas internas y externas + análisis competitivo.
+t2: Priorización
+d2: Framework de impacto vs. esfuerzo con los hallazgos clave.
+t3: Rollout
+d3: Acompañamiento de ejecución semanal durante 6 semanas.` },
+    { id: 'servicio', name: 'Servicio',
+      desc: 'Promoción de servicio. Eyebrow + titular + descripción.',
+      example: `plantilla: servicio
+eyebrow: SERVICIO
+titular: Diagnóstico de [visibilidad]
+descripcion: Una auditoría completa de cómo te ven buscadores, IA y clientes. En 4 semanas tienes un mapa de prioridades ejecutables.` },
+    { id: 'antes-despues', name: 'Antes / Después',
+      desc: 'Comparación 2 columnas. Para contraste de estados.',
+      example: `plantilla: antes-despues
+eyebrow: DIAGNÓSTICO DE MARCA
+titular: De ruido a señal
+a1: Mensajes inconsistentes entre canales
+a2: Diferenciación ambigua
+a3: Decisiones reactivas
+a4: Sin framework de priorización
+b1: Narrativa unificada
+b2: Posicionamiento documentado
+b3: Roadmap de 90 días
+b4: KPIs medibles de marca` },
+    { id: 'quote-landscape', name: 'Quote Landscape',
+      desc: 'Quote con imagen/espacio lateral. Editorial ancho.',
+      example: `plantilla: quote-landscape
+eyebrow: CLIENTES
+titular: Tenemos la marca más limpia del sector y nadie lo sabe.
+atribucion: CMO, SaaS B2B · Barcelona` },
+    { id: 'cuadrante', name: 'Cuadrante',
+      desc: 'Matriz 2x2 de posicionamiento. 4 celdas + ejes.',
+      example: `plantilla: cuadrante
+eyebrow: CUADRANTE MAGNIFY
+titular: ¿Dónde está tu marca?
+eje_x: VISIBILIDAD
+eje_x_min: BAJA
+eje_x_max: ALTA
+eje_y: FORTALEZA DE MARCA
+eje_y_min: BAJA
+eje_y_max: ALTA
+q1_nombre: JOYA ESCONDIDA
+q1_desc: Buena marca, poca visibilidad. Nadie encuentra lo que ofreces.
+q1_tag: → NECESITAS VISIBILIDAD
+q2_nombre: MARCA CONECTADA
+q2_desc: Lo que eres y cómo te ven está alineado.
+q2_tag: ★ OBJETIVO
+q2_highlight: si
+q3_nombre: INVISIBLE
+q3_desc: Sin marca ni visibilidad. No existes para el mercado.
+q3_tag: ✕ PUNTO CIEGO
+q3_dimmed: si
+q4_nombre: MUCHO RUIDO, POCA MARCA
+q4_desc: Visible pero sin sustancia. Google te indexa. Nadie te recuerda.
+q4_tag: → NECESITAS COHERENCIA` }
+  ],
+
+  'banner': [
+    { id: 'og-statement', name: 'OG Statement',
+      desc: 'Imagen para share en web (1200×630). Titular + subtítulo.',
+      example: `plantilla: statement
+eyebrow: DIAGNÓSTICO DE MARCA
+titular: Las marcas que no se [miden] no se mejoran
+subtitulo: Se improvisan. Y la improvisación no escala.` },
+    { id: 'og-data', name: 'OG Data',
+      desc: 'Imagen de dato para share (1200×630). Stat dominante.',
+      example: `plantilla: data
+eyebrow: ENCUESTA MAGNIFY
+numero: 73
+sufijo: %
+descripcion: de marcas B2B no puede articular qué las [diferencia]
+meta: +50 líderes de marketing consultados` },
+    { id: 'og-minimal', name: 'OG Minimal',
+      desc: 'Imagen de marca con tagline (1200×630).',
+      example: `plantilla: minimal
+tagline: Brand visibility consultancy` },
+    { id: 'li-profile-icon', name: 'Banner perfil LinkedIn',
+      desc: '1584×396 — negro + A-mark sutil abajo derecha. Para tu perfil.',
+      example: `formato: linkedin-profile
+plantilla: icon` },
+    { id: 'li-profile-wordmark', name: 'Banner perfil (wordmark)',
+      desc: '1584×396 — negro + MAGNIFY centrado.',
+      example: `formato: linkedin-profile
+plantilla: wordmark` },
+    { id: 'li-company', name: 'Banner company LinkedIn',
+      desc: '1128×191 — cover de página de empresa en LinkedIn.',
+      example: `formato: linkedin-company
+plantilla: wordmark` },
+    { id: 'logo-square', name: 'Logo cuadrado',
+      desc: '400×400 — A-mark centrada. Para logo company LinkedIn, avatar, favicon.',
+      example: `formato: logo
+plantilla: icon` }
+  ],
+
+  'linkedin-carousel': [
+    { id: 'manifiesto', name: 'Manifiesto',
+      desc: 'Lista de principios/valores. 3-5 slides.',
+      example: `slide: 1
+plantilla: cover
+eyebrow: MANIFIESTO
+titular: Estos son nuestros [principios.] No son aspiracionales. Son filtros.
+subtitulo: Utilízalos para evaluarnos, porque nosotros también lo haremos.
+---
+slide: 2
+plantilla: interior
+eyebrow: PRINCIPIO 01
+titular: Tu problema no es de tráfico. Es de [coherencia.]
+cuerpo: Si hay una desconexión entre lo que tu marca dice y lo que los buscadores interpretan, ninguna táctica lo compensa.
+---
+slide: 3
+plantilla: interior
+eyebrow: PRINCIPIO 02
+titular: Estrategia a medida, no [checklists.]
+cuerpo: Cada proyecto empieza con un diagnóstico profundo de tu realidad, no de nuestras suposiciones.
+---
+slide: 4
+plantilla: cta
+titular: ¿Tu marca dice una cosa y el mercado entiende [otra?]
+url: magnify.ing` },
+    { id: 'guia-practica', name: 'Guía práctica',
+      desc: 'Carousel educativo con señales, pasos o tips.',
+      example: `slide: 1
+plantilla: cover
+eyebrow: GUÍA PRÁCTICA
+titular: 5 señales de que tu marca necesita un [diagnóstico]
+subtitulo: Descubre si tu marca está construida sobre una base sólida.
+---
+slide: 2
+plantilla: interior
+eyebrow: SEÑAL #1
+titular: Tu equipo no sabe explicar qué os hace [diferentes]
+cuerpo: Si preguntas a 5 personas "¿qué nos diferencia?", obtienes 5 respuestas distintas.
+---
+slide: 3
+plantilla: interior
+eyebrow: SEÑAL #2
+titular: Tu web dice lo mismo que la de tu [competencia]
+cuerpo: Cambia el logo y nadie nota la diferencia. Eso es un problema de posicionamiento.
+---
+slide: 4
+plantilla: cta
+titular: ¿Tu marca está construida para crecer o para [sobrevivir?]
+url: magnify.ing` },
+    { id: 'caso-estudio-carousel', name: 'Caso de estudio',
+      desc: 'Narrativa de resultado cliente en formato carousel.',
+      example: `slide: 1
+plantilla: cover
+eyebrow: CASO DE ESTUDIO
+titular: Cómo TechCorp multiplicó por [2.4] su engagement
+subtitulo: Diagnóstico y reposicionamiento en 8 semanas.
+---
+slide: 2
+plantilla: stat
+eyebrow: EL RETO
+stat: 73%
+stat_label: de inconsistencia entre canales de marketing
+titular: El equipo comercial iba en paralelo al de marketing
+cuerpo: Mercado saturado con 15 competidores indiferenciados. El mensaje cambiaba en cada canal.
+---
+slide: 3
+plantilla: interior
+eyebrow: LA SOLUCIÓN
+titular: Diagnóstico + [narrativa unificada] + rollout
+cuerpo: 30 entrevistas, framework de priorización, y ejecución coordinada en 12 touchpoints durante 6 semanas.
+---
+slide: 4
+plantilla: stat
+eyebrow: RESULTADO
+stat: 2.4x
+stat_label: engagement en LinkedIn
+titular: En 8 semanas
+cuerpo: De narrativa dispersa a territorio único reconocible y defendible por cualquier miembro del equipo.
+---
+slide: 5
+plantilla: cta
+titular: ¿Tu marca tiene el mismo problema de [coherencia?]
+url: magnify.ing` }
+  ],
+
+  'presentacion': [
+    { id: 'diagnostico-marca', name: 'Diagnóstico de marca',
+      desc: 'Deck interno/cliente con hallazgos y recomendaciones.',
+      example: `tipo: presentacion
+titulo: Diagnóstico de Marca
+autor: Magnify
+fecha: Abril 2026
+---
+slide: portada
+titular: Diagnóstico de [Marca]
+subtitulo: TechCorp · Abril 2026
+notas: Abrir con la pregunta: si cerramos los ojos, qué es esta empresa en una frase? Pausar 3 segundos.
+---
+slide: divisor
+numero: 01
+titulo: Dónde estamos hoy
+---
+slide: contenido
+eyebrow: HALLAZGOS
+titular: Tres patrones que se [repiten]
+bullet1: Mensajes inconsistentes entre canales
+bullet2: Sin narrativa diferencial clara
+bullet3: Decisiones de marca por intuición
+---
+slide: stat
+numero: 73
+sufijo: %
+descripcion: de tu equipo no puede articular qué os diferencia
+meta: Encuesta interna, n=30
+---
+slide: siguiente-paso
+titular: ¿[Empezamos?]
+url: magnify.ing` },
+    { id: 'propuesta-servicios', name: 'Propuesta de servicios',
+      desc: 'Deck comercial con servicios, timeline y propuesta económica.',
+      example: `tipo: presentacion
+titulo: Propuesta Magnify
+autor: Magnify
+---
+slide: portada
+titular: Propuesta para [TechCorp]
+subtitulo: Diagnóstico de marca + acompañamiento · 3 meses
+---
+slide: divisor
+numero: 01
+titulo: El enfoque
+---
+slide: timeline
+titular: Cómo trabajamos
+fase1_etiqueta: DIAGNOS.ING
+fase1_titulo: Diagnóstico
+fase1_duracion: 2 semanas
+fase2_etiqueta: PRIORITIZ.ING
+fase2_titulo: Priorización
+fase2_duracion: 1 semana
+fase3_etiqueta: IMPLEMENT.ING
+fase3_titulo: Implementación
+fase3_duracion: 8 semanas
+---
+slide: siguiente-paso
+titular: ¿Empezamos el [kickoff?]
+url: magnify.ing` }
+  ]
+};
+
+// ── SIDEBAR / TYPE SELECTION ──
+function selectType(type) {
+  currentType = type;
+  document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('on'));
+  document.querySelector(`[data-type="${type}"]`).classList.add('on');
+
+  const meta = TYPE_META[type];
+  document.getElementById('panel-title').textContent = meta.title;
+  document.getElementById('panel-desc').textContent = meta.desc;
+  document.getElementById('btn-export').textContent = meta.exportLabel;
+  document.getElementById('btn-export').disabled = true;
+
+  // If this type has multiple variants, show the variant picker gallery first.
+  const variants = VARIANTS[type];
+  const contentEl = document.getElementById('content');
+  const contentWrap = contentEl.parentElement;
+  if (variants && variants.length) {
+    // Hide textarea, show gallery in hint area
+    contentWrap.style.display = 'none';
+    document.getElementById('hint').innerHTML = renderVariantGallery(type, variants);
+  } else {
+    contentWrap.style.display = '';
+    document.getElementById('hint').innerHTML = meta.hint;
+    contentEl.value = meta.example;
+  }
+
+  // Reset preview
+  document.getElementById('preview').innerHTML = `<div class="empty-state">
+    <p style="font-size:32px; opacity:0.15; font-family:var(--serif);">M</p>
+    <p>${variants ? 'Elige una plantilla arriba para empezar' : 'Pulsa <strong>Generar Preview</strong> para ver el resultado'}</p>
+  </div>`;
+  document.getElementById('render-container').innerHTML = '';
+  renderedFrames = [];
+}
+
+function renderVariantGallery(type, variants) {
+  const cards = variants.map(v => `<button class="variant-card" onclick="selectVariant('${type}', '${v.id}')">
+    <span class="vn">${v.name}</span>
+    <span class="vd">${v.desc}</span>
+  </button>`).join('');
+  return `<p class="variant-intro"><strong>Elige una plantilla:</strong></p>
+    <div class="variant-grid">${cards}</div>`;
+}
+
+function selectVariant(type, variantId) {
+  const variants = VARIANTS[type] || [];
+  const v = variants.find(x => x.id === variantId);
+  if (!v) return;
+  const meta = TYPE_META[type];
+  // Swap UI from gallery to editor
+  const contentEl = document.getElementById('content');
+  contentEl.parentElement.style.display = '';
+  contentEl.value = v.example;
+  // Hint: show a "back to gallery" link + the type-level format hint
+  document.getElementById('hint').innerHTML = `<div class="variant-back" onclick="selectType('${type}')">\u2190 Ver otras plantillas</div>${meta.hint}`;
+  // Auto-generate preview so user sees the variant immediately
+  generate();
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── PARSER ──
+function parseBlock(text) {
+  const data = {};
+  const lines = text.trim().split('\n');
+  let currentKey = null;
+  for (const line of lines) {
+    const m = line.match(/^(\w+(?:[-_]\w+)*):\s*(.*)$/);
+    if (m) {
+      currentKey = m[1].toLowerCase();
+      data[currentKey] = m[2].trim();
+    } else if (currentKey) {
+      data[currentKey] += '\n' + line;
+    }
+  }
+  return data;
+}
+
+// Inline SVG logos — html2canvas renders inline SVG reliably, but not external SVG <img>.
+const WORDMARK_PATH = 'M772.2,645.1l-44,147h-26.6l62.8-166.8h7.8h7.8l62.8,166.8h-26.6L772.2,645.1z M1741.7,625.2h32.4v167.1h-32.4V625.2z M353.7,625.2v167.1h29.7V659.1l47.9,133.2h23.9l47.9-133.2v133.2h29.7V625.2c-15.1,0-30.3,0-45.4,0l-44.1,113.6l-44.1-113.6C384,625.2,368.8,625.2,353.7,625.2z M1376.2,625.2v167.1h30.1V666.5l72.6,125.8h34.2V625.2h-30.1v127.1l-72.6-127.1H1376.2zM1999.6,625.2v167.1h31.1v-73h66v-25.9h-66v-41.3h76v-27H1999.6z M2337.3,625.2l54.1,97.3v69.8h33.2v-69.8l54.1-97.3h-34l-36.7,70l-36.7-70H2337.3z M1077.2,703.4v24.2h43.6v27.8l-1.2,0.9c-9.3,6.8-20.2,11.1-31.6,12.6c-10.9,1.4-22.1,0.3-32.3-3.8c-10.3-4-19.1-10.8-25.3-20c-7.2-10.5-10.2-22.9-10.2-35.5c0-16,5.6-31.6,16.5-43.4c10.8-11.6,25.4-18.1,41.3-18.1c17.6,0,33.6,8.4,44.4,22.1h31c-11.4-30.9-43.9-47.7-75.8-47.7c-23.8,0-46.5,8.7-63.5,25.5c-16.5,16.3-25.5,38.4-25.5,61.6c0,31.2,14.5,59.3,42.4,74.2c9.5,5.1,20.2,8.3,30.9,9.9c11.4,1.7,23.1,1.7,34.4,0.1c21.4-3.1,43.2-12.2,57.4-29v-61.4H1077.2z';
+const ICON_POINTS = '141.7,77.7 97.6,224.7 71,224.7 133.9,57.9 141.7,57.9 149.5,57.9 212.3,224.7 185.7,224.7';
+function wordmark(color) { return `<svg class="logo-svg wm" viewBox="348 620 2140 178" xmlns="http://www.w3.org/2000/svg"><path fill="${color}" d="${WORDMARK_PATH}"/></svg>`; }
+function icon(color) { return `<svg class="logo-svg ic" viewBox="65 52 155 178" xmlns="http://www.w3.org/2000/svg"><polygon fill="${color}" points="${ICON_POINTS}"/></svg>`; }
+
+function applyHighlights(text) {
+  // Commas and periods stay OUTSIDE the yellow highlight (cleaner, more editorial).
+  // Strip trailing punctuation from [brackets] and emit it after </span>; also don't consume punctuation after ].
+  return text.replace(/\[([^\]]+)\]/g, (_, inner) => {
+    const m = inner.match(/^(.*?)([.,;:!?]+)$/);
+    if (m) return `<span class="hl">${m[1]}</span>${m[2]}`;
+    return `<span class="hl">${inner}</span>`;
+  });
+}
+
+// Highlight the .ING suffix in eyebrows (Active Particle pattern: DIAGNOS.ING, PRIORITIZ.ING, etc.)
+function applyActiveParticle(text) {
+  if (!text) return text;
+  return String(text).replace(/\.ING\b/gi, '<span class="ing-ap">.ING</span>');
+}
+
+// Returns eyebrow + accent line markup, or empty string if no text provided.
+// This way eyebrow-less posts don't show placeholder defaults like "INSIGHT" or "DATO CLAVE".
+function eyebrowBlock(text, eyebrowClass, accentClass, accentStyle) {
+  if (!text || !String(text).trim()) return '';
+  eyebrowClass = eyebrowClass || 'eyebrow-yl';
+  accentClass = accentClass || 'accent-yl';
+  const style = accentStyle ? ` style="${accentStyle}"` : '';
+  return `<span class="eyebrow ${eyebrowClass}">${applyActiveParticle(text)}</span>
+    <div class="accent ${accentClass}"${style}></div>`;
+}
+
+// ── FOOTER HELPERS ──
+function ftrDk() {
+  return `<div class="ftr ftr-dk">${wordmark('#FAFAFA')}<span class="url url-dk">magnify.<span class="ing-ap">ing</span></span></div>`;
+}
+function ftrLt() {
+  return `<div class="ftr ftr-lt">${wordmark('#0A0A0A')}<span class="url url-lt">magnify.<span class="ing-ap">ing</span></span></div>`;
+}
+function ftrCDk() {
+  return `<div class="ftr-c ftr-dk">${icon('#FAFAFA')}<span class="url url-dk">magnify.<span class="ing-ap">ing</span></span></div>`;
+}
+function ftrCLt() {
+  return `<div class="ftr-c ftr-lt">${icon('#0A0A0A')}<span class="url url-lt">magnify.<span class="ing-ap">ing</span></span></div>`;
+}
+
+// ════════════════════════════════════════════
+// LINKEDIN POST RENDERERS (T1-T7) — identical to linkedin-editor.html
+// ════════════════════════════════════════════
+
+function renderQuote(d) {
+  return `<div class="frame sq dk"><div class="t1">
+    <div class="watermark">${icon('#FAFAFA')}</div>
+    ${eyebrowBlock(d.eyebrow, 'eyebrow-yl', 'accent-yl')}
+    <h2>${applyHighlights(d.titular || 'Tu headline aqu\u00ed')}</h2>
+    <p class="attr">${d.atribucion || ''}</p>
+  </div>${ftrDk()}</div>`;
+}
+
+function renderStatsGrid(d) {
+  const stats = [];
+  for (let i = 1; i <= 4; i++) {
+    const num = d['stat' + i] || d['num' + i] || '';
+    const lbl = d['label' + i] || d['etiqueta' + i] || '';
+    if (num) stats.push({ num, lbl });
+  }
+  while (stats.length < 4) stats.push({ num: '\u2014', lbl: '' });
+  return `<div class="frame sq lt"><div class="t2">
+    ${eyebrowBlock(d.eyebrow, 'eyebrow-lt', 'accent-yl')}
+    <div class="t2-grid">
+      ${stats.map((s, i) => `<div class="t2-cell"><div class="t2-num${i === 0 ? ' t2-num-yl' : ''}">${s.num}</div><div class="t2-lbl">${s.lbl}</div></div>`).join('')}
+    </div>
+  </div>${ftrLt()}</div>`;
+}
+
+function renderStatsHero(d) {
+  const num = d.numero || d.stat || '73';
+  const suffix = d.sufijo || d.suffix || '%';
+  return `<div class="frame sq dk"><div class="t3">
+    ${eyebrowBlock(d.eyebrow, 'eyebrow-yl', 'accent-yl', 'margin:20px auto 0')}
+    <div class="t3-num">${num}<sup>${suffix}</sup></div>
+    <p class="t3-desc">${d.descripcion || d.cuerpo || ''}</p>
+    <p class="t3-meta">${d.meta || ''}</p>
+  </div>${ftrDk()}</div>`;
+}
+
+function renderFramework(d) {
+  const items = [];
+  for (let i = 1; i <= 6; i++) {
+    const title = d['titulo' + i] || d['item' + i] || '';
+    const desc = d['desc' + i] || d['descripcion' + i] || '';
+    if (title) items.push({ title, desc });
+  }
+  return `<div class="frame sq lt"><div class="t4">
+    ${eyebrowBlock(d.eyebrow, 'eyebrow-lt', 'accent-yl')}
+    <h2>${applyHighlights(d.titular || 'Tu framework')}</h2>
+    <div class="t4-list">
+      ${items.map((it, i) => `<div class="t4-item"><span class="t4-n">0${i + 1}</span><div><h3>${it.title}</h3><p>${it.desc}</p></div></div>`).join('')}
+    </div>
+  </div>${ftrLt()}</div>`;
+}
+
+function renderServicio(d) {
+  return `<div class="frame sq lt"><div class="t5">
+    <div class="t5-body">
+      ${eyebrowBlock(d.eyebrow, 'eyebrow-lt', 'accent-yl')}
+      <h2>${applyHighlights(d.titular || 'Tu servicio')}</h2>
+      <p class="t5-desc">${d.descripcion || d.cuerpo || ''}</p>
+    </div>
+    <a class="t5-cta-bar">${d.cta || 'Solicitar info'} <span class="t5-cta-ar">\u2192</span></a>
+  </div>${ftrLt()}</div>`;
+}
+
+function renderAntesDepues(d) {
+  const antes = [];
+  const despues = [];
+  for (let i = 1; i <= 6; i++) {
+    if (d['antes' + i]) antes.push(d['antes' + i]);
+    if (d['despues' + i]) despues.push(d['despues' + i]);
+  }
+  return `<div class="frame sq dk"><div class="t6">
+    <div class="t6-col">
+      <span class="eyebrow eyebrow-dk">${applyActiveParticle(d.label_antes || 'MODELO TRADICIONAL')}</span>
+      <div class="accent" style="background:rgba(255,255,255,0.2); margin-bottom:48px"></div>
+      <ul class="t6-ul t6-ul-antes">${antes.map(a => `<li>${a}</li>`).join('')}</ul>
+    </div>
+    <div class="t6-div"></div>
+    <div class="t6-col">
+      <span class="eyebrow eyebrow-yl">${applyActiveParticle(d.label_despues || 'MAGNIFY')}</span>
+      <div class="accent accent-yl" style="margin-bottom:48px"></div>
+      <ul class="t6-ul t6-ul-despues">${despues.map(a => `<li>${a}</li>`).join('')}</ul>
+    </div>
+  </div>${ftrDk()}</div>`;
+}
+
+function renderQuoteLandscape(d) {
+  return `<div class="frame ls lt"><div class="t7">
+    <div class="t7-l">
+      ${eyebrowBlock(d.eyebrow, 'eyebrow-lt', 'accent-yl')}
+      <h2>${applyHighlights(d.titular || 'Tu headline')}</h2>
+    </div>
+    <div class="t7-r"><p>${d.sidebar || d.descripcion || ''}</p></div>
+  </div><div class="ftr ftr-lt" style="height:68px;padding:0 100px">${wordmark('#0A0A0A')}<span class="url url-lt">magnify.<span class="ing-ap">ing</span></span></div></div>`;
+}
+
+function renderCuadrante(d) {
+  const symbolize = (s) => (s || '')
+    .replace(/^->\s*/, '\u2192 ')
+    .replace(/^=>\s*/, '\u2192 ')
+    .replace(/^\*\s*/, '\u2605 ')
+    .replace(/^x\s*/i, '\u2715 ')
+    .replace(/^!\s*/, '\u26A0 ');
+  const cell = (n) => {
+    const flags = [];
+    if ((d[`q${n}_highlight`] || '').toLowerCase() === 'si') flags.push('hl');
+    if ((d[`q${n}_dimmed`] || '').toLowerCase() === 'si') flags.push('dim');
+    return `<div class="tcq-cell q${n} ${flags.join(' ')}">
+      <div>
+        <div class="nm">${d[`q${n}_nombre`] || ''}</div>
+        <div class="ds">${d[`q${n}_desc`] || ''}</div>
+      </div>
+      <div class="tg">${symbolize(d[`q${n}_tag`])}</div>
+    </div>`;
+  };
+  return `<div class="frame sq lt"><div class="tcq">
+    <div class="tcq-head">
+      <div>
+        ${eyebrowBlock(d.eyebrow, 'eyebrow-lt', 'accent-yl')}
+        <h2>${applyHighlights(d.subtitulo || d.titular || '')}</h2>
+      </div>
+    </div>
+    <div class="tcq-grid">
+      <div class="tcq-axis-y">
+        <span class="tip">${d.eje_y_max || 'Alta'}</span>
+        <span class="lbl">${d.eje_y || 'Eje Y'}</span>
+        <span class="tip">${d.eje_y_min || 'Baja'}</span>
+      </div>
+      ${cell(1)}${cell(2)}${cell(3)}${cell(4)}
+      <div class="tcq-axis-x">
+        <span class="tip">${d.eje_x_min || 'Baja'}</span>
+        <span class="lbl mid">${d.eje_x || 'Eje X'}</span>
+        <span class="tip">${d.eje_x_max || 'Alta'}</span>
+      </div>
+    </div>
+  </div>${ftrLt()}</div>`;
+}
+
+const postRenderers = {
+  'quote': renderQuote,
+  'stats-grid': renderStatsGrid,
+  'stats-hero': renderStatsHero,
+  'framework': renderFramework,
+  'servicio': renderServicio,
+  'antes-despues': renderAntesDepues,
+  'quote-landscape': renderQuoteLandscape,
+  'cuadrante': renderCuadrante,
+};
+
+// ════════════════════════════════════════════
+// CAROUSEL RENDERERS (T8-T11) — identical to linkedin-editor.html
+// ════════════════════════════════════════════
+
+function renderCarouselCover(d) {
+  // Title-case the eyebrow (first letter of each word capitalized, rest lowercase) — serif italic reads better cased than shouted in caps.
+  const eyebrowRaw = d.eyebrow || 'Gu\u00eda';
+  const eyebrow = eyebrowRaw.toLowerCase().replace(/(^|\s)(\p{L})/gu, (_, sp, c) => sp + c.toUpperCase());
+  return `<div class="frame cr dk"><div class="t8">
+    <div class="t8-brand">${wordmark('#FAFAFA')}</div>
+    <div class="t8-top">
+      <div class="t8-eyebrow-wrap">
+        <span class="ln"></span>
+        <span class="t8-eyebrow">${applyActiveParticle(eyebrow)}</span>
+      </div>
+      <h2>${applyHighlights(d.titular || 'Tu carousel')}</h2>
+      <p class="sub">${d.subtitulo || ''}</p>
+    </div>
+    <div class="t8-bar"><span class="arr">\u2192</span></div>
+  </div></div>`;
+}
+
+function renderCarouselText(d, slideNum, totalSlides) {
+  const num = String(slideNum).padStart(2, '0');
+  const dots = Array.from({ length: totalSlides }, (_, i) =>
+    `<div class="t9-dot${i + 1 === slideNum ? ' on' : ''}"></div>`
+  ).join('');
+  return `<div class="frame cr lt"><div class="t9">
+    <div class="t9-head">
+      <div>
+        ${eyebrowBlock(d.eyebrow, 'eyebrow-lt', 'accent-yl')}
+      </div>
+      <div class="t9-big">${num}</div>
+    </div>
+    <div class="t9-content">
+      <h3 class="t9-title">${applyHighlights(d.titular || '')}</h3>
+      <p class="t9-body">${(d.cuerpo || '').replace(/\n/g, '<br>')}</p>
+    </div>
+    <div class="t9-dots">${dots}</div>
+  </div>${ftrCLt()}</div>`;
+}
+
+function renderCarouselSplit(d, slideNum, totalSlides) {
+  const dots = Array.from({ length: totalSlides }, (_, i) =>
+    `<div class="t9-dot${i + 1 === slideNum ? ' on' : ''}"></div>`
+  ).join('');
+  // Extract suffix (%, x, +) from stat for sup treatment
+  let statNum = d.stat || d.numero || '73%';
+  const statMatch = String(statNum).match(/^(\d+[.,]?\d*)([%x+]+)?$/);
+  let statHtml;
+  if (statMatch && statMatch[2]) {
+    statHtml = `${statMatch[1]}<sup>${statMatch[2]}</sup>`;
+  } else {
+    statHtml = statNum;
+  }
+  return `<div class="frame cr dk"><div class="t10">
+    <div class="t10-top">
+      ${eyebrowBlock(d.eyebrow, 'eyebrow-yl', 'accent-yl', 'margin-bottom:0')}
+      <div class="t10-stat">${statHtml}</div>
+      <div class="t10-sl">${d.stat_label || d.etiqueta || ''}</div>
+    </div>
+    <div class="t10-bot">
+      <h3>${applyHighlights(d.titular || d.pregunta || '')}</h3>
+      <p>${d.cuerpo || ''}</p>
+    </div>
+  </div><div class="ftr-c ftr-lt" style="background:#fff">${icon('#0A0A0A')}<span class="url url-lt">magnify.<span class="ing-ap">ing</span></span></div></div>`;
+}
+
+function renderCarouselCTA(d) {
+  // titular = main message/headline at top (serif, dark).
+  // url = URL footer at bottom of slide. Fallback: accept legacy `cta` only if it looks like a URL, otherwise treat as message.
+  const ctaLooksLikeUrl = d.cta && /\b(\.ing|\.com|\.co|\.es|\/)\b/i.test(d.cta);
+  const url = d.url || (ctaLooksLikeUrl ? d.cta : null) || 'magnify.ing';
+  const titular = d.titular || (ctaLooksLikeUrl ? null : d.cta) || '\u00bfHablamos?';
+  // Auto-highlight the .ing TLD in the URL for brand consistency.
+  const urlHtml = url.replace(/\.ing(\/|$)/i, '.<span class="ing-ap">ing</span>$1');
+  return `<div class="frame cr yl"><div class="t11">
+    <h2>${applyHighlights(titular)}</h2>
+    <div class="t11-ln"></div>
+    <div class="logo-area">${wordmark('#0A0A0A')}</div>
+    <p class="url">${urlHtml}</p>
+  </div></div>`;
+}
+
+// ════════════════════════════════════════════
+// BANNER RENDERERS
+// ════════════════════════════════════════════
+
+function renderBannerStatement(d, frameClass) {
+  frameClass = frameClass || 'frame bn';
+  const sub = d.subtitulo ? `<p class="sub">${applyHighlights(d.subtitulo)}</p>` : '';
+  return `<div class="${frameClass} dk">
+    <div class="bn-wm">${icon('#FAFAFA')}</div>
+    <div class="bn-statement">
+      ${eyebrowBlock(d.eyebrow, 'eyebrow-yl', 'accent-yl', 'margin:18px auto 28px')}
+      <h2>${applyHighlights(d.titular || 'Tu headline')}</h2>
+      ${sub}
+    </div>${ftrDk()}</div>`;
+}
+
+function renderBannerData(d, frameClass) {
+  frameClass = frameClass || 'frame bn';
+  const num = d.numero || d.stat || '73';
+  const suffix = d.sufijo || d.suffix || '%';
+  const desc = d.descripcion || d.cuerpo || '';
+  const meta = d.meta ? `<p class="meta">${d.meta}</p>` : '';
+  return `<div class="${frameClass} dk">
+    <div class="bn-wm">${icon('#FAFAFA')}</div>
+    <div class="bn-data">
+      ${eyebrowBlock(d.eyebrow, 'eyebrow-yl', 'accent-yl', 'margin:16px auto 32px')}
+      <div class="big-num">${num}<sup>${suffix}</sup></div>
+      <p class="context">${applyHighlights(desc)}</p>
+      ${meta}
+    </div>${ftrDk()}</div>`;
+}
+
+function renderBannerMinimal(d, frameClass) {
+  frameClass = frameClass || 'frame bn';
+  return `<div class="${frameClass} dk"><div class="bn-minimal">
+    ${wordmark('#FAFAFA')}
+    <div class="ln"></div>
+    <p class="tagline">${d.tagline || 'Brand visibility consultancy'}</p>
+  </div></div>`;
+}
+
+function renderBannerWordmark(d, frameClass) {
+  // Pure black + centered wordmark. Nothing else. For LinkedIn profile banner or minimalist brand moment.
+  return `<div class="${frameClass} dk"><div class="bn-wmark">
+    ${wordmark('#FAFAFA')}
+  </div></div>`;
+}
+
+function renderBannerIcon(d, frameClass) {
+  // A-mark in bottom-right corner on black. Use <img> with data URI (not inline SVG) because html2canvas reliably rasterizes <img> elements but drops positioning on absolutely-positioned inline SVG.
+  return `<div class="${frameClass} dk"><div class="bn-imark">
+    <img class="bn-imark-img" src="${iconDataUri('#FAFAFA')}" alt="">
+  </div></div>`;
+}
+
+const bannerRenderers = {
+  'statement': renderBannerStatement,
+  'data': renderBannerData,
+  'minimal': renderBannerMinimal,
+  'wordmark': renderBannerWordmark,
+  'icon': renderBannerIcon,
+};
+
+// ════════════════════════════════════════════
+// CASE STUDY RENDERER
+// ════════════════════════════════════════════
+
+function renderCaseStudy(d) {
+  const solutions = [];
+  for (let i = 1; i <= 3; i++) {
+    if (d['solucion' + i]) solutions.push(d['solucion' + i]);
+  }
+  const stats = [];
+  for (let i = 1; i <= 3; i++) {
+    const num = d['stat' + i] || '';
+    const lbl = d['label' + i] || '';
+    if (num) stats.push({ num, lbl });
+  }
+
+  return `<div class="frame a4"><div class="cs">
+    <div class="cs-header">
+      <div class="cs-header-top">
+        ${wordmark('#FAFAFA')}
+        <span class="cs-eyebrow">CASO DE ESTUDIO</span>
+      </div>
+      <div class="cs-client">${d.cliente || 'Cliente'}</div>
+      <div class="cs-meta">${d.industria || ''} ${d.industria && d.fecha ? ' \u00b7 ' : ''}${d.fecha || ''}</div>
+    </div>
+    <div class="cs-body">
+      <div class="cs-section">
+        <h3>El Reto</h3>
+        <p>${(d.reto || '').replace(/\n/g, '<br>')}</p>
+      </div>
+      <div class="cs-section">
+        <h3>La Soluci\u00f3n</h3>
+        ${solutions.map((s, i) => `<div class="cs-sol-item"><span class="cs-sol-num">${i + 1}</span><span class="cs-sol-text">${s}</span></div>`).join('')}
+      </div>
+      <div class="cs-section">
+        <h3>Resultados</h3>
+        <div class="cs-stats">
+          ${stats.map(s => `<div class="cs-stat-card"><div class="cs-stat-num">${s.num}</div><div class="cs-stat-label">${s.lbl}</div></div>`).join('')}
+        </div>
+      </div>
+      ${d.cita ? `<div class="cs-quote">
+        <blockquote>\u201c${d.cita}\u201d</blockquote>
+        <cite>${d.autor || ''}</cite>
+      </div>` : ''}
+    </div>
+    <div class="cs-footer">
+      ${wordmark('#0A0A0A')}
+      <span class="url">magnify.<span class="ing-ap">ing</span></span>
+    </div>
+  </div></div>`;
+}
+
+// ════════════════════════════════════════════
+// REPORT COVER RENDERER
+// ════════════════════════════════════════════
+
+function renderReportCover(d) {
+  const eyebrow = (d.eyebrow || d.subtitulo || 'Diagn\u00f3stico de marca').toUpperCase();
+  const isConfidential = d.confidencial && d.confidencial.toLowerCase().startsWith('si');
+  return `<div class="frame a4"><div class="rc">
+    <div class="rc-watermark">${icon('#FAFAFA')}</div>
+    <div class="rc-top">
+      ${wordmark('#FAFAFA')}
+      ${isConfidential ? '<div class="rc-badge">Confidencial</div>' : '<div></div>'}
+    </div>
+    <div class="rc-body">
+      <div class="rc-eyebrow">${eyebrow}</div>
+      <div class="rc-accent"></div>
+      <div class="rc-client">${d.cliente || 'Cliente'}</div>
+      <div class="rc-date">${d.fecha || ''}</div>
+    </div>
+    <div class="rc-bottom">
+      <span class="url">magnify.<span class="ing-ap">ing</span></span>
+    </div>
+  </div></div>`;
+}
+
+// ════════════════════════════════════════════
+// EMAIL SIGNATURE RENDERER
+// ════════════════════════════════════════════
+
+function renderEmailSig(d) {
+  const linkHtml = d.link ? `<a class="sig-link" href="${d.link}">Agendar reuni\u00f3n <span class="arrow">\u2197</span></a>` : '';
+  return `<div class="frame sig"><div class="sig-inner">
+    <div class="sig-icon">${icon('#0A0A0A')}</div>
+    <div class="sig-info">
+      <div class="sig-name">${d.nombre || 'Nombre'}</div>
+      <div class="sig-role">${d.cargo || 'Cargo'}</div>
+      <div class="sig-divider"></div>
+      <div class="sig-url">magnify.<span class="ing-ap">ing</span></div>
+      ${linkHtml}
+    </div>
+  </div></div>`;
+}
+
+function generateEmailSigInlineHTML(d) {
+  const link = d.link || '';
+  const iconUri = iconDataUri('#0A0A0A');
+  return `<table cellpadding="0" cellspacing="0" border="0" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#0A0A0A;max-width:600px;border-collapse:collapse;">
+  <tr>
+    <td style="vertical-align:top;padding:0 20px 0 16px;border-left:3px solid #FFD600;width:44px;">
+      <img src="${iconUri}" alt="M" width="32" height="36" style="display:block;">
+    </td>
+    <td style="vertical-align:top;padding-left:4px;">
+      <div style="font-size:15px;font-weight:700;color:#0A0A0A;margin-bottom:3px;letter-spacing:-0.1px;">${d.nombre || 'Nombre'}</div>
+      <div style="font-size:13px;color:#999999;margin-bottom:12px;">${d.cargo || 'Cargo'}</div>
+      <div style="width:40px;height:1px;background-color:#E5E5E5;margin-bottom:12px;font-size:0;line-height:0;">&nbsp;</div>
+      <div style="font-size:12px;color:rgba(0,0,0,0.45);letter-spacing:0.12em;text-transform:uppercase;font-weight:500;">magnify.<span style="color:#0A0A0A;background-color:#FFD600;font-weight:600;padding:1px 5px;">ing</span></div>
+      ${link ? `<div style="margin-top:10px;"><a href="${link}" style="font-size:13px;color:#0A0A0A;font-weight:600;text-decoration:none;letter-spacing:0.02em;">Agendar reuni\u00f3n \u2197</a></div>` : ''}
+    </td>
+  </tr>
+</table>`;
+}
+
+// ════════════════════════════════════════════
+// MULTI-PAGE DOC HELPERS (case-study + propuesta)
+// ════════════════════════════════════════════
+
+function parseMultiDoc(raw) {
+  const blocks = raw.split(/^---$/m).map(b => b.trim()).filter(Boolean);
+  if (blocks.length === 0) return { global: {}, sections: [] };
+  const global = parseBlock(blocks[0]);
+  const sections = blocks.slice(1).map(b => parseBlock(b));
+  return { global, sections };
+}
+
+function pageHeader(label) {
+  return `<div class="doc-header">
+    ${wordmark('#0A0A0A').replace('class="logo-svg wm"', 'class="logo-svg wm doc-wm"')}
+    <span class="doc-eyebrow">${label}</span>
+  </div><div class="doc-sep"></div>`;
+}
+function pageFooter(pageN, total) {
+  const num = String(pageN).padStart(2, '0');
+  const tot = String(total).padStart(2, '0');
+  return `<div class="doc-footer"><span>${num} / ${tot}</span><span>magnify.<span class="ing-ap">ing</span></span></div>`;
+}
+
+function parseSlashStat(s) {
+  if (!s) return { num: '', lbl: '' };
+  const parts = s.split('/');
+  return { num: (parts[0] || '').trim(), lbl: (parts.slice(1).join('/') || '').trim() };
+}
+
+// ── CASE STUDY section renderers
+function renderCSPortada(g, s) {
+  return `<div class="frame a4"><div class="doc-portada">
+    ${wordmark('#FAFAFA').replace('class="logo-svg wm"', 'class="logo-svg wm pt-wm"')}
+    <div class="pt-eyebrow">Caso de estudio</div>
+    <h1>${applyHighlights(s.titular || g.cliente || '')}</h1>
+    <div class="pt-accent"></div>
+    <p class="pt-sub">${s.subtitulo || ''}</p>
+    <div class="pt-meta">
+      <strong>${g.cliente || ''}</strong><br>
+      ${g.industria || ''}${g.industria && g.fecha ? ' \u00b7 ' : ''}${g.fecha || ''}
+    </div>
+    <div class="pt-bottom"><span>magnify.<span class="ing-ap">ing</span></span><span>Confidencial</span></div>
+  </div></div>`;
+}
+function renderCSReto(g, s, pN, tot) {
+  const s1 = parseSlashStat(s.stat1); const s2 = parseSlashStat(s.stat2);
+  const hasStats = s1.num || s2.num;
+  return `<div class="frame a4"><div class="doc-page">
+    ${pageHeader('Caso de estudio \u00b7 ' + (g.cliente || ''))}
+    <div class="doc-content">
+      <h2 class="cs-page-title">${applyHighlights(s.titulo || 'El Reto')}</h2>
+      <div class="cs-page-title-accent"></div>
+      <div class="cs-page-body">${applyHighlights((s.cuerpo || '').replace(/\n/g, '<br>'))}</div>
+      ${hasStats ? `<div class="cs-inline-stats">
+        ${s1.num ? `<div class="cs-inline-stat"><div class="n">${s1.num}</div><div class="l">${s1.lbl}</div></div>` : ''}
+        ${s2.num ? `<div class="cs-inline-stat"><div class="n">${s2.num}</div><div class="l">${s2.lbl}</div></div>` : ''}
+      </div>` : ''}
+    </div>
+    ${pageFooter(pN, tot)}
+  </div></div>`;
+}
+function renderCSSolucion(g, s, pN, tot) {
+  const pasos = [];
+  for (let i = 1; i <= 6; i++) {
+    if (s['paso' + i + '_titulo'] || s['paso' + i + '_desc']) {
+      pasos.push({ t: s['paso' + i + '_titulo'] || '', d: s['paso' + i + '_desc'] || '' });
+    }
+  }
+  return `<div class="frame a4"><div class="doc-page">
+    ${pageHeader('Caso de estudio \u00b7 ' + (g.cliente || ''))}
+    <div class="doc-content">
+      <h2 class="cs-page-title">${applyHighlights(s.titulo || 'La Soluci\u00f3n')}</h2>
+      <div class="cs-page-title-accent"></div>
+      <div class="cs-steps">
+        ${pasos.map((p, i) => `<div class="cs-step"><span class="cs-step-n">0${i + 1}</span><div class="cs-step-body"><h4>${p.t}</h4><p>${applyHighlights(p.d)}</p></div></div>`).join('')}
+      </div>
+    </div>
+    ${pageFooter(pN, tot)}
+  </div></div>`;
+}
+function renderCSResultados(g, s, pN, tot) {
+  const stats = [];
+  for (let i = 1; i <= 4; i++) {
+    const st = parseSlashStat(s['stat' + i]);
+    if (st.num) stats.push(st);
+  }
+  return `<div class="frame a4"><div class="doc-page">
+    ${pageHeader('Caso de estudio \u00b7 ' + (g.cliente || ''))}
+    <div class="doc-content">
+      <h2 class="cs-page-title">${applyHighlights(s.titular || s.titulo || 'Resultados')}</h2>
+      <div class="cs-page-title-accent"></div>
+      <div class="cs-results-hero">
+        ${stats.map(st => `<div class="cs-result"><div class="n">${st.num}</div><div class="l">${st.lbl}</div></div>`).join('')}
+      </div>
+      <div class="cs-narrativa">${applyHighlights((s.narrativa || '').replace(/\n/g, '<br>'))}</div>
+    </div>
+    ${pageFooter(pN, tot)}
+  </div></div>`;
+}
+function renderCSQuote(g, s, pN, tot) {
+  // Split autor into "Name, Role" for differentiated styling
+  const autor = s.autor || '';
+  const parts = autor.split(',');
+  const name = (parts[0] || '').trim();
+  const role = parts.slice(1).join(',').trim();
+  return `<div class="frame a4"><div class="doc-page">
+    ${pageHeader('Caso de estudio \u00b7 ' + (g.cliente || ''))}
+    <div class="doc-content" style="display:flex;align-items:center;justify-content:center;">
+      <div class="cs-bigquote">
+        <div class="qmark">\u201c</div>
+        <blockquote>${s.cita || ''}</blockquote>
+        <div class="qline"></div>
+        <cite>${name}${role ? `<span class="role"> \u00b7 ${role}</span>` : ''}</cite>
+      </div>
+    </div>
+    ${pageFooter(pN, tot)}
+  </div></div>`;
+}
+function renderCSCierre(g, s, pN, tot) {
+  // Try to extract a URL from cuerpo/cta for the yellow CTA bar
+  const cuerpoRaw = s.cuerpo || '';
+  const urlMatch = cuerpoRaw.match(/(magnify\.ing\/[\w\-\/]*)/i);
+  const url = s.cta || (urlMatch ? urlMatch[1] : 'magnify.ing');
+  // Remove the URL from the paragraph to avoid duplication
+  const cuerpoClean = cuerpoRaw.replace(/\s*magnify\.ing\/[\w\-\/]*/i, '').replace(/\s+$/, '').replace(/\n/g, '<br>');
+  const ctaText = s.cta_texto || 'Agenda tu diagnostico';
+  return `<div class="frame a4"><div class="doc-page">
+    ${pageHeader('Caso de estudio \u00b7 ' + (g.cliente || ''))}
+    <div class="doc-content" style="display:flex;align-items:center;justify-content:center;">
+      <div class="cs-cierre">
+        <h2>${applyHighlights(s.titulo || 'Siguiente paso')}</h2>
+        <div class="cs-cierre-accent"></div>
+        ${cuerpoClean ? `<p>${applyHighlights(cuerpoClean)}</p>` : ''}
+        <div class="cs-cierre-cta">
+          <div class="txt">${ctaText}</div>
+          <div class="url">${url}<span class="arrow">\u2192</span></div>
+        </div>
+      </div>
+    </div>
+    ${pageFooter(pN, tot)}
+  </div></div>`;
+}
+
+const CS_RENDERERS = {
+  portada: renderCSPortada,
+  reto: renderCSReto,
+  solucion: renderCSSolucion,
+  resultados: renderCSResultados,
+  quote: renderCSQuote,
+  cierre: renderCSCierre,
+};
+
+// ── PROPUESTA section renderers
+function renderPRPortada(g, s) {
+  return `<div class="frame a4"><div class="doc-portada">
+    ${wordmark('#FAFAFA').replace('class="logo-svg wm"', 'class="logo-svg wm pt-wm"')}
+    <div class="pt-eyebrow">Propuesta</div>
+    <h1>${applyHighlights(s.titular || '')}</h1>
+    <div class="pt-accent"></div>
+    <p class="pt-sub">${s.subtitulo || ''}</p>
+    <div class="pt-meta">
+      <strong>${g.cliente || ''}</strong><br>
+      ${g.fecha || ''}${g.validez ? ' \u00b7 V\u00e1lida ' + g.validez : ''}
+    </div>
+    <div class="pt-bottom"><span>magnify.<span class="ing-ap">ing</span></span><span>Confidencial</span></div>
+  </div></div>`;
+}
+function renderPRContexto(g, s, pN, tot) {
+  const paras = (s.cuerpo || '').split(/\n+/).filter(Boolean);
+  return `<div class="frame a4"><div class="doc-page">
+    ${pageHeader('Propuesta \u00b7 ' + (g.cliente || ''))}
+    <div class="doc-content">
+      <h2 class="pr-page-title">${applyHighlights(s.titulo || 'Contexto')}</h2>
+      <div class="pr-page-title-accent"></div>
+      <div class="pr-body">${paras.map(p => `<p>${applyHighlights(p)}</p>`).join('')}</div>
+    </div>
+    ${pageFooter(pN, tot)}
+  </div></div>`;
+}
+function renderPRAproximacion(g, s, pN, tot) {
+  const fases = [];
+  for (let i = 1; i <= 6; i++) {
+    if (s['fase' + i + '_titulo'] || s['fase' + i + '_etiqueta']) {
+      fases.push({
+        et: s['fase' + i + '_etiqueta'] || '',
+        t: s['fase' + i + '_titulo'] || '',
+        d: s['fase' + i + '_desc'] || '',
+        du: s['fase' + i + '_duracion'] || ''
+      });
+    }
+  }
+  const renderEt = (et) => {
+    const m = et.match(/^(.+?)(\.ING)$/i);
+    return m ? `${m[1]}<span class="ing">${m[2]}</span>` : et;
+  };
+  return `<div class="frame a4"><div class="doc-page">
+    ${pageHeader('Propuesta \u00b7 ' + (g.cliente || ''))}
+    <div class="doc-content">
+      <h2 class="pr-page-title">${applyHighlights(s.titulo || 'Aproximaci\u00f3n')}</h2>
+      <div class="pr-page-title-accent"></div>
+      <div class="pr-fases">
+        ${fases.map(f => `<div class="pr-fase">
+          <div class="pr-fase-head">
+            <span class="pr-fase-etiqueta">${renderEt(f.et)}</span>
+            <span class="pr-fase-duracion">${f.du}</span>
+          </div>
+          <h3>${applyHighlights(f.t)}</h3>
+          <p>${applyHighlights(f.d)}</p>
+        </div>`).join('')}
+      </div>
+    </div>
+    ${pageFooter(pN, tot)}
+  </div></div>`;
+}
+function renderPRTimeline(g, s, pN, tot, aproxSection) {
+  // Prefer explicit timeline rows, fallback to fases
+  const rows = [];
+  for (let i = 1; i <= 6; i++) {
+    if (s['timeline' + i + '_fase']) {
+      rows.push({ label: s['timeline' + i + '_fase'], weeks: parseFloat(s['timeline' + i + '_semanas'] || '1') });
+    }
+  }
+  if (rows.length === 0 && aproxSection) {
+    for (let i = 1; i <= 6; i++) {
+      if (aproxSection['fase' + i + '_titulo']) {
+        const dur = aproxSection['fase' + i + '_duracion'] || '';
+        const m = dur.match(/(\d+(?:[.,]\d+)?)/);
+        const weeks = m ? parseFloat(m[1].replace(',', '.')) : 1;
+        rows.push({ label: aproxSection['fase' + i + '_titulo'], weeks, dur });
+      }
+    }
+  }
+  const maxWeeks = Math.max(1, ...rows.map(r => r.weeks));
+  return `<div class="frame a4"><div class="doc-page">
+    ${pageHeader('Propuesta \u00b7 ' + (g.cliente || ''))}
+    <div class="doc-content">
+      <h2 class="pr-page-title">${applyHighlights(s.titulo || 'Timeline')}</h2>
+      <div class="pr-page-title-accent"></div>
+      <div class="pr-timeline">
+        ${rows.map(r => `<div class="pr-tl-row">
+          <div class="pr-tl-label">${r.label}</div>
+          <div class="pr-tl-bar-wrap"><div class="pr-tl-bar" style="width:${(r.weeks / maxWeeks * 100).toFixed(1)}%">${r.dur || (r.weeks + ' sem')}</div></div>
+        </div>`).join('')}
+      </div>
+    </div>
+    ${pageFooter(pN, tot)}
+  </div></div>`;
+}
+function renderPRInversion(g, s, pN, tot) {
+  const rows = [];
+  for (let i = 1; i <= 8; i++) {
+    if (s['concepto' + i] || s['precio' + i]) {
+      rows.push({ c: s['concepto' + i] || '', p: s['precio' + i] || '' });
+    }
+  }
+  return `<div class="frame a4"><div class="doc-page">
+    ${pageHeader('Propuesta \u00b7 ' + (g.cliente || ''))}
+    <div class="doc-content">
+      <h2 class="pr-page-title">${applyHighlights(s.titulo || 'Inversi\u00f3n')}</h2>
+      <div class="pr-page-title-accent"></div>
+      <div class="pr-inversion">
+        ${rows.map(r => `<div class="pr-inv-row"><span class="pr-inv-concepto">${applyHighlights(r.c)}</span><span class="pr-inv-precio">${r.p}</span></div>`).join('')}
+      </div>
+      ${s.total ? `<div class="pr-inv-total"><span class="lbl">Total</span><span class="val">${s.total}</span></div>` : ''}
+    </div>
+    ${pageFooter(pN, tot)}
+  </div></div>`;
+}
+function renderPRSiguientePaso(g, s, pN, tot) {
+  const ctaText = s.cta_texto || 'Agenda tu kickoff';
+  return `<div class="frame a4"><div class="doc-page">
+    ${pageHeader('Propuesta \u00b7 ' + (g.cliente || ''))}
+    <div class="doc-content">
+      <div style="max-width:560px;margin:0 auto;padding-top:20px;">
+        <h2 class="pr-page-title">${applyHighlights(s.titulo || 'Siguiente paso')}</h2>
+        <div class="pr-page-title-accent"></div>
+        ${s.cuerpo ? `<p style="font-size:16px;color:#444;line-height:1.7;margin-bottom:32px;">${applyHighlights((s.cuerpo || '').replace(/\n/g, '<br>'))}</p>` : ''}
+        ${s.cta ? `<div class="pr-cta"><div class="txt">${ctaText}</div><div class="url">${s.cta}<span class="arrow">\u2192</span></div></div>` : ''}
+      </div>
+    </div>
+    ${pageFooter(pN, tot)}
+  </div></div>`;
+}
+
+const PR_RENDERERS = {
+  portada: renderPRPortada,
+  contexto: renderPRContexto,
+  aproximacion: renderPRAproximacion,
+  timeline: renderPRTimeline,
+  inversion: renderPRInversion,
+  'siguiente-paso': renderPRSiguientePaso,
+};
+
+function generateMultiPageDoc(raw, preview, renderC, renderers, options) {
+  const { global, sections } = parseMultiDoc(raw);
+  if (sections.length === 0) { toast('A\u00f1ade al menos una secci\u00f3n separada por ---'); return; }
+
+  const total = sections.length;
+  const pages = [];
+  sections.forEach((s, idx) => {
+    const key = (s.seccion || '').toLowerCase().trim();
+    const fn = renderers[key];
+    if (!fn) return;
+    // portada is page 1 but no numbered footer logic — still pass
+    const html = fn(global, s, idx + 1, total, sections.find(x => (x.seccion || '').toLowerCase() === 'aproximacion'));
+    pages.push({ html, label: key });
+  });
+
+  // Render into renderC and preview
+  const previewCols = Math.min(2, pages.length);
+  pages.forEach((p, i) => {
+    const actualDiv = document.createElement('div');
+    actualDiv.innerHTML = p.html;
+    renderC.appendChild(actualDiv);
+    renderedFrames.push(actualDiv.querySelector('.frame'));
+  });
+
+  const w = 794, h = 1123;
+  const maxW = preview.clientWidth - 80;
+  const maxH = preview.clientHeight - 120;
+  const scale = Math.min((maxW / 2 - 32) / w, maxH / h, 0.45);
+
+  pages.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'preview-card paper';
+    card.style.width = (w * scale) + 'px';
+    card.style.height = (h * scale) + 'px';
+    card.style.marginTop = '32px';
+    card.innerHTML = `<div class="slide-label">${String(i + 1).padStart(2, '0')} \u00b7 ${p.label}</div>` + p.html;
+    const inner = card.querySelector('.frame');
+    inner.style.transform = `scale(${scale})`;
+    inner.style.transformOrigin = 'top left';
+    preview.appendChild(card);
+  });
+}
+
+// ════════════════════════════════════════════
+// PRESENTACION — HTML RENDERERS (1920x1080)
+// ════════════════════════════════════════════
+
+function psFooterDk() {
+  return `<div class="ps-footer"><span>${wordmark('#FAFAFA')}</span><span class="url-dk">magnify.<span class="ing-ap">ing</span></span></div>`;
+}
+function psFooterLt() {
+  return `<div class="ps-footer"><span>${wordmark('#0A0A0A')}</span><span class="url-lt">magnify.<span class="ing-ap">ing</span></span></div>`;
+}
+
+function renderPsPortada(d, g) {
+  return `<div class="frame ps"><div class="ps-slide dk ps-portada">
+    <div class="ps-wm">${wordmark('#FAFAFA')}</div>
+    <h1>${applyHighlights(d.titular || g.titulo || 'Titulo')}</h1>
+    <p class="sub">${d.subtitulo || ''}</p>
+    <div class="bar ps-bar-yl"></div>
+    <div class="ps-footer"><span></span><span class="url-dk">magnify.<span class="ing-ap">ing</span></span></div>
+  </div></div>`;
+}
+
+function renderPsDivisor(d) {
+  return `<div class="frame ps"><div class="ps-slide yl ps-divisor">
+    <div class="num">${d.numero || '01'}</div>
+    <h2>${d.titulo || d.titular || ''}</h2>
+  </div></div>`;
+}
+
+function renderPsContenido(d) {
+  const bullets = [];
+  for (let i = 1; i <= 6; i++) if (d['bullet' + i]) bullets.push(d['bullet' + i]);
+  return `<div class="frame ps"><div class="ps-slide lt ps-contenido">
+    <span class="eyebrow">${d.eyebrow || 'CONTENIDO'}</span>
+    <div class="bar"></div>
+    <h2>${applyHighlights(d.titular || '')}</h2>
+    <ul>${bullets.map(b => `<li>${b}</li>`).join('')}</ul>
+    ${psFooterLt()}
+  </div></div>`;
+}
+
+function renderPsStat(d) {
+  return `<div class="frame ps"><div class="ps-slide dk ps-stat">
+    <div class="num">${d.numero || '0'}<sup>${d.sufijo || ''}</sup></div>
+    <p class="desc">${d.descripcion || ''}</p>
+    <p class="meta">${d.meta || ''}</p>
+    ${psFooterDk()}
+  </div></div>`;
+}
+
+function renderPsQuote(d) {
+  return `<div class="frame ps"><div class="ps-slide lt ps-quote">
+    <div class="mark">&ldquo;</div>
+    <blockquote>${d.cita || ''}</blockquote>
+    <p class="author">&mdash; ${d.autor || ''}</p>
+    ${psFooterLt()}
+  </div></div>`;
+}
+
+function renderPsComparacion(d) {
+  const a = [], b = [];
+  for (let i = 1; i <= 5; i++) {
+    if (d['a' + i]) a.push(d['a' + i]);
+    if (d['b' + i]) b.push(d['b' + i]);
+  }
+  return `<div class="frame ps"><div class="ps-slide lt ps-comp">
+    <div class="col a">
+      <span class="eb a">${d.label_a || 'ANTES'}</span>
+      <div class="bar a"></div>
+      <ul>${a.map(x => `<li>${x}</li>`).join('')}</ul>
+    </div>
+    <div class="sep"></div>
+    <div class="col b">
+      <span class="eb b">${d.label_b || 'DESPUES'}</span>
+      <div class="bar b"></div>
+      <ul>${b.map(x => `<li>${x}</li>`).join('')}</ul>
+    </div>
+  </div></div>`;
+}
+
+function renderPsCuadrante(d) {
+  const cell = (n) => {
+    const cls = [];
+    if ((d[`q${n}_highlight`] || '').toLowerCase() === 'si') cls.push('hl');
+    if ((d[`q${n}_dimmed`] || '').toLowerCase() === 'si') cls.push('dim');
+    return `<div class="cell ${cls.join(' ')}">
+      <div>
+        <div class="nm">${d[`q${n}_nombre`] || ''}</div>
+        <div class="ds">${d[`q${n}_desc`] || ''}</div>
+      </div>
+      <div class="tg">${d[`q${n}_tag`] || ''}</div>
+    </div>`;
+  };
+  return `<div class="frame ps"><div class="ps-slide lt ps-cua">
+    <div class="head">
+      <span class="eb">${d.eyebrow || 'CUADRANTE'}</span>
+      <h2>${d.subtitulo || ''}</h2>
+    </div>
+    <div class="mat">
+      <div class="yax"><span>${d.eje_y_max || 'ALTA'}</span><span class="lbl">${d.eje_y || ''}</span><span>${d.eje_y_min || 'BAJA'}</span></div>
+      ${cell(1)}${cell(2)}${cell(3)}${cell(4)}
+      <div class="xax"><span>${d.eje_x_min || 'BAJA'}</span><span>${d.eje_x || ''}</span><span>${d.eje_x_max || 'ALTA'}</span></div>
+    </div>
+  </div></div>`;
+}
+
+function renderPsTimeline(d) {
+  const fases = [];
+  for (let i = 1; i <= 4; i++) {
+    if (d[`fase${i}_titulo`] || d[`fase${i}_etiqueta`]) {
+      fases.push({
+        et: d[`fase${i}_etiqueta`] || '',
+        ti: d[`fase${i}_titulo`] || '',
+        du: d[`fase${i}_duracion`] || ''
+      });
+    }
+  }
+  const etHtml = (et) => {
+    const m = et.match(/^(.+?)(\.ING)$/i);
+    return m ? `${m[1]}<span class="ing">${m[2]}</span>` : et;
+  };
+  return `<div class="frame ps"><div class="ps-slide lt ps-tl">
+    <h2>${d.titular || d.titulo || 'Timeline'}</h2>
+    <div class="fases">
+      ${fases.map(f => `<div class="fase">
+        <span class="et">${etHtml(f.et)}</span>
+        <div class="ti">${f.ti}</div>
+        <div class="du">${f.du}</div>
+        <div class="b"></div>
+      </div>`).join('')}
+    </div>
+    ${psFooterLt()}
+  </div></div>`;
+}
+
+function renderPsImagen(d) {
+  return `<div class="frame ps"><div class="ps-slide lt ps-img">
+    <div class="ph">[ IMAGEN ]</div>
+    <p class="cap">${d.caption || ''}</p>
+    ${psFooterLt()}
+  </div></div>`;
+}
+
+function renderPsSiguientePaso(d) {
+  return `<div class="frame ps"><div class="ps-slide yl ps-sig">
+    <h2>${applyHighlights(d.titular || 'Empezamos')}</h2>
+    <div class="cta"><span class="arrow">\u2192</span>${d.cta || 'magnify.ing'}</div>
+  </div></div>`;
+}
+
+const PS_RENDERERS = {
+  'portada': renderPsPortada,
+  'divisor': renderPsDivisor,
+  'contenido': renderPsContenido,
+  'stat': renderPsStat,
+  'quote': renderPsQuote,
+  'comparacion': renderPsComparacion,
+  'cuadrante': renderPsCuadrante,
+  'timeline': renderPsTimeline,
+  'imagen': renderPsImagen,
+  'siguiente-paso': renderPsSiguientePaso
+};
+
+// ════════════════════════════════════════════
+// PRESENTACION — PPTX BUILDERS
+// Layout: LAYOUT_WIDE 13.33 x 7.5 in
+// ════════════════════════════════════════════
+
+const PPTX_W = 13.33, PPTX_H = 7.5;
+const COLOR_DARK = '0A0A0A', COLOR_YELLOW = 'FFD600', COLOR_WHITE = 'FFFFFF';
+const COLOR_LIGHT_TEXT = 'F0F0F0', COLOR_GREY = '999999', COLOR_GREY_DK = '444444';
+const FONT_SERIF = 'DM Serif Display', FONT_SANS = 'Inter';
+
+// Convert [highlight] syntax to pptxgenjs rich text array.
+// bgMode: 'light' (default), 'dark', or 'yellow' — determines highlight treatment since Keynote doesn't render OOXML highlight reliably.
+function richWithHighlights(text, baseOpts, bgMode) {
+  bgMode = bgMode || 'light';
+  const parts = [];
+  const re = /\[([^\]]+)\]/g;
+  let last = 0, m;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) parts.push({ text: text.slice(last, m.index), options: baseOpts });
+    let hlOpts;
+    if (bgMode === 'dark') {
+      hlOpts = { ...baseOpts, color: COLOR_YELLOW, bold: true };
+    } else if (bgMode === 'yellow') {
+      hlOpts = { ...baseOpts, color: COLOR_DARK, bold: true, italic: true };
+    } else {
+      // light: yellow color + bold reads well on white
+      hlOpts = { ...baseOpts, color: 'B8A000', bold: true };
+    }
+    // Extract trailing punctuation from the highlight so the bold/yellow run doesn't include it — punctuation stays in the normal baseOpts run.
+    const inner = m[1];
+    const punctMatch = inner.match(/^(.*?)([.,;:!?]+)$/);
+    if (punctMatch) {
+      parts.push({ text: punctMatch[1], options: hlOpts });
+      parts.push({ text: punctMatch[2], options: baseOpts });
+    } else {
+      parts.push({ text: inner, options: hlOpts });
+    }
+    last = re.lastIndex;
+  }
+  if (last < text.length) parts.push({ text: text.slice(last), options: baseOpts });
+  return parts.length ? parts : [{ text: text, options: baseOpts }];
+}
+
+function stripBrackets(text) {
+  return (text || '').replace(/\[([^\]]+)\]/g, '$1');
+}
+
+function wordmarkDataUri(color) {
+  // Same intrinsic-ratio fix as iconDataUri — explicit width/height so <img> knows the aspect.
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="2140" height="178" viewBox="348 620 2140 178"><path fill="${color}" d="${WORDMARK_PATH}"/></svg>`;
+  return 'data:image/svg+xml;base64,' + btoa(svg);
+}
+function iconDataUri(color) {
+  // Explicit width/height attributes on the SVG root — needed so <img> gets the correct intrinsic aspect ratio (155:178). Without them, browsers default to 300x150 which distorts the A-mark.
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="155" height="178" viewBox="65 52 155 178"><polygon fill="${color}" points="${ICON_POINTS}"/></svg>`;
+  return 'data:image/svg+xml;base64,' + btoa(svg);
+}
+
+function addFooterDk(slide) {
+  slide.addImage({ data: iconDataUri('#FAFAFA'), x: 0.7, y: 6.85, w: 0.42, h: 0.48 });
+  slide.addText([
+    { text: 'magnify.', options: { color: 'DDDDDD' } },
+    { text: 'ing', options: { color: COLOR_YELLOW, bold: true } }
+  ], { x: 10.5, y: 6.95, w: 2.5, h: 0.35, fontFace: FONT_SANS, fontSize: 14, align: 'right', charSpacing: 2 });
+}
+
+function addFooterLt(slide) {
+  slide.addImage({ data: iconDataUri('#0A0A0A'), x: 0.7, y: 6.85, w: 0.42, h: 0.48 });
+  slide.addText([
+    { text: 'magnify.', options: { color: '444444' } },
+    { text: 'ing', options: { color: COLOR_YELLOW, bold: true } }
+  ], { x: 10.5, y: 6.95, w: 2.5, h: 0.35, fontFace: FONT_SANS, fontSize: 14, align: 'right', charSpacing: 2 });
+}
+
+function buildPptxPortada(pptx, d, g) {
+  const s = pptx.addSlide();
+  s.background = { color: COLOR_DARK };
+  // Full wordmark top-left (brand moment on the cover)
+  s.addImage({ data: wordmarkDataUri('#FAFAFA'), x: 0.7, y: 0.5, w: 2.2, h: 0.47 });
+  const titular = d.titular || g.titulo || 'Titulo';
+  s.addText(richWithHighlights(titular, { fontFace: FONT_SERIF, fontSize: 56, color: COLOR_LIGHT_TEXT }, 'dark'),
+    { x: 0.7, y: 2, w: 11.9, h: 3.2, valign: 'middle' });
+  if (d.subtitulo) {
+    s.addText(d.subtitulo, { x: 0.7, y: 5.3, w: 11.9, h: 0.6, fontFace: FONT_SANS, fontSize: 22, color: 'DDDDDD' });
+  }
+  s.addShape(pptx.ShapeType.rect, { x: 0.7, y: 6.1, w: 1.2, h: 0.08, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
+  s.addText([
+    { text: 'magnify.', options: { color: 'DDDDDD' } },
+    { text: 'ing', options: { color: COLOR_YELLOW, bold: true } }
+  ], { x: 10.5, y: 6.95, w: 2.5, h: 0.35, fontFace: FONT_SANS, fontSize: 14, align: 'right', charSpacing: 2 });
+}
+
+function buildPptxDivisor(pptx, d) {
+  const s = pptx.addSlide();
+  s.background = { color: COLOR_YELLOW };
+  s.addText(d.numero || '01', { x: 0.7, y: 0.3, w: 8, h: 3.8, fontFace: FONT_SERIF, fontSize: 260, color: COLOR_DARK });
+  s.addText(richWithHighlights(d.titulo || d.titular || '', { fontFace: FONT_SERIF, fontSize: 50, color: COLOR_DARK }, 'yellow'),
+    { x: 0.7, y: 4.3, w: 11.9, h: 2.4 });
+  s.addImage({ data: iconDataUri('#0A0A0A'), x: 0.7, y: 6.85, w: 0.42, h: 0.48 });
+}
+
+function buildPptxContenido(pptx, d) {
+  const s = pptx.addSlide();
+  s.background = { color: COLOR_WHITE };
+  s.addText(d.eyebrow || 'CONTENIDO', { x: 0.7, y: 0.6, w: 10, h: 0.4, fontFace: FONT_SANS, fontSize: 15, color: 'B8A000', bold: true, charSpacing: 3 });
+  s.addShape(pptx.ShapeType.rect, { x: 0.7, y: 1.1, w: 0.6, h: 0.04, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
+  s.addText(richWithHighlights(d.titular || '', { fontFace: FONT_SERIF, fontSize: 44, color: COLOR_DARK }),
+    { x: 0.7, y: 1.35, w: 11.9, h: 1.6 });
+  const bullets = [];
+  for (let i = 1; i <= 6; i++) if (d['bullet' + i]) bullets.push(d['bullet' + i]);
+  bullets.forEach((b, i) => {
+    s.addShape(pptx.ShapeType.rect, { x: 0.7, y: 3.35 + i * 0.55, w: 0.14, h: 0.14, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
+    s.addText(b, { x: 1.05, y: 3.25 + i * 0.55, w: 11.3, h: 0.5, fontFace: FONT_SANS, fontSize: 21, color: COLOR_DARK });
+  });
+  addFooterLt(s);
+}
+
+function buildPptxStat(pptx, d) {
+  const s = pptx.addSlide();
+  s.background = { color: COLOR_DARK };
+  const num = d.numero || '0';
+  const suf = d.sufijo || '';
+  s.addText(num + suf, { x: 0, y: 0.9, w: PPTX_W, h: 3.4, fontFace: FONT_SERIF, fontSize: 250, color: COLOR_YELLOW, align: 'center', valign: 'middle' });
+  if (d.descripcion) {
+    s.addText(d.descripcion, { x: 1.5, y: 4.7, w: 10.3, h: 0.9, fontFace: FONT_SANS, fontSize: 26, color: COLOR_LIGHT_TEXT, align: 'center' });
+  }
+  if (d.meta) {
+    s.addText(d.meta, { x: 1.5, y: 5.85, w: 10.3, h: 0.45, fontFace: FONT_SANS, fontSize: 15, color: 'CCCCCC', align: 'center', charSpacing: 2 });
+  }
+  addFooterDk(s);
+}
+
+function buildPptxQuote(pptx, d) {
+  const s = pptx.addSlide();
+  s.background = { color: COLOR_WHITE };
+  s.addText('\u201C', { x: 1.1, y: 1.1, w: 1.6, h: 1.8, fontFace: FONT_SERIF, fontSize: 180, color: COLOR_YELLOW, valign: 'top' });
+  s.addText(richWithHighlights(d.cita || '', { fontFace: FONT_SERIF, fontSize: 38, color: COLOR_DARK, italic: true }, 'light'),
+    { x: 1.2, y: 2.7, w: 11, h: 2.8, valign: 'top' });
+  const autor = (d.autor || '').replace(/^\s*[—–-]+\s*/, '').trim();
+  if (autor) {
+    s.addShape(pptx.ShapeType.rect, { x: 1.2, y: 5.7, w: 0.4, h: 0.04, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
+    s.addText(autor, { x: 1.2, y: 5.85, w: 11, h: 0.5, fontFace: FONT_SANS, fontSize: 18, color: '444444', bold: true });
+  }
+  addFooterLt(s);
+}
+
+function buildPptxComparacion(pptx, d) {
+  const s = pptx.addSlide();
+  s.background = { color: COLOR_WHITE };
+  const colW = 5.7, yStart = 0.7;
+  // A
+  s.addText(d.label_a || 'ANTES', { x: 0.7, y: yStart, w: colW, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: '666666', bold: true, charSpacing: 3 });
+  s.addShape(pptx.ShapeType.rect, { x: 0.7, y: yStart + 0.5, w: 0.5, h: 0.04, fill: { color: 'CCCCCC' }, line: { color: 'CCCCCC' } });
+  // B
+  s.addText(d.label_b || 'DESPUES', { x: 7.1, y: yStart, w: colW, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: 'B8A000', bold: true, charSpacing: 3 });
+  s.addShape(pptx.ShapeType.rect, { x: 7.1, y: yStart + 0.5, w: 0.5, h: 0.04, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
+  // separator
+  s.addShape(pptx.ShapeType.rect, { x: 6.65, y: 1.1, w: 0.04, h: 5, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
+  for (let i = 1; i <= 5; i++) {
+    if (d['a' + i]) s.addText(d['a' + i], { x: 0.7, y: 1.5 + (i - 1) * 0.75, w: colW, h: 0.65, fontFace: FONT_SANS, fontSize: 19, color: '666666' });
+    if (d['b' + i]) s.addText(d['b' + i], { x: 7.1, y: 1.5 + (i - 1) * 0.75, w: colW, h: 0.65, fontFace: FONT_SANS, fontSize: 19, color: COLOR_DARK });
+  }
+  addFooterLt(s);
+}
+
+function buildPptxCuadrante(pptx, d) {
+  const s = pptx.addSlide();
+  s.background = { color: COLOR_WHITE };
+  s.addText(d.eyebrow || 'CUADRANTE', { x: 0.7, y: 0.45, w: 10, h: 0.4, fontFace: FONT_SANS, fontSize: 14, color: '666666', bold: true, charSpacing: 3 });
+  s.addText(d.subtitulo || '', { x: 0.7, y: 0.9, w: 10, h: 0.65, fontFace: FONT_SERIF, fontSize: 32, color: COLOR_DARK });
+
+  const gridX = 1.5, gridY = 2, cellW = 5.4, cellH = 2.0;
+  const positions = [
+    { n: 1, x: gridX, y: gridY },
+    { n: 2, x: gridX + cellW + 0.1, y: gridY },
+    { n: 3, x: gridX, y: gridY + cellH + 0.1 },
+    { n: 4, x: gridX + cellW + 0.1, y: gridY + cellH + 0.1 }
+  ];
+  positions.forEach(p => {
+    const hl = (d[`q${p.n}_highlight`] || '').toLowerCase() === 'si';
+    const dim = (d[`q${p.n}_dimmed`] || '').toLowerCase() === 'si';
+    const fill = hl ? COLOR_YELLOW : COLOR_WHITE;
+    const border = hl ? COLOR_YELLOW : 'EEEEEE';
+    const textColor = dim ? 'BBBBBB' : COLOR_DARK;
+    s.addShape(pptx.ShapeType.rect, { x: p.x, y: p.y, w: cellW, h: cellH, fill: { color: fill }, line: { color: border, width: 2 } });
+    s.addText(d[`q${p.n}_nombre`] || '', { x: p.x + 0.25, y: p.y + 0.2, w: cellW - 0.5, h: 0.6, fontFace: FONT_SERIF, fontSize: 24, color: textColor });
+    s.addText(d[`q${p.n}_desc`] || '', { x: p.x + 0.25, y: p.y + 0.85, w: cellW - 0.5, h: 0.8, fontFace: FONT_SANS, fontSize: 15, color: dim ? 'CCCCCC' : '444444' });
+    if (d[`q${p.n}_tag`]) {
+      s.addText(d[`q${p.n}_tag`], { x: p.x + 0.25, y: p.y + cellH - 0.45, w: cellW - 0.5, h: 0.3, fontFace: FONT_SANS, fontSize: 12, color: dim ? 'CCCCCC' : '666666', bold: true, charSpacing: 2 });
+    }
+  });
+  // Axis labels
+  s.addText(d.eje_y || '', { x: 0.25, y: gridY + cellH - 0.25, w: 1.2, h: 0.4, fontFace: FONT_SANS, fontSize: 12, color: '666666', bold: true, charSpacing: 2, align: 'center' });
+  s.addText(d.eje_x || '', { x: gridX, y: gridY + cellH * 2 + 0.25, w: cellW * 2 + 0.1, h: 0.4, fontFace: FONT_SANS, fontSize: 12, color: '666666', bold: true, charSpacing: 2, align: 'center' });
+  addFooterLt(s);
+}
+
+function buildPptxTimeline(pptx, d) {
+  const s = pptx.addSlide();
+  s.background = { color: COLOR_WHITE };
+  s.addText(d.titular || d.titulo || 'Timeline', { x: 0.7, y: 0.5, w: 11.9, h: 1, fontFace: FONT_SERIF, fontSize: 42, color: COLOR_DARK });
+  const fases = [];
+  for (let i = 1; i <= 4; i++) {
+    if (d[`fase${i}_titulo`] || d[`fase${i}_etiqueta`]) {
+      fases.push({ et: d[`fase${i}_etiqueta`] || '', ti: d[`fase${i}_titulo`] || '', du: d[`fase${i}_duracion`] || '' });
+    }
+  }
+  const fW = (11.9 - (fases.length - 1) * 0.3) / fases.length;
+  fases.forEach((f, i) => {
+    const fx = 0.7 + i * (fW + 0.3);
+    const m = f.et.match(/^(.+?)(\.ING)$/i);
+    const etRich = m ? [
+      { text: m[1], options: { fontFace: FONT_SANS, fontSize: 16, color: COLOR_DARK, bold: true, charSpacing: 2 } },
+      { text: m[2], options: { fontFace: FONT_SANS, fontSize: 16, color: 'B8A000', bold: true, charSpacing: 2 } }
+    ] : [{ text: f.et, options: { fontFace: FONT_SANS, fontSize: 16, color: COLOR_DARK, bold: true, charSpacing: 2 } }];
+    s.addText(etRich, { x: fx, y: 2.3, w: fW, h: 0.45 });
+    s.addText(f.ti, { x: fx, y: 2.85, w: fW, h: 1.3, fontFace: FONT_SERIF, fontSize: 28, color: COLOR_DARK });
+    s.addText(f.du, { x: fx, y: 4.3, w: fW, h: 0.45, fontFace: FONT_SANS, fontSize: 16, color: '444444' });
+    s.addShape(pptx.ShapeType.rect, { x: fx, y: 4.95, w: fW, h: 0.08, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
+  });
+  addFooterLt(s);
+}
+
+function buildPptxImagen(pptx, d) {
+  const s = pptx.addSlide();
+  s.background = { color: COLOR_WHITE };
+  s.addShape(pptx.ShapeType.rect, { x: 2, y: 1.2, w: 9.33, h: 4.5, fill: { color: 'E8E8E8' }, line: { color: 'E8E8E8' } });
+  s.addText('[ IMAGEN ]', { x: 2, y: 1.2, w: 9.33, h: 4.5, fontFace: FONT_SANS, fontSize: 28, color: '999999', align: 'center', valign: 'middle', charSpacing: 3 });
+  s.addText(d.caption || '', { x: 2, y: 5.9, w: 9.33, h: 0.5, fontFace: FONT_SANS, fontSize: 16, color: '444444', align: 'center', charSpacing: 2 });
+  addFooterLt(s);
+}
+
+function buildPptxSiguientePaso(pptx, d) {
+  const s = pptx.addSlide();
+  s.background = { color: COLOR_YELLOW };
+  // Titular grande, serif, centrado (con highlights en modo yellow)
+  s.addText(richWithHighlights(d.titular || 'Empezamos', { fontFace: FONT_SERIF, fontSize: 88, color: COLOR_DARK, align: 'center' }, 'yellow'),
+    { x: 0.5, y: 2.2, w: PPTX_W - 1, h: 2.6, align: 'center', valign: 'middle' });
+  // Accent line separator
+  s.addShape(pptx.ShapeType.rect, { x: PPTX_W / 2 - 0.3, y: 5.15, w: 0.6, h: 0.06, fill: { color: COLOR_DARK }, line: { color: COLOR_DARK } });
+  // CTA sin cuadro — flecha + URL bold con underline tipográfico
+  const cta = d.cta || 'magnify.ing';
+  s.addText([
+    { text: '\u2192  ', options: { fontFace: FONT_SANS, fontSize: 32, color: COLOR_DARK, bold: true } },
+    { text: cta, options: { fontFace: FONT_SANS, fontSize: 30, color: COLOR_DARK, bold: true, underline: { style: 'sng', color: '0A0A0A' } } }
+  ], { x: 0.5, y: 5.5, w: PPTX_W - 1, h: 0.7, align: 'center', valign: 'middle' });
+  // Icono A dark en bottom-left
+  s.addImage({ data: iconDataUri('#0A0A0A'), x: 0.7, y: 6.85, w: 0.42, h: 0.48 });
+}
+
+const PS_BUILDERS = {
+  'portada': buildPptxPortada,
+  'divisor': buildPptxDivisor,
+  'contenido': buildPptxContenido,
+  'stat': buildPptxStat,
+  'quote': buildPptxQuote,
+  'comparacion': buildPptxComparacion,
+  'cuadrante': buildPptxCuadrante,
+  'timeline': buildPptxTimeline,
+  'imagen': buildPptxImagen,
+  'siguiente-paso': buildPptxSiguientePaso
+};
+
+function generatePresentacion(raw, preview, renderC) {
+  const { global, sections } = parseMultiDoc(raw);
+  if (sections.length === 0) { toast('A\u00f1ade al menos un slide separado por ---'); return; }
+
+  const slides = [];
+  sections.forEach((s, idx) => {
+    const key = (s.slide || '').toLowerCase().trim();
+    const fn = PS_RENDERERS[key];
+    if (!fn) return;
+    slides.push({ key, data: s, html: fn(s, global) });
+  });
+
+  if (slides.length === 0) { toast('Ning\u00fan slide reconocido. Usa slide: portada/divisor/contenido/etc.'); return; }
+
+  const w = 1920, h = 1080;
+  const maxW = preview.clientWidth - 80;
+  const colW = (maxW - 32) / 2;
+  const scale = Math.min(colW / w, 0.4);
+
+  slides.forEach((sl, i) => {
+    const actualDiv = document.createElement('div');
+    actualDiv.innerHTML = sl.html;
+    renderC.appendChild(actualDiv);
+    renderedFrames.push(actualDiv.querySelector('.frame'));
+
+    const card = document.createElement('div');
+    card.className = 'preview-card';
+    card.style.width = (w * scale) + 'px';
+    card.style.height = (h * scale) + 'px';
+    card.style.marginTop = '32px';
+    card.innerHTML = `<div class="slide-label">${String(i + 1).padStart(2, '0')} \u00b7 ${sl.key}</div>` + sl.html;
+    const inner = card.querySelector('.frame');
+    inner.style.transform = `scale(${scale})`;
+    inner.style.transformOrigin = 'top left';
+    preview.appendChild(card);
+  });
+}
+
+async function exportPptx() {
+  const raw = document.getElementById('content').value.trim();
+  const { global, sections } = parseMultiDoc(raw);
+  if (!window.PptxGenJS) { toast('pptxgenjs no cargado'); return; }
+  const pptx = new PptxGenJS();
+  pptx.layout = 'LAYOUT_WIDE';
+  pptx.title = global.titulo || 'Presentacion Magnify';
+  pptx.author = global.autor || 'Magnify';
+
+  // Wrap addSlide to capture a reference to the last slide so we can attach speaker notes
+  const origAddSlide = pptx.addSlide.bind(pptx);
+  let lastSlide = null;
+  pptx.addSlide = function(...args) {
+    lastSlide = origAddSlide(...args);
+    return lastSlide;
+  };
+
+  sections.forEach(s => {
+    const key = (s.slide || '').toLowerCase().trim();
+    const fn = PS_BUILDERS[key];
+    if (!fn) return;
+    fn(pptx, s, global);
+    // Speaker notes: any `notas:` field on the slide (also accept `notes:` alias)
+    const notas = s.notas || s.notes || '';
+    if (notas && lastSlide && typeof lastSlide.addNotes === 'function') {
+      lastSlide.addNotes(notas);
+    }
+  });
+
+  const slug = (global.titulo || 'presentacion').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  await pptx.writeFile({ fileName: `magnify-presentacion-${slug}.pptx` });
+  toast('\u2713 PPTX descargado');
+}
+
+// ════════════════════════════════════════════
+// GENERATE
+// ════════════════════════════════════════════
+
+function showError(msg) {
+  const el = document.getElementById('err');
+  el.innerHTML = msg;
+  el.classList.add('show');
+}
+function clearError() {
+  const el = document.getElementById('err');
+  el.classList.remove('show');
+  el.innerHTML = '';
+}
+
+// Quick sanity check on the raw input: looks like key:value at all?
+function validateShape(raw) {
+  const hasKV = /^\s*\w[\w-]*:\s*.+/m.test(raw);
+  if (!hasKV) {
+    return 'El formato esperado es <code>clave: valor</code> (una por línea). No he encontrado ninguna línea con ese patrón. Mira el ejemplo del panel de ayuda.';
+  }
+  return null;
+}
+
+function generate() {
+  clearError();
+  const raw = document.getElementById('content').value.trim();
+  if (!raw) { showError('Pega tu contenido primero. Copia el ejemplo del panel de ayuda si necesitas una plantilla.'); return; }
+
+  const shapeErr = validateShape(raw);
+  if (shapeErr) { showError('<strong>Formato no reconocido.</strong> ' + shapeErr); return; }
+
+  const preview = document.getElementById('preview');
+  const renderC = document.getElementById('render-container');
+  preview.innerHTML = '';
+  renderC.innerHTML = '';
+  renderedFrames = [];
+
+  try {
+    switch (currentType) {
+      case 'linkedin-post': generatePost(raw, preview, renderC); break;
+      case 'linkedin-carousel': generateCarousel(raw, preview, renderC); break;
+      case 'banner': generateBanner(raw, preview, renderC); break;
+      case 'case-study': generateMultiPageDoc(raw, preview, renderC, CS_RENDERERS, { label: 'Caso de estudio' }); break;
+      case 'propuesta': generateMultiPageDoc(raw, preview, renderC, PR_RENDERERS, { label: 'Propuesta' }); break;
+      case 'report-cover': generateA4(raw, preview, renderC, renderReportCover); break;
+      case 'email-sig': generateSig(raw, preview, renderC); break;
+      case 'presentacion': generatePresentacion(raw, preview, renderC); break;
+    }
+  } catch (e) {
+    console.error(e);
+    showError('<strong>Error al generar:</strong> ' + (e && e.message ? e.message : String(e)) + '. Revisa la estructura de tu texto.');
+    document.getElementById('btn-export').disabled = true;
+    return;
+  }
+
+  document.getElementById('btn-export').disabled = renderedFrames.length === 0;
+}
+
+function generatePost(raw, preview, renderC) {
+  const data = parseBlock(raw);
+  const tpl = data.plantilla || 'quote';
+  const renderer = postRenderers[tpl];
+  if (!renderer) { toast('Plantilla no reconocida: ' + tpl); return; }
+
+  const html = renderer(data);
+
+  const actualDiv = document.createElement('div');
+  actualDiv.innerHTML = html;
+  renderC.appendChild(actualDiv);
+  renderedFrames = [actualDiv.querySelector('.frame')];
+
+  const frame = actualDiv.querySelector('.frame');
+  const w = frame.offsetWidth;
+  const h = frame.offsetHeight;
+  const maxW = preview.clientWidth - 80;
+  const maxH = preview.clientHeight - 80;
+  const scale = Math.min(maxW / w, maxH / h, 0.7);
+
+  const card = document.createElement('div');
+  card.className = 'preview-card';
+  card.style.width = (w * scale) + 'px';
+  card.style.height = (h * scale) + 'px';
+  card.innerHTML = html;
+  const inner = card.querySelector('.frame');
+  inner.style.transform = `scale(${scale})`;
+  inner.style.transformOrigin = 'top left';
+  preview.appendChild(card);
+}
+
+function generateCarousel(raw, preview, renderC) {
+  const blocks = raw.split(/^---$/m).map(b => b.trim()).filter(Boolean);
+  if (blocks.length === 0) { toast('Separa cada slide con ---'); return; }
+
+  const totalContent = blocks.length;
+  const slides = [];
+
+  blocks.forEach((block, idx) => {
+    const data = parseBlock(block);
+    let html;
+
+    const plantilla = (data.plantilla || '').toLowerCase().trim();
+    if (idx === 0 || plantilla === 'cover' || plantilla === 'portada') {
+      html = renderCarouselCover(data);
+    } else if (plantilla === 'cta' || (data.cta && !data.titular && !data.cuerpo)) {
+      html = renderCarouselCTA(data);
+    } else if (plantilla === 'stat' || data.stat || data.numero) {
+      html = renderCarouselSplit(data, idx, totalContent);
+    } else {
+      html = renderCarouselText(data, idx, totalContent);
+    }
+
+    slides.push({ html, label: idx === 0 ? 'Portada' : (data.cta && !data.titular ? 'CTA' : `Slide ${idx}`) });
+  });
+
+  const maxW = preview.clientWidth - 80;
+  const maxH = preview.clientHeight - 120;
+  const scale = Math.min(maxW / (slides.length * 300), maxH / 375, 0.35);
+
+  slides.forEach((s, i) => {
+    const actualDiv = document.createElement('div');
+    actualDiv.innerHTML = s.html;
+    renderC.appendChild(actualDiv);
+    renderedFrames.push(actualDiv.querySelector('.frame'));
+
+    const card = document.createElement('div');
+    card.className = 'preview-card';
+    card.style.width = (1080 * scale) + 'px';
+    card.style.height = (1350 * scale) + 'px';
+    card.style.marginTop = '32px';
+    card.innerHTML = `<div class="slide-label">${s.label}</div>` + s.html;
+    const inner = card.querySelector('.frame');
+    inner.style.transform = `scale(${scale})`;
+    inner.style.transformOrigin = 'top left';
+    preview.appendChild(card);
+  });
+}
+
+function generateBanner(raw, preview, renderC) {
+  const data = parseBlock(raw);
+  const tpl = (data.plantilla || 'statement').toLowerCase().trim();
+  const renderer = bannerRenderers[tpl];
+  if (!renderer) { toast('Plantilla no reconocida: ' + tpl); return; }
+
+  // formato selects the canvas size. default = og (1200x630 post-share).
+  const formato = (data.formato || '').toLowerCase().trim();
+  let frameClass = 'frame bn';
+  if (formato === 'linkedin-profile' || formato === 'linkedin' || formato === 'profile') frameClass = 'frame bn-li';
+  else if (formato === 'linkedin-company' || formato === 'company') frameClass = 'frame bn-co';
+  else if (formato === 'logo' || formato === 'square' || formato === 'thumbnail' || formato === 'avatar') frameClass = 'frame bn-lg';
+
+  // statement/data only fit on the 1200x630 canvas — too tight on the other formats.
+  let html;
+  if (frameClass !== 'frame bn' && (tpl === 'statement' || tpl === 'data')) {
+    toast(`Plantilla "${tpl}" no cabe en formato ${formato}. Usa wordmark, icon o minimal.`);
+    return;
+  } else {
+    html = renderer(data, frameClass);
+  }
+
+  const actualDiv = document.createElement('div');
+  actualDiv.innerHTML = html;
+  renderC.appendChild(actualDiv);
+  renderedFrames = [actualDiv.querySelector('.frame')];
+
+  const frame = actualDiv.querySelector('.frame');
+  const w = frame.offsetWidth;
+  const h = frame.offsetHeight;
+  const maxW = preview.clientWidth - 80;
+  const maxH = preview.clientHeight - 80;
+  const scale = Math.min(maxW / w, maxH / h, 0.7);
+
+  const card = document.createElement('div');
+  card.className = 'preview-card';
+  card.style.width = (w * scale) + 'px';
+  card.style.height = (h * scale) + 'px';
+  card.innerHTML = html;
+  const inner = card.querySelector('.frame');
+  inner.style.transform = `scale(${scale})`;
+  inner.style.transformOrigin = 'top left';
+  preview.appendChild(card);
+}
+
+function generateA4(raw, preview, renderC, rendererFn) {
+  const data = parseBlock(raw);
+  const html = rendererFn(data);
+
+  const actualDiv = document.createElement('div');
+  actualDiv.innerHTML = html;
+  renderC.appendChild(actualDiv);
+  renderedFrames = [actualDiv.querySelector('.frame')];
+
+  const w = 794;
+  const h = 1123;
+  const maxW = preview.clientWidth - 80;
+  const maxH = preview.clientHeight - 80;
+  const scale = Math.min(maxW / w, maxH / h, 0.7);
+
+  const card = document.createElement('div');
+  card.className = 'preview-card paper';
+  card.style.width = (w * scale) + 'px';
+  card.style.height = (h * scale) + 'px';
+  card.innerHTML = html;
+  const inner = card.querySelector('.frame');
+  inner.style.transform = `scale(${scale})`;
+  inner.style.transformOrigin = 'top left';
+  preview.appendChild(card);
+}
+
+function generateSig(raw, preview, renderC) {
+  const data = parseBlock(raw);
+  const html = renderEmailSig(data);
+
+  const actualDiv = document.createElement('div');
+  actualDiv.innerHTML = html;
+  renderC.appendChild(actualDiv);
+  renderedFrames = [actualDiv.querySelector('.frame')];
+
+  // Preview at 1:1 scale, centered
+  const card = document.createElement('div');
+  card.className = 'preview-card';
+  card.style.width = '600px';
+  card.innerHTML = html;
+  preview.appendChild(card);
+
+  // Store data for HTML copy
+  card.dataset.sigData = JSON.stringify(data);
+}
+
+// ════════════════════════════════════════════
+// EXPORT
+// ════════════════════════════════════════════
+
+async function exportAll() {
+  if (renderedFrames.length === 0) return;
+
+  // Email signature: copy HTML
+  if (currentType === 'email-sig') {
+    const raw = document.getElementById('content').value.trim();
+    const data = parseBlock(raw);
+    const inlineHtml = generateEmailSigInlineHTML(data);
+    try {
+      await navigator.clipboard.writeText(inlineHtml);
+      toast('\u2713 HTML copiado al portapapeles');
+    } catch (e) {
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = inlineHtml;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      toast('\u2713 HTML copiado al portapapeles');
+    }
+    return;
+  }
+
+  // Presentacion: export .pptx editable
+  if (currentType === 'presentacion') {
+    toast('Generando PPTX...');
+    try { await exportPptx(); } catch (e) { console.error(e); toast('Error: ' + e.message); }
+    return;
+  }
+
+  toast('Generando...');
+
+  if ((currentType === 'case-study' || currentType === 'propuesta') && renderedFrames.length > 0) {
+    // Multi-page PDF
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    for (let i = 0; i < renderedFrames.length; i++) {
+      const canvas = await html2canvas(renderedFrames[i], { scale: 2, useCORS: true, backgroundColor: '#ffffff', logging: false });
+      const imgData = canvas.toDataURL('image/png');
+      if (i > 0) pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, 0, pageW, pageH);
+    }
+    const raw = document.getElementById('content').value.trim();
+    const g = parseMultiDoc(raw).global;
+    const slug = (g.cliente || 'doc').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const prefix = currentType === 'case-study' ? 'magnify-caso' : 'magnify-propuesta';
+    pdf.save(`${prefix}-${slug}.pdf`);
+    toast('\u2713 PDF descargado');
+    return;
+  }
+
+  if (currentType === 'linkedin-carousel' && renderedFrames.length > 1) {
+    // LinkedIn Document Post requires a single multi-page PDF (not individual PNGs).
+    // Page size matches the 1080x1350 carousel aspect. We also bundle PNGs in the same ZIP for flexibility (LinkedIn native image carousel, Instagram, etc.).
+    const { jsPDF } = window.jspdf;
+    const SLIDE_W = 1080, SLIDE_H = 1350;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [SLIDE_W, SLIDE_H] });
+    const zip = new JSZip();
+    for (let i = 0; i < renderedFrames.length; i++) {
+      const canvas = await html2canvas(renderedFrames[i], { scale: 2, useCORS: true, backgroundColor: null, logging: false });
+      const dataUrl = canvas.toDataURL('image/png');
+      if (i > 0) pdf.addPage([SLIDE_W, SLIDE_H], 'portrait');
+      pdf.addImage(dataUrl, 'PNG', 0, 0, SLIDE_W, SLIDE_H, undefined, 'FAST');
+      const base64 = dataUrl.split(',')[1];
+      zip.file(`slide-${String(i + 1).padStart(2, '0')}.png`, base64, { base64: true });
+    }
+    // PDF first (primary format for LinkedIn Document Post)
+    pdf.save('magnify-carousel.pdf');
+    // PNGs zip as bonus (for native image carousel / Instagram / reuse)
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    const zipLink = document.createElement('a');
+    zipLink.download = 'magnify-carousel-pngs.zip';
+    zipLink.href = URL.createObjectURL(zipBlob);
+    zipLink.click();
+    toast('\u2713 PDF + ZIP de PNGs descargados');
+  } else {
+    // Single PNG
+    const canvas = await html2canvas(renderedFrames[0], { scale: 1, useCORS: true, backgroundColor: null, logging: false });
+    const link = document.createElement('a');
+    const names = {
+      'linkedin-post': 'magnify-post.png',
+      'linkedin-carousel': 'magnify-carousel.png',
+      'banner': 'magnify-banner.png',
+      'case-study': 'magnify-case-study.png',
+      'report-cover': 'magnify-report-cover.png',
+    };
+    link.download = names[currentType] || 'magnify-export.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    toast('\u2713 PNG descargado');
+  }
+}
+
+// ── INIT ──
+document.getElementById('sidebar-logo').innerHTML = icon('#FAFAFA');
+selectType('linkedin-post');
+</script>
+</body>
+</html>
