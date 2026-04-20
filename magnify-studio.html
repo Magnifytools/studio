@@ -297,6 +297,65 @@
   .frame.yl .t7-r { border-left-color:rgba(10,10,10,0.2); }
   .frame.yl .t7-r p { color:rgba(10,10,10,0.7); }
 
+  /* Stats Grid color variants. Light (default): white cells on light bg with a near-transparent grid divider.
+     Dark: near-black cells on darker bg, light numbers, light-grey dividers. Yellow: white cells pop on yellow — keep
+     cell+number styling but re-tint the divider so it reads. */
+  .frame.dk .t2-grid { background:rgba(255,255,255,0.1); }
+  .frame.dk .t2-cell { background:#0F0F0F; }
+  .frame.dk .t2-cell::before { background:rgba(255,255,255,0.2); }
+  .frame.dk .t2-cell:first-child::before { background:var(--yellow); }
+  .frame.dk .t2-num { color:var(--h1); }
+  .frame.dk .t2-lbl { color:var(--body-dk); }
+  .frame.yl .t2-grid { background:rgba(10,10,10,0.15); }
+
+  /* Servicio color variants. Dark: yellow CTA bar stays (pops on dark). Yellow: CTA bar flips to black+yellow text
+     because yellow-on-yellow disappears. Title/body invert per surface. */
+  .frame.dk .t5-body h2 { color:var(--h1); }
+  .frame.dk .t5-desc { color:var(--body-dk); }
+  .frame.yl .t5-body h2 { color:var(--bg); }
+  .frame.yl .t5-desc { color:rgba(10,10,10,0.7); }
+  .frame.yl .t5-cta-bar { background:var(--bg); color:var(--yellow); }
+
+  /* Antes/Después color variants. Default dark. Light+yellow swap list text + row dividers + central gradient.
+     On yellow, the yellow check glyph is invisible — flipped to black for legibility. */
+  .frame.lt .t6-ul li { border-bottom-color:rgba(0,0,0,0.08); }
+  .frame.lt .t6-ul-antes li { color:var(--body-lt); }
+  .frame.lt .t6-ul-antes li::before { color:rgba(0,0,0,0.35); }
+  .frame.lt .t6-ul-despues li { color:var(--bg); }
+  .frame.lt .t6-div { background:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.14) 20%, var(--yellow) 50%, rgba(0,0,0,0.14) 80%, transparent 100%); }
+  .frame.lt .t6 .eyebrow-dk { color:var(--body-lt); }
+  .frame.lt .t6 .accent[style*="rgba(255"] { background:rgba(0,0,0,0.2) !important; }
+  .frame.yl .t6-ul li { border-bottom-color:rgba(10,10,10,0.12); }
+  .frame.yl .t6-ul-antes li { color:rgba(10,10,10,0.5); }
+  .frame.yl .t6-ul-antes li::before { color:rgba(10,10,10,0.4); }
+  .frame.yl .t6-ul-despues li { color:var(--bg); }
+  .frame.yl .t6-ul-despues li::before { color:var(--bg); }
+  .frame.yl .t6-div { background:linear-gradient(to bottom, transparent 0%, rgba(10,10,10,0.14) 20%, var(--bg) 50%, rgba(10,10,10,0.14) 80%, transparent 100%); }
+  .frame.yl .t6 .eyebrow-dk { color:rgba(10,10,10,0.55); }
+  .frame.yl .t6 .eyebrow-yl { color:var(--bg); }
+  .frame.yl .t6 .accent-yl { background:var(--bg); }
+  .frame.yl .t6 .accent[style*="rgba(255"] { background:rgba(10,10,10,0.25) !important; }
+
+  /* Cuadrante color variants. The highlighted cell has to stay visually dominant on every surface:
+     on dark stays yellow; on yellow it flips to black (yellow-on-yellow would erase it). Axes + text invert. */
+  .frame.dk .tcq-head h2 { color:var(--h1); }
+  .frame.dk .tcq-axis-y { border-right-color:var(--h1); }
+  .frame.dk .tcq-axis-x { border-top-color:var(--h1); }
+  .frame.dk .tcq-axis-y .lbl, .frame.dk .tcq-axis-x .lbl { color:var(--h1); }
+  .frame.dk .tcq-axis-y .tip, .frame.dk .tcq-axis-x .tip { color:rgba(255,255,255,0.55); }
+  .frame.dk .tcq-cell { background:#111; border-color:rgba(255,255,255,0.12); }
+  .frame.dk .tcq-cell.dim { background:#0D0D0D; }
+  .frame.dk .tcq-cell .nm { color:var(--h1); }
+  .frame.dk .tcq-cell .ds { color:var(--body-dk); }
+  .frame.dk .tcq-cell .tg { color:var(--body-dk); }
+  .frame.dk .tcq-cell.hl { box-shadow:0 0 0 2px var(--yellow); border-color:var(--yellow); }
+  .frame.yl .tcq-cell { background:#FFFFFF; border-color:rgba(0,0,0,0.15); }
+  .frame.yl .tcq-cell.dim { background:#FAFAFA; }
+  .frame.yl .tcq-cell.hl { background:var(--bg); border-color:var(--bg); box-shadow:0 0 0 2px var(--bg); }
+  .frame.yl .tcq-cell.hl .nm { color:var(--h1); }
+  .frame.yl .tcq-cell.hl .ds { color:rgba(250,250,250,0.78); }
+  .frame.yl .tcq-cell.hl .tg { color:var(--yellow); background:transparent; }
+
   /* T-IMG — Carousel Image: full-bleed photo + lower gradient overlay with caption. Height reserves the 120px footer so the photo never overlaps the brand bar. */
   .t-img { height:calc(100% - 120px); position:relative; overflow:hidden; background:#222; }
   .t-img .photo { position:absolute; inset:0; background-size:cover; background-position:center; }
@@ -1182,6 +1241,11 @@ titular: Las marcas que no se [miden], no se mejoran. Se improvisan.
 atribucion: Insight de nuestro trabajo con +50 marcas B2B` },
     { id: 'stats-grid', name: 'Stats Grid',
       desc: 'Grilla 2x2 de stats. Ideal para 4 métricas clave.',
+      colors: [
+        { id: 'light', label: 'Claro' },
+        { id: 'dark', label: 'Oscuro' },
+        { id: 'yellow', label: 'Amarillo' },
+      ],
       example: `plantilla: stats-grid
 eyebrow: RESULTADOS TÍPICOS
 titular: Lo que moves en 90 días
@@ -1224,12 +1288,22 @@ t3: Rollout
 d3: Acompañamiento de ejecución semanal durante 6 semanas.` },
     { id: 'servicio', name: 'Servicio',
       desc: 'Promoción de servicio. Eyebrow + titular + descripción.',
+      colors: [
+        { id: 'light', label: 'Claro' },
+        { id: 'dark', label: 'Oscuro' },
+        { id: 'yellow', label: 'Amarillo' },
+      ],
       example: `plantilla: servicio
 eyebrow: SERVICIO
 titular: Diagnóstico de [visibilidad]
 descripcion: Una auditoría completa de cómo te ven buscadores, IA y clientes. En 4 semanas tienes un mapa de prioridades ejecutables.` },
     { id: 'antes-despues', name: 'Antes / Después',
       desc: 'Comparación 2 columnas. Para contraste de estados.',
+      colors: [
+        { id: 'dark', label: 'Oscuro' },
+        { id: 'light', label: 'Claro' },
+        { id: 'yellow', label: 'Amarillo' },
+      ],
       example: `plantilla: antes-despues
 eyebrow: DIAGNÓSTICO DE MARCA
 titular: De ruido a señal
@@ -1254,6 +1328,11 @@ titular: Tenemos la marca más limpia del sector y nadie lo sabe.
 atribucion: CMO, SaaS B2B · Barcelona` },
     { id: 'cuadrante', name: 'Cuadrante',
       desc: 'Matriz 2x2 de posicionamiento. 4 celdas + ejes.',
+      colors: [
+        { id: 'light', label: 'Claro' },
+        { id: 'dark', label: 'Oscuro' },
+        { id: 'yellow', label: 'Amarillo' },
+      ],
       example: `plantilla: cuadrante
 eyebrow: CUADRANTE MAGNIFY
 titular: ¿Dónde está tu marca?
@@ -1719,6 +1798,11 @@ function renderQuote(d) {
 }
 
 function renderStatsGrid(d) {
+  const color = (d.color || currentColor || 'light').toLowerCase().trim();
+  const frameClass = color === 'light' ? 'lt' : color === 'yellow' ? 'yl' : 'dk';
+  const eyebrowClass = color === 'dark' ? 'eyebrow-yl' : 'eyebrow-lt';
+  const accentClass = color === 'yellow' ? 'accent-dk' : 'accent-yl';
+  const footer = color === 'dark' ? ftrDk() : ftrLt();
   const stats = [];
   for (let i = 1; i <= 4; i++) {
     const num = d['stat' + i] || d['num' + i] || '';
@@ -1726,12 +1810,12 @@ function renderStatsGrid(d) {
     if (num) stats.push({ num, lbl });
   }
   while (stats.length < 4) stats.push({ num: '\u2014', lbl: '' });
-  return `<div class="frame sq lt"><div class="t2">
-    ${eyebrowBlock(d.eyebrow, 'eyebrow-lt', 'accent-yl')}
+  return `<div class="frame sq ${frameClass}"><div class="t2">
+    ${eyebrowBlock(d.eyebrow, eyebrowClass, accentClass)}
     <div class="t2-grid">
       ${stats.map((s, i) => `<div class="t2-cell"><div class="t2-num${i === 0 ? ' t2-num-yl' : ''}">${s.num}</div><div class="t2-lbl">${s.lbl}</div></div>`).join('')}
     </div>
-  </div>${ftrLt()}</div>`;
+  </div>${footer}</div>`;
 }
 
 function renderStatsHero(d) {
@@ -1772,24 +1856,32 @@ function renderFramework(d) {
 }
 
 function renderServicio(d) {
-  return `<div class="frame sq lt"><div class="t5">
+  const color = (d.color || currentColor || 'light').toLowerCase().trim();
+  const frameClass = color === 'light' ? 'lt' : color === 'yellow' ? 'yl' : 'dk';
+  const eyebrowClass = color === 'dark' ? 'eyebrow-yl' : 'eyebrow-lt';
+  const accentClass = color === 'yellow' ? 'accent-dk' : 'accent-yl';
+  const footer = color === 'dark' ? ftrDk() : ftrLt();
+  return `<div class="frame sq ${frameClass}"><div class="t5">
     <div class="t5-body">
-      ${eyebrowBlock(d.eyebrow, 'eyebrow-lt', 'accent-yl')}
+      ${eyebrowBlock(d.eyebrow, eyebrowClass, accentClass)}
       <h2>${applyHighlights(d.titular || 'Tu servicio')}</h2>
       <p class="t5-desc">${d.descripcion || d.cuerpo || ''}</p>
     </div>
     <a class="t5-cta-bar">${d.cta || 'Solicitar info'} <span class="t5-cta-ar">\u2192</span></a>
-  </div>${ftrLt()}</div>`;
+  </div>${footer}</div>`;
 }
 
 function renderAntesDepues(d) {
+  const color = (d.color || currentColor || 'dark').toLowerCase().trim();
+  const frameClass = color === 'light' ? 'lt' : color === 'yellow' ? 'yl' : 'dk';
+  const footer = color === 'dark' ? ftrDk() : ftrLt();
   const antes = [];
   const despues = [];
   for (let i = 1; i <= 6; i++) {
     if (d['antes' + i]) antes.push(d['antes' + i]);
     if (d['despues' + i]) despues.push(d['despues' + i]);
   }
-  return `<div class="frame sq dk"><div class="t6">
+  return `<div class="frame sq ${frameClass}"><div class="t6">
     <div class="t6-col">
       <span class="eyebrow eyebrow-dk">${applyActiveParticle(d.label_antes || 'MODELO TRADICIONAL')}</span>
       <div class="accent" style="background:rgba(255,255,255,0.2); margin-bottom:48px"></div>
@@ -1801,7 +1893,7 @@ function renderAntesDepues(d) {
       <div class="accent accent-yl" style="margin-bottom:48px"></div>
       <ul class="t6-ul t6-ul-despues">${despues.map(a => `<li>${a}</li>`).join('')}</ul>
     </div>
-  </div>${ftrDk()}</div>`;
+  </div>${footer}</div>`;
 }
 
 function renderQuoteLandscape(d) {
@@ -1841,10 +1933,15 @@ function renderCuadrante(d) {
       <div class="tg">${symbolize(d[`q${n}_tag`])}</div>
     </div>`;
   };
-  return `<div class="frame sq lt"><div class="tcq">
+  const color = (d.color || currentColor || 'light').toLowerCase().trim();
+  const frameClass = color === 'light' ? 'lt' : color === 'yellow' ? 'yl' : 'dk';
+  const eyebrowClass = color === 'dark' ? 'eyebrow-yl' : 'eyebrow-lt';
+  const accentClass = color === 'yellow' ? 'accent-dk' : 'accent-yl';
+  const footer = color === 'dark' ? ftrDk() : ftrLt();
+  return `<div class="frame sq ${frameClass}"><div class="tcq">
     <div class="tcq-head">
       <div>
-        ${eyebrowBlock(d.eyebrow, 'eyebrow-lt', 'accent-yl')}
+        ${eyebrowBlock(d.eyebrow, eyebrowClass, accentClass)}
         <h2>${applyHighlights(d.subtitulo || d.titular || '')}</h2>
       </div>
     </div>
@@ -1861,7 +1958,7 @@ function renderCuadrante(d) {
         <span class="tip">${d.eje_x_max || 'Alta'}</span>
       </div>
     </div>
-  </div>${ftrLt()}</div>`;
+  </div>${footer}</div>`;
 }
 
 const postRenderers = {
