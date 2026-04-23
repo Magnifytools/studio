@@ -12,6 +12,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha384-+mbV2IY1Zk/X1p/nWllGySJSUN8uMs+gUAN10Or95UBH0fpj6GfKgPmgC5EXieXG" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js" integrity="sha384-Cck14aA9cifjYolcnjebXRfWGkz5ltHMBiG4px/j8GS+xQcb7OhNQWZYyWjQ+UwQ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js" integrity="sha384-/TQbtLCAerC3jgaim+N78RZSDYV7ryeoBCVqTuzRrFec2akfBkHS7ACQ3PQhvMVi" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
   @font-face { font-family: 'NM'; src: url('fonts/PPNeueMontreal-Book.woff2') format('woff2'); font-weight: 400; }
   @font-face { font-family: 'NM'; src: url('fonts/PPNeueMontreal-Medium.woff2') format('woff2'); font-weight: 500; }
@@ -228,6 +229,9 @@
   .ftr .url-dk .ing-ap { color:var(--yellow); font-weight:500; }
   .ftr .url-lt { color:rgba(0,0,0,0.55); }
   .ftr .url-lt .ing-ap { color:var(--yellow); font-weight:500; }
+  /* Yellow surface: .ing-ap in yellow vanishes on yellow bg. Flip to black stamp so the particle still pops. */
+  .frame.yl .ftr .url-lt { color:rgba(10,10,10,0.7); }
+  .frame.yl .ftr .url-lt .ing-ap { color:var(--bg); font-weight:700; }
 
   .ftr-c { position:absolute; bottom:0; left:0; right:0; display:flex; align-items:center; justify-content:space-between; padding:0 80px; height:120px; }
   .ftr-c.ftr-dk { border-top:1px solid var(--border-dk); }
@@ -239,6 +243,8 @@
   .ftr-c .url-dk .ing-ap { color:var(--yellow); font-weight:500; }
   .ftr-c .url-lt { color:rgba(0,0,0,0.6); }
   .ftr-c .url-lt .ing-ap { color:var(--yellow); font-weight:500; }
+  .frame.yl .ftr-c .url-lt { color:rgba(10,10,10,0.7); }
+  .frame.yl .ftr-c .url-lt .ing-ap { color:var(--bg); font-weight:700; }
 
   .eyebrow { font-family:var(--sans); font-size:26px; font-weight:700; letter-spacing:2.8px; text-transform:uppercase; }
   .eyebrow-dk { color:var(--body-dk); }
@@ -261,8 +267,9 @@
   .t1 { padding:100px; display:flex; flex-direction:column; justify-content:center; height:calc(100% - 96px); position:relative; overflow:hidden; }
   .t1 .watermark { position:absolute; top:40px; right:60px; opacity:0.04; pointer-events:none; }
   .t1 .watermark .logo-svg.ic { height:420px; width:auto; }
-  .t1 h2 { font-family:var(--serif); font-size:86px; font-weight:400; line-height:1.04; letter-spacing:-2px; color:var(--h1); margin-top:32px; max-width:1000px; }
-  .t1 .attr { font-size:26px; color:var(--body-dk); margin-top:56px; letter-spacing:0.02em; max-width:900px; line-height:1.5; }
+  .t1 .eyebrow { font-size:32px; letter-spacing:3.2px; }
+  .t1 h2 { font-family:var(--serif); font-size:112px; font-weight:400; line-height:1.04; letter-spacing:-2.4px; color:var(--h1); margin-top:40px; max-width:1040px; }
+  .t1 .attr { font-size:32px; color:var(--body-dk); margin-top:64px; letter-spacing:0.02em; max-width:900px; line-height:1.5; }
   /* Quote color variants: the three surfaces in the Magnify brand system. Light/yellow invert the titular + body + watermark colors to keep contrast without leaving brand. */
   .frame.lt .t1 h2 { color:var(--bg); }
   .frame.lt .t1 .attr { color:var(--body-lt); }
@@ -325,13 +332,13 @@
   .frame.lt .t6-div { background:linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.14) 20%, var(--yellow) 50%, rgba(0,0,0,0.14) 80%, transparent 100%); }
   .frame.lt .t6 .eyebrow-dk { color:var(--body-lt); }
   .frame.lt .t6 .accent[style*="rgba(255"] { background:rgba(0,0,0,0.2) !important; }
-  .frame.yl .t6-ul li { border-bottom-color:rgba(10,10,10,0.12); }
-  .frame.yl .t6-ul-antes li { color:rgba(10,10,10,0.5); }
-  .frame.yl .t6-ul-antes li::before { color:rgba(10,10,10,0.4); }
+  .frame.yl .t6-ul li { border-bottom-color:rgba(10,10,10,0.18); }
+  .frame.yl .t6-ul-antes li { color:rgba(10,10,10,0.78); }
+  .frame.yl .t6-ul-antes li::before { color:rgba(10,10,10,0.6); }
   .frame.yl .t6-ul-despues li { color:var(--bg); }
   .frame.yl .t6-ul-despues li::before { color:var(--bg); }
   .frame.yl .t6-div { background:linear-gradient(to bottom, transparent 0%, rgba(10,10,10,0.14) 20%, var(--bg) 50%, rgba(10,10,10,0.14) 80%, transparent 100%); }
-  .frame.yl .t6 .eyebrow-dk { color:rgba(10,10,10,0.55); }
+  .frame.yl .t6 .eyebrow-dk { color:rgba(10,10,10,0.75); }
   .frame.yl .t6 .eyebrow-yl { color:var(--bg); }
   .frame.yl .t6 .accent-yl { background:var(--bg); }
   .frame.yl .t6 .accent[style*="rgba(255"] { background:rgba(10,10,10,0.25) !important; }
@@ -674,6 +681,76 @@
   .pr-cta .url .arrow { font-size:18px; }
 
   /* ════════════════════════════════════════════
+     DOCUMENTO (MD-rendered A4) — long-form prose, proposals, case studies from raw markdown
+     Major page breaks: double horizontal rule (---\n---). Within a page, single --- stays as <hr>.
+     ════════════════════════════════════════════ */
+  .docmd-page { background:#FFF; display:flex; flex-direction:column; position:relative; overflow:hidden; }
+  .docmd-head { display:flex; justify-content:space-between; align-items:center; padding:30px 56px 0; }
+  .docmd-head .logo-svg.wm { height:16px; width:auto; display:block; }
+  .docmd-head .docmd-meta { font-size:11px; letter-spacing:2.2px; text-transform:uppercase; color:rgba(0,0,0,0.4); font-weight:600; }
+  .docmd-sep { height:2px; background:var(--yellow); margin:12px 56px 0; width:40px; }
+  .docmd-body { flex:1; padding:36px 56px 72px; overflow:hidden; font-family:var(--sans); font-size:13.5px; line-height:1.65; color:#222; }
+  .docmd-body > *:first-child { margin-top:0; }
+
+  .docmd-body h1 { font-family:var(--serif); font-size:36px; font-weight:400; line-height:1.1; color:var(--bg); letter-spacing:-0.8px; margin:8px 0 18px; padding-bottom:14px; border-bottom:2px solid var(--yellow); }
+  .docmd-body h2 { font-family:var(--serif); font-size:22px; font-weight:400; line-height:1.2; color:var(--bg); letter-spacing:-0.4px; margin:26px 0 10px; }
+  .docmd-body h2::before { content:''; display:block; width:28px; height:2px; background:var(--yellow); margin-bottom:10px; }
+  /* Kill the redundant dash above h2 when an h1 (which already has a yellow underline) sits right before it. */
+  .docmd-body h1 + h2 { margin-top:16px; }
+  .docmd-body h1 + h2::before { display:none; }
+  .docmd-body h3 { font-family:var(--sans); font-size:11px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--bg); margin:22px 0 8px; }
+  .docmd-body h4 { font-family:var(--sans); font-size:15.5px; font-weight:700; color:var(--bg); margin:24px 0 8px; letter-spacing:-0.1px; }
+  .docmd-body p { margin:0 0 11px; }
+  .docmd-body strong { color:var(--bg); font-weight:700; }
+
+  /* Sign-off block: "Best,\nName\nAffiliation" patterns get styled with a separator rule above,
+     the name in bold, affiliation slightly muted serif-italic for a proper letter closing. */
+  .docmd-body .docmd-signoff { margin:22px 0 6px; padding-top:14px; border-top:1px solid rgba(0,0,0,0.08); line-height:1.5; }
+  .docmd-body .docmd-signoff .so-salutation { color:#555; font-size:13px; }
+  .docmd-body .docmd-signoff .so-name { font-weight:700; color:var(--bg); font-size:14px; }
+  .docmd-body .docmd-signoff .so-affiliation { font-family:var(--serif); font-style:italic; color:#666; font-size:14px; }
+  .docmd-body em { font-style:italic; }
+  .docmd-body ul { list-style:none; padding-left:0; margin:10px 0 14px; }
+  .docmd-body ul > li { padding:0 0 0 22px; position:relative; margin-bottom:6px; }
+  .docmd-body ul > li::before { content:'\2014'; position:absolute; left:0; top:-1px; color:var(--yellow); font-weight:700; }
+  .docmd-body ol { margin:10px 0 14px; padding-left:22px; }
+  .docmd-body ol li { margin-bottom:6px; }
+  .docmd-body ol li::marker { color:var(--yellow); font-weight:700; }
+  .docmd-body li > p { margin:0 0 4px; }
+  .docmd-body hr { border:none; height:1px; background:rgba(0,0,0,0.12); margin:20px 0; }
+  .docmd-body blockquote { border-left:3px solid var(--yellow); margin:14px 0; padding:4px 0 4px 18px; font-family:var(--serif); font-style:italic; font-size:16px; color:#333; line-height:1.5; }
+  .docmd-body blockquote p { margin:0; }
+  .docmd-body code { font-family:'SF Mono', 'Fira Code', monospace; font-size:12px; background:rgba(255,214,0,0.12); color:var(--bg); padding:1px 5px; border-radius:3px; }
+  .docmd-body a { color:var(--bg); text-decoration:underline; text-decoration-color:var(--yellow); text-decoration-thickness:2px; text-underline-offset:3px; }
+
+  /* Tables: compact by default so 10-row pitch tables fit A4 without row clipping. */
+  .docmd-body table { width:100%; border-collapse:collapse; margin:12px 0; font-size:10px; line-height:1.4; }
+  .docmd-body thead th { background:var(--bg); color:var(--h1); text-align:left; font-weight:600; font-size:9.5px; letter-spacing:0.06em; text-transform:uppercase; padding:6px 8px; border-bottom:2px solid var(--yellow); }
+  .docmd-body tbody td { padding:5px 8px; border-bottom:1px solid rgba(0,0,0,0.08); vertical-align:top; }
+  .docmd-body tbody tr:nth-child(even) td { background:#FAFAFA; }
+
+  .docmd-foot { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:16px 56px; font-size:11px; color:rgba(0,0,0,0.4); letter-spacing:0.1em; border-top:1px solid rgba(0,0,0,0.08); }
+  .docmd-foot .ing-ap { color:var(--yellow); font-weight:600; }
+
+  /* Overflow indicator: visible-only hint shown when the rendered markdown chunk exceeds the A4 body height. Non-destructive — content still clips, but the user sees immediately that a split is needed. */
+  .docmd-overflow-warn { position:absolute; bottom:48px; left:56px; right:56px; padding:8px 12px; background:#FFF3C4; border-left:3px solid #E6A100; font-family:var(--sans); font-size:11.5px; color:#6B4800; line-height:1.4; border-radius:2px; }
+
+  /* Cover page: dark surface, editorial typography — reserved for the first chunk when it looks like a cover
+     (has a heading + prose/metadata, no lists/tables/hrs). Uses the same A4 frame so PDF page size is consistent. */
+  .docmd-cover { background:var(--bg); color:var(--h1); padding:80px 64px 120px; display:flex; flex-direction:column; position:relative; overflow:hidden; }
+  .docmd-cover .logo-svg.wm { height:24px; width:auto; margin-bottom:72px; display:block; }
+  .docmd-cover .mc-eyebrow { font-family:var(--serif); font-style:italic; font-size:20px; color:var(--yellow); margin-bottom:22px; letter-spacing:-0.2px; }
+  .docmd-cover h1.mc-title, .docmd-cover .mc-title { font-family:var(--serif); font-size:60px; font-weight:400; line-height:1.04; color:var(--h1); letter-spacing:-1.4px; max-width:600px; margin:0 0 26px; }
+  .docmd-cover .mc-subtitle { font-size:21px; line-height:1.45; color:#D0D0D0; max-width:580px; margin:0 0 34px; font-weight:400; }
+  .docmd-cover .mc-accent { width:44px; height:3px; background:var(--yellow); }
+  .docmd-cover .mc-meta { font-size:13.5px; color:rgba(255,255,255,0.55); line-height:1.95; margin-top:auto; }
+  .docmd-cover .mc-meta strong { color:var(--h1); font-weight:500; }
+  .docmd-cover .mc-meta p { margin:0 0 4px; }
+  .docmd-cover .mc-confidential { font-family:var(--serif); font-style:italic; font-size:13px; color:rgba(255,214,0,0.85); margin-top:14px; letter-spacing:0.02em; }
+  .docmd-cover .mc-bottom { position:absolute; bottom:42px; left:64px; right:64px; display:flex; justify-content:space-between; align-items:center; font-size:11px; color:rgba(255,255,255,0.35); letter-spacing:0.12em; }
+  .docmd-cover .mc-bottom .ing-ap { color:var(--yellow); font-weight:600; }
+
+  /* ════════════════════════════════════════════
      REPORT COVER STYLES (A4)
      ════════════════════════════════════════════ */
   .rc { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:var(--bg); position:relative; text-align:center; padding:80px; overflow:hidden; }
@@ -808,6 +885,300 @@
   .ps-sig .cta { margin-top:72px; background:var(--bg); color:#fff; font-size:30px; font-weight:500; padding:28px 56px; letter-spacing:0.04em; display:inline-flex; align-items:center; gap:18px; }
   .ps-sig .cta .arrow { color:var(--yellow); font-size:32px; }
 
+  /* ══════════════════════════════════════════════════════════════
+     CHARLA — keynote slide types ported from Deck template.
+     Minimum font size 20px across the board (meta/url can go to 20).
+     New slide types live alongside the existing ps-* ones; they use
+     their own class prefixes to avoid collisions. Event chrome
+     (logo + handle) is injected via .ps-top-meta from the renderer.
+     ═══════════════════════════════════════════════════════════ */
+
+  /* Chrome: icon bottom-left + paginator bottom-right + event top-meta */
+  .ps-wmk-bl { position:absolute; bottom:72px; left:120px; width:56px; height:56px; z-index:2; }
+  .ps-wmk-bl svg { width:100%; height:100%; display:block; }
+  .ps-pag { position:absolute; bottom:84px; right:120px; font-size:24px; letter-spacing:0.08em; color:#999; font-family:var(--sans); z-index:2; }
+  .ps-top-meta { position:absolute; top:72px; left:120px; right:120px; display:flex; justify-content:space-between; align-items:center; font-size:22px; letter-spacing:0.08em; color:#999; font-family:var(--sans); z-index:3; }
+  .ps-top-meta .logo { max-height:44px; max-width:260px; width:auto; height:auto; display:block; }
+  .ps-top-meta .handle { font-weight:500; }
+  .ps-slide.lt .ps-pag, .ps-slide.lt .ps-top-meta { color:#666; }
+  .ps-slide.yl .ps-pag, .ps-slide.yl .ps-top-meta { color:rgba(10,10,10,0.6); }
+  .ps-slide.on-image .ps-pag, .ps-slide.on-image .ps-top-meta { color:#FAFAFA; opacity:0.85; }
+
+  /* Generic charla body area (matches Deck template geometry). 20px min enforced. */
+  .ps-charla { padding:160px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
+  .ps-charla .eyebrow { font-family:var(--sans); font-size:28px; font-weight:400; letter-spacing:0.15em; color:#999; text-transform:uppercase; }
+  .ps-slide.lt .ps-charla .eyebrow, .ps-slide.yl .ps-charla .eyebrow { color:#444; }
+  .ps-charla h1.h1 { font-family:var(--serif); font-weight:400; font-size:96px; line-height:1.05; letter-spacing:-0.02em; color:#F0F0F0; margin:0; }
+  .ps-slide.lt .ps-charla h1.h1, .ps-slide.yl .ps-charla h1.h1 { color:var(--bg); }
+  .ps-charla h2.h2 { font-family:var(--serif); font-weight:400; font-size:64px; line-height:1.10; letter-spacing:-0.02em; color:#FAFAFA; margin:0; }
+  .ps-slide.lt .ps-charla h2.h2, .ps-slide.yl .ps-charla h2.h2 { color:var(--bg); }
+  .ps-charla .body-l { font-family:var(--sans); font-size:36px; line-height:1.35; color:#FAFAFA; max-width:1200px; }
+  .ps-slide.lt .ps-charla .body-l, .ps-slide.yl .ps-charla .body-l { color:var(--bg); }
+  .ps-charla .body-m { font-family:var(--sans); font-size:28px; line-height:1.4; color:#FAFAFA; }
+  .ps-slide.lt .ps-charla .body-m, .ps-slide.yl .ps-charla .body-m { color:var(--bg); }
+  .ps-charla .meta-s { font-family:var(--sans); font-size:24px; line-height:1.5; color:#999; }
+  .ps-slide.lt .ps-charla .meta-s { color:#666; }
+  .ps-slide.yl .ps-charla .meta-s { color:var(--bg); }
+  .ps-charla .h3-label { font-family:var(--sans); font-size:26px; font-weight:400; letter-spacing:0.10em; color:#999; text-transform:uppercase; }
+  .ps-slide.lt .ps-charla .h3-label, .ps-slide.yl .ps-charla .h3-label { color:#444; }
+  .ps-charla em { font-style:italic; }
+
+  /* hero (cover with hairline) */
+  .ps-hero { padding:0 160px 240px 160px; display:flex; flex-direction:column; justify-content:flex-end; height:100%; }
+  .ps-hero .eyebrow { font-size:32px; margin-bottom:56px; }
+  .ps-hero .title { font-family:var(--serif); font-weight:400; font-size:140px; line-height:1.0; letter-spacing:-0.02em; color:#F0F0F0; max-width:1500px; }
+  .ps-slide.lt .ps-hero .title, .ps-slide.yl .ps-hero .title { color:var(--bg); }
+  .ps-hero .hairline { width:80px; height:2px; background:var(--yellow); margin:40px 0; }
+  .ps-hero .author { font-family:var(--sans); font-size:30px; color:#CCC; }
+  .ps-slide.lt .ps-hero .author { color:#666; }
+  .ps-slide.yl .ps-hero .author { color:var(--bg); }
+
+  /* agenda */
+  .ps-agenda-list { list-style:none; margin-top:48px; padding:0; }
+  .ps-agenda-list li { font-family:var(--sans); font-weight:400; font-size:48px; line-height:1.6; color:#FAFAFA; display:grid; grid-template-columns:120px 1fr; align-items:baseline; }
+  .ps-slide.lt .ps-agenda-list li, .ps-slide.yl .ps-agenda-list li { color:var(--bg); }
+  .ps-agenda-list .n { color:#999; font-family:var(--serif); }
+  .ps-slide.lt .ps-agenda-list .n { color:#777; }
+  .ps-slide.yl .ps-agenda-list .n { color:rgba(10,10,10,0.5); }
+  .ps-agenda-list li.active .n { color:var(--yellow); }
+  .ps-slide.yl .ps-agenda-list li.active .n { color:#fff; }
+
+  /* manifiesto (hero-xxl italic) */
+  .ps-manif { display:flex; align-items:center; justify-content:center; height:100%; padding:0 120px; }
+  .ps-manif .hero-xxl { font-family:var(--serif); font-weight:400; font-style:italic; font-size:180px; line-height:0.95; letter-spacing:-0.02em; text-align:left; max-width:1600px; color:#F0F0F0; }
+  .ps-slide.lt .ps-manif .hero-xxl, .ps-slide.yl .ps-manif .hero-xxl { color:var(--bg); }
+
+  /* stat-hero (big number + side explanation) */
+  .ps-stat-hero { padding:0 160px; display:flex; align-items:center; gap:120px; height:100%; }
+  .ps-stat-hero .num { font-family:var(--serif); font-weight:400; font-size:320px; line-height:0.9; letter-spacing:-0.04em; color:var(--yellow); flex-shrink:0; }
+  .ps-stat-hero .explain { max-width:800px; }
+  .ps-stat-hero .explain .eyebrow { display:block; margin-bottom:32px; font-size:26px; }
+  .ps-stat-hero .explain h2 { font-family:var(--serif); font-weight:400; font-size:72px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:40px; color:#FAFAFA; }
+  .ps-slide.lt .ps-stat-hero .explain h2, .ps-slide.yl .ps-stat-hero .explain h2 { color:var(--bg); }
+  .ps-stat-hero .explain .src { font-family:var(--sans); font-size:24px; color:#999; }
+  .ps-slide.lt .ps-stat-hero .explain .src { color:#666; }
+  .ps-slide.yl .ps-stat-hero .explain .src { color:var(--bg); }
+
+  /* divisor charla (yellow act with huge number + right text) */
+  .ps-divisor-c { display:flex; align-items:center; justify-content:center; height:100%; }
+  .ps-divisor-c .num { font-family:var(--serif); font-size:560px; line-height:0.8; letter-spacing:-0.04em; font-weight:400; color:var(--bg); }
+  .ps-divisor-c .sep { width:2px; height:240px; background:var(--bg); opacity:0.25; margin:0 80px; }
+  .ps-divisor-c .right .meta-s { font-family:var(--sans); font-size:26px; letter-spacing:0.1em; color:var(--bg); opacity:0.7; text-transform:uppercase; margin-bottom:24px; }
+  .ps-divisor-c .right .title { font-family:var(--serif); font-size:120px; line-height:1.0; letter-spacing:-0.02em; color:var(--bg); }
+
+  /* compare (horizontal 2-col with hairline dividers) */
+  .ps-compare { padding:160px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
+  .ps-compare h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; text-align:center; margin-bottom:80px; color:#FAFAFA; }
+  .ps-slide.lt .ps-compare h2, .ps-slide.yl .ps-compare h2 { color:var(--bg); }
+  .ps-compare .grid { display:grid; grid-template-columns:1fr 1px 1fr; gap:80px; align-items:start; }
+  .ps-compare .divider { background:rgba(255,255,255,0.1); width:1px; min-height:400px; }
+  .ps-slide.lt .ps-compare .divider, .ps-slide.yl .ps-compare .divider { background:rgba(0,0,0,0.15); }
+  .ps-compare .col .lbl { font-family:var(--sans); font-size:26px; letter-spacing:0.1em; color:#999; display:block; margin-bottom:40px; text-transform:uppercase; }
+  .ps-slide.lt .ps-compare .col .lbl, .ps-slide.yl .ps-compare .col .lbl { color:#444; }
+  .ps-compare .col.magnify .lbl { color:var(--yellow); }
+  .ps-slide.lt .ps-compare .col.magnify .lbl, .ps-slide.yl .ps-compare .col.magnify .lbl { color:#B8A000; }
+  .ps-compare .col ul { list-style:none; padding:0; }
+  .ps-compare .col li { padding:24px 0; border-bottom:1px solid rgba(255,255,255,0.1); font-family:var(--sans); font-size:34px; color:#FAFAFA; }
+  .ps-slide.lt .ps-compare .col li, .ps-slide.yl .ps-compare .col li { color:var(--bg); border-bottom-color:rgba(0,0,0,0.12); }
+  .ps-compare .col li:last-child { border-bottom:none; }
+
+  /* framework 3 steps */
+  .ps-fw { padding:160px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
+  .ps-fw h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:96px; color:#FAFAFA; }
+  .ps-slide.lt .ps-fw h2, .ps-slide.yl .ps-fw h2 { color:var(--bg); }
+  .ps-fw .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:80px; }
+  .ps-fw .step .num { color:var(--yellow); font-family:var(--serif); font-size:220px; line-height:0.9; letter-spacing:-0.04em; margin-bottom:32px; }
+  .ps-fw .step .label { font-family:var(--sans); font-size:28px; letter-spacing:0.1em; color:var(--yellow); margin-bottom:24px; text-transform:uppercase; }
+  .ps-slide.lt .ps-fw .step .label, .ps-slide.yl .ps-fw .step .label { color:#B8A000; }
+  .ps-fw .step .desc { font-family:var(--sans); font-size:32px; line-height:1.4; color:#FAFAFA; }
+  .ps-slide.lt .ps-fw .step .desc, .ps-slide.yl .ps-fw .step .desc { color:var(--bg); }
+
+  /* timeline charla (4 nodes on horizontal rail) */
+  .ps-tl-c { padding:160px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
+  .ps-tl-c h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:120px; color:#FAFAFA; }
+  .ps-slide.lt .ps-tl-c h2, .ps-slide.yl .ps-tl-c h2 { color:var(--bg); }
+  .ps-tl-c .track { position:relative; }
+  .ps-tl-c .track::before { content:""; position:absolute; top:14px; left:14px; right:14px; height:1px; background:rgba(255,255,255,0.2); }
+  .ps-slide.lt .ps-tl-c .track::before, .ps-slide.yl .ps-tl-c .track::before { background:rgba(0,0,0,0.2); }
+  .ps-tl-c .grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:48px; position:relative; }
+  .ps-tl-c .node .dot { width:28px; height:28px; background:var(--yellow); border:6px solid var(--bg); margin-bottom:40px; }
+  .ps-slide.lt .ps-tl-c .node .dot, .ps-slide.yl .ps-tl-c .node .dot { border-color:#fff; }
+  .ps-slide.yl .ps-tl-c .node .dot { background:var(--bg); border-color:var(--yellow); }
+  .ps-tl-c .node .label { font-family:var(--sans); font-size:24px; letter-spacing:0.1em; color:var(--yellow); margin-bottom:20px; text-transform:uppercase; }
+  .ps-slide.lt .ps-tl-c .node .label, .ps-slide.yl .ps-tl-c .node .label { color:#B8A000; }
+  .ps-tl-c .node .title { font-family:var(--serif); font-size:52px; line-height:1.1; color:#FAFAFA; margin-bottom:20px; letter-spacing:-0.01em; }
+  .ps-slide.lt .ps-tl-c .node .title, .ps-slide.yl .ps-tl-c .node .title { color:var(--bg); }
+  .ps-tl-c .node .desc { font-family:var(--sans); font-size:26px; line-height:1.45; color:#FAFAFA; }
+  .ps-slide.lt .ps-tl-c .node .desc, .ps-slide.yl .ps-tl-c .node .desc { color:var(--bg); }
+
+  /* imagen full-bleed */
+  .ps-imgfull { position:absolute; inset:0; overflow:hidden; }
+  .ps-imgfull .bg { position:absolute; inset:0; background-size:cover; background-position:center; }
+  .ps-imgfull .bg.ph { background:linear-gradient(180deg,#2a2a2a 0%,#161616 70%,#0a0a0a 100%); }
+  .ps-imgfull .bg.ph::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(90deg, transparent 0 80px, rgba(255,255,255,0.02) 80px 82px); }
+  .ps-imgfull .scrim { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.75), transparent 55%); }
+  .ps-imgfull .overlay { position:absolute; bottom:240px; left:120px; right:120px; }
+  .ps-imgfull .overlay .eyebrow { color:#FAFAFA; opacity:0.85; margin-bottom:20px; display:block; font-size:28px; letter-spacing:0.15em; font-family:var(--sans); text-transform:uppercase; }
+  .ps-imgfull .overlay .title { color:#FAFAFA; font-family:var(--serif); font-weight:400; font-size:96px; line-height:1.05; letter-spacing:-0.02em; }
+  .ps-imgfull .overlay em { font-style:italic; }
+
+  /* imagen split (2col: image + text) */
+  .ps-imgsplit { position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr; }
+  .ps-imgsplit .pane-img { position:relative; overflow:hidden; background-size:cover; background-position:center; }
+  .ps-imgsplit .pane-img.ph { background:linear-gradient(135deg,#555,#1c1c1c); }
+  .ps-imgsplit.rev .pane-img { order:2; }
+  .ps-imgsplit .pane-txt { padding:160px 120px; display:flex; flex-direction:column; justify-content:center; background:var(--bg); color:#FAFAFA; }
+  .ps-slide.lt .ps-imgsplit .pane-txt { background:#FFF; color:var(--bg); }
+  .ps-slide.yl .ps-imgsplit .pane-txt { background:var(--yellow); color:var(--bg); }
+  .ps-imgsplit .pane-txt .eyebrow { font-family:var(--sans); font-size:28px; letter-spacing:0.15em; color:#999; margin-bottom:32px; display:block; text-transform:uppercase; }
+  .ps-slide.lt .ps-imgsplit .pane-txt .eyebrow, .ps-slide.yl .ps-imgsplit .pane-txt .eyebrow { color:#444; }
+  .ps-imgsplit .pane-txt h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:32px; font-weight:400; }
+  .ps-imgsplit .pane-txt .body-l { font-family:var(--sans); font-size:30px; max-width:560px; line-height:1.35; }
+  .ps-imgsplit .pane-txt .meta-s { font-family:var(--sans); font-size:24px; margin-top:32px; color:#999; }
+  .ps-slide.lt .ps-imgsplit .pane-txt .meta-s { color:#666; }
+  .ps-slide.yl .ps-imgsplit .pane-txt .meta-s { color:var(--bg); opacity:0.7; }
+  .ps-imgsplit em { font-style:italic; }
+
+  /* diptych (2 images with captions) */
+  .ps-dip { position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr; }
+  .ps-dip .pane { position:relative; overflow:hidden; display:flex; align-items:flex-end; padding:80px 80px 200px; background-size:cover; background-position:center; }
+  .ps-dip .pane.ph1 { background:linear-gradient(135deg,#3a3a3a 0%,#1a1a1a 100%); }
+  .ps-dip .pane.ph2 { background:linear-gradient(135deg,#555,#1c1c1c 100%); }
+  .ps-dip .pane::after { content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.65), transparent 55%); pointer-events:none; }
+  .ps-dip .pane .cap { position:relative; z-index:1; }
+  .ps-dip .pane .lbl { font-family:var(--sans); font-size:26px; letter-spacing:0.15em; color:var(--yellow); margin-bottom:16px; display:block; text-transform:uppercase; }
+  .ps-dip .pane .title { font-family:var(--serif); font-size:72px; line-height:1.05; letter-spacing:-0.02em; color:#FAFAFA; font-weight:400; }
+  .ps-dip .pane .body { font-family:var(--sans); font-size:30px; line-height:1.45; color:#FAFAFA; margin-top:24px; max-width:540px; opacity:0.92; }
+  .ps-dip em { font-style:italic; }
+
+  /* triptych (3 image tiles + caption overlay) */
+  .ps-trp { position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr 1fr; }
+  .ps-trp .tile { position:relative; overflow:hidden; display:flex; align-items:flex-end; padding:64px 64px 200px; background-size:cover; background-position:center; }
+  .ps-trp .tile.ph1 { background:linear-gradient(135deg,#383838,#1a1a1a); }
+  .ps-trp .tile.ph2 { background:linear-gradient(135deg,#555,#1c1c1c); }
+  .ps-trp .tile.ph3 { background:linear-gradient(135deg,#2a2a2a,#0f0f0f); }
+  .ps-trp .tile::after { content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.7), transparent 50%); }
+  .ps-trp .tile .cap { position:relative; z-index:1; }
+  .ps-trp .tile .num { font-family:var(--serif); font-size:80px; line-height:0.9; color:var(--yellow); margin-bottom:16px; font-weight:400; }
+  .ps-trp .tile .t { font-family:var(--serif); font-size:40px; line-height:1.1; color:#FAFAFA; letter-spacing:-0.01em; font-weight:400; }
+  .ps-trp .tile .s { font-family:var(--sans); font-size:24px; color:#FAFAFA; opacity:0.85; margin-top:16px; max-width:320px; }
+  .ps-trp em { font-style:italic; }
+
+  /* mosaic (1 big + 3-4 small) */
+  .ps-mos { position:absolute; inset:120px; display:grid; grid-template-columns:2fr 1fr 1fr; grid-template-rows:1fr 1fr; gap:16px; }
+  .ps-mos .cell { position:relative; overflow:hidden; background-size:cover; background-position:center; }
+  .ps-mos .cell.big { grid-row:1 / span 2; }
+  .ps-mos .cell.ph1 { background:linear-gradient(135deg,#3a3a3a,#1a1a1a); }
+  .ps-mos .cell.ph2 { background:linear-gradient(135deg,#555,#1c1c1c); }
+  .ps-mos .cell.ph3 { background:linear-gradient(135deg,#383838,#1a1a1a); }
+  .ps-mos .cell.ph4 { background:linear-gradient(135deg,#1a1a1a,#0a0a0a); }
+  .ps-mos .cell.ph5 { background:linear-gradient(135deg,#2a2a2a,#161616); }
+  .ps-mos .cell::after { content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.55), transparent 60%); }
+  .ps-mos .cap { position:absolute; bottom:32px; left:32px; right:32px; z-index:1; }
+  .ps-mos .cap .lbl { font-family:var(--sans); font-size:24px; letter-spacing:0.12em; color:var(--yellow); display:block; margin-bottom:10px; text-transform:uppercase; }
+  .ps-mos .cap .t { font-family:var(--serif); font-size:38px; line-height:1.1; color:#FAFAFA; letter-spacing:-0.01em; font-weight:400; }
+  .ps-mos .big .cap .t { font-size:64px; }
+  .ps-mos em { font-style:italic; }
+  .ps-mos-head { position:absolute; top:72px; left:120px; right:120px; z-index:3; display:flex; justify-content:space-between; align-items:baseline; }
+  .ps-mos-head h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; color:#FAFAFA; font-weight:400; margin:0; }
+
+  /* portrait quote (big photo + quote) */
+  .ps-port { position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr; }
+  .ps-port .pane-img { position:relative; overflow:hidden; background-size:cover; background-position:center; }
+  .ps-port .pane-img.ph { background:linear-gradient(160deg,#4a4a4a 0%,#2a2a2a 60%,#101010 100%); }
+  .ps-port .pane-txt { padding:120px 120px 180px; display:flex; flex-direction:column; justify-content:flex-end; background:var(--bg); color:#FAFAFA; }
+  .ps-slide.lt .ps-port .pane-txt { background:#FFF; color:var(--bg); }
+  .ps-port .pane-txt .eyebrow { font-family:var(--sans); font-size:28px; letter-spacing:0.15em; color:#999; display:block; margin-bottom:24px; text-transform:uppercase; }
+  .ps-port .pane-txt .h-quote { font-family:var(--serif); font-size:60px; line-height:1.15; color:#FAFAFA; letter-spacing:-0.01em; margin-bottom:40px; font-weight:400; }
+  .ps-slide.lt .ps-port .pane-txt .h-quote { color:var(--bg); }
+  .ps-port .pane-txt .name { font-family:var(--sans); font-size:30px; color:#FAFAFA; font-weight:500; }
+  .ps-slide.lt .ps-port .pane-txt .name { color:var(--bg); }
+  .ps-port .pane-txt .role { font-family:var(--sans); font-size:24px; color:#999; margin-top:6px; }
+  .ps-slide.lt .ps-port .pane-txt .role { color:#666; }
+  .ps-port em { font-style:italic; }
+
+  /* quote-big (single centered quote with photo) */
+  .ps-qbig { padding:160px 160px 200px; height:100%; display:flex; flex-direction:column; justify-content:center; }
+  .ps-qbig .mark { font-family:var(--serif); font-size:260px; line-height:0.5; color:var(--bg); margin-bottom:24px; }
+  .ps-slide.lt .ps-qbig .mark, .ps-slide.yl .ps-qbig .mark { color:var(--bg); }
+  .ps-qbig .text { font-family:var(--serif); font-weight:400; font-size:88px; line-height:1.1; letter-spacing:-0.01em; color:var(--bg); max-width:1500px; }
+  .ps-qbig .attr { display:flex; align-items:center; gap:24px; margin-top:64px; }
+  .ps-qbig .attr .photo { width:120px; height:120px; background:#0A0A0A; background-size:cover; background-position:center; flex-shrink:0; border-radius:50%; }
+  .ps-qbig .attr .name { font-family:var(--sans); font-size:28px; color:var(--bg); font-weight:500; }
+  .ps-qbig .attr .role { font-family:var(--sans); font-size:24px; color:#666; margin-top:4px; }
+  .ps-qbig em { font-style:italic; }
+
+  /* tabla (comparison table) */
+  .ps-tabla { padding:160px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
+  .ps-tabla h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:64px; color:var(--bg); font-weight:400; }
+  .ps-tabla table { width:100%; border-collapse:collapse; }
+  .ps-tabla th { font-family:var(--sans); font-size:24px; font-weight:400; letter-spacing:0.1em; text-align:left; color:#444; padding:28px 16px; border-bottom:1px solid rgba(0,0,0,0.2); text-transform:uppercase; }
+  .ps-tabla td { font-family:var(--sans); font-size:30px; padding:26px 16px; border-bottom:1px solid rgba(0,0,0,0.08); color:var(--bg); }
+  .ps-tabla tr.hi td { background:var(--yellow); border-bottom:0; }
+  .ps-tabla td.c { text-align:center; }
+
+  /* equipo (team grid) */
+  .ps-team { padding:160px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
+  .ps-team h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:72px; color:#FAFAFA; font-weight:400; }
+  .ps-slide.lt .ps-team h2, .ps-slide.yl .ps-team h2 { color:var(--bg); }
+  .ps-team .grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:48px; }
+  .ps-team .card .photo { aspect-ratio:1; margin-bottom:24px; background:#333; background-size:cover; background-position:center; }
+  .ps-team .card .photo.ph1 { background:linear-gradient(135deg,#3a3a3a,#1a1a1a); }
+  .ps-team .card .photo.ph2 { background:linear-gradient(135deg,#2e2e2e,#141414); }
+  .ps-team .card .photo.ph3 { background:linear-gradient(135deg,#4a4a4a,#222); }
+  .ps-team .card .photo.ph4 { background:linear-gradient(135deg,#333,#181818); }
+  .ps-team .card .name { font-family:var(--sans); font-size:30px; color:#FAFAFA; margin-bottom:8px; }
+  .ps-slide.lt .ps-team .card .name, .ps-slide.yl .ps-team .card .name { color:var(--bg); }
+  .ps-team .card .role { font-family:var(--sans); font-size:24px; color:#999; }
+  .ps-slide.lt .ps-team .card .role { color:#666; }
+  .ps-slide.yl .ps-team .card .role { color:var(--bg); opacity:0.7; }
+
+  /* pricing (3 col) */
+  .ps-pricing { padding:160px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
+  .ps-pricing h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:72px; color:#FAFAFA; font-weight:400; }
+  .ps-slide.lt .ps-pricing h2, .ps-slide.yl .ps-pricing h2 { color:var(--bg); }
+  .ps-pricing .grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; align-items:stretch; }
+  .ps-pricing .col { padding:40px; position:relative; background:var(--bg); color:#FAFAFA; }
+  .ps-slide.lt .ps-pricing .col { background:#FFF; color:var(--bg); }
+  .ps-pricing .col + .col { border-left:1px solid rgba(255,255,255,0.1); }
+  .ps-slide.lt .ps-pricing .col + .col { border-left-color:rgba(0,0,0,0.12); }
+  .ps-pricing .col.hi { background:var(--yellow); color:var(--bg); border-left:none; }
+  .ps-pricing .col.hi + .col { border-left:none; }
+  .ps-pricing .col .lbl { font-family:var(--sans); font-size:24px; letter-spacing:0.12em; color:#999; margin-bottom:24px; text-transform:uppercase; }
+  .ps-pricing .col.hi .lbl { color:var(--bg); }
+  .ps-pricing .col .name { font-family:var(--serif); font-size:56px; line-height:1; margin-bottom:32px; letter-spacing:-0.02em; font-weight:400; }
+  .ps-pricing .col .price { font-family:var(--serif); font-size:160px; line-height:0.9; color:var(--yellow); letter-spacing:-0.04em; font-weight:400; }
+  .ps-pricing .col.hi .price { color:var(--bg); }
+  .ps-pricing .col .unit { font-family:var(--sans); font-size:24px; color:#999; margin-bottom:32px; }
+  .ps-pricing .col.hi .unit { color:var(--bg); opacity:0.7; }
+  .ps-pricing .col ul { list-style:none; border-top:1px solid rgba(255,255,255,0.1); padding:24px 0 0; margin:0; }
+  .ps-pricing .col.hi ul { border-top-color:rgba(0,0,0,0.2); }
+  .ps-pricing .col li { font-family:var(--sans); font-size:24px; padding:12px 0; }
+
+  /* cta-final (yellow big cta) */
+  .ps-ctafinal { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:0 160px; text-align:center; }
+  .ps-ctafinal .eyebrow { font-family:var(--sans); font-size:24px; letter-spacing:0.15em; color:var(--bg); margin-bottom:32px; display:block; text-transform:uppercase; }
+  .ps-ctafinal h1 { font-family:var(--serif); font-size:140px; line-height:1.0; color:var(--bg); margin-bottom:56px; font-weight:400; letter-spacing:-0.02em; }
+  .ps-ctafinal .contact { font-family:var(--sans); font-size:32px; color:var(--bg); }
+  .ps-ctafinal em { font-style:italic; }
+
+  /* cierre (final thank you) */
+  .ps-cierre { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; position:relative; }
+  .ps-cierre .wm { height:120px; margin-bottom:48px; }
+  .ps-cierre .wm svg { height:100%; width:auto; }
+  .ps-cierre .thanks { font-family:var(--sans); font-size:26px; letter-spacing:0.3em; color:#999; }
+  .ps-slide.lt .ps-cierre .thanks, .ps-slide.yl .ps-cierre .thanks { color:#666; }
+  .ps-cierre .contact { position:absolute; bottom:180px; left:120px; font-family:var(--sans); font-size:28px; line-height:1.7; color:#FAFAFA; }
+  .ps-slide.lt .ps-cierre .contact, .ps-slide.yl .ps-cierre .contact { color:var(--bg); }
+
+  /* standard (simple h1 + body) */
+  .ps-std .h1 { max-width:1600px; margin-bottom:64px; }
+  .ps-std .h1-m { font-family:var(--serif); font-size:96px; line-height:1.05; letter-spacing:-0.02em; font-weight:400; color:#F0F0F0; margin-bottom:64px; max-width:1600px; }
+  .ps-slide.lt .ps-std .h1-m, .ps-slide.yl .ps-std .h1-m { color:var(--bg); }
+  .ps-std .body-xl { font-family:var(--sans); font-size:40px; line-height:1.35; color:#FAFAFA; max-width:1400px; }
+  .ps-slide.lt .ps-std .body-xl, .ps-slide.yl .ps-std .body-xl { color:var(--bg); }
+  .ps-std em { font-style:italic; }
+
   /* Print CSS for A4 */
   /* ── Print CSS for A4 ── */
   @media print {
@@ -852,6 +1223,10 @@
     <button class="sidebar-item" onclick="selectType('presentacion')" data-type="presentacion">
       <span class="ic">&#9707;</span>
       <span>Presentación</span>
+    </button>
+    <button class="sidebar-item" onclick="selectType('documento')" data-type="documento">
+      <span class="ic">&#9776;</span>
+      <span>Documento (MD)</span>
     </button>
     <button class="sidebar-item" onclick="selectType('email-sig')" data-type="email-sig">
       <span class="ic">&#9993;</span>
@@ -1119,21 +1494,38 @@ confidencial: si`
     title: 'Presentaci\u00f3n',
     desc: 'Slides 16:9 exportables a PPTX editable',
     exportLabel: 'Descargar PPTX',
+    supportsImages: true,
     hint: `<strong>Formato:</strong> bloque global + slides separados por <code>---</code><br><br>
-<code>tipo: presentacion</code> &nbsp; <code>titulo:</code> &nbsp; <code>autor:</code> &nbsp; <code>fecha:</code><br><br>
-<strong>Tipos de slide (<code>slide:</code>):</strong><br>
-<code>portada</code> \u2014 titular + subtitulo<br>
-<code>divisor</code> \u2014 numero + titulo (fondo amarillo)<br>
-<code>contenido</code> \u2014 titular + bullet1..6 (+ eyebrow)<br>
-<code>stat</code> \u2014 numero + sufijo + descripcion + meta<br>
-<code>quote</code> \u2014 cita + autor<br>
-<code>comparacion</code> \u2014 label_a/label_b + a1..5 + b1..5<br>
-<code>cuadrante</code> \u2014 ejes + q1..4 (highlight/dimmed)<br>
-<code>timeline</code> \u2014 fase1..4_etiqueta/titulo/duracion<br>
-<code>imagen</code> \u2014 caption + alt (placeholder)<br>
-<code>siguiente-paso</code> \u2014 titular + cta<br><br>
-<strong>Speaker notes:</strong> a\u00f1ade <code>notas:</code> a cualquier slide \u2014 van al panel de notas del PPTX (no se imprimen en la slide).<br><br>
-<strong>Nota:</strong> los <code>[highlights]</code> en titulares deben caber en una sola linea \u2014 si wrappean, el highlight se desplazara.`,
+<code>tipo: presentacion</code> &nbsp; <code>titulo:</code> &nbsp; <code>autor:</code> &nbsp; <code>fecha:</code><br>
+<strong>Evento (opcional, aparece en todas las slides):</strong> <code>evento_nombre:</code> TMS Madrid 2026 &nbsp; <code>evento_logo:</code> img1 &nbsp; <code>evento_handle:</code> @tms_madrid<br><br>
+<strong>Slide types cl\u00e1sicos:</strong><br>
+<code>portada</code> &middot; <code>divisor</code> &middot; <code>contenido</code> &middot; <code>stat</code> &middot; <code>quote</code> &middot; <code>comparacion</code> &middot; <code>cuadrante</code> &middot; <code>timeline</code> &middot; <code>imagen</code> &middot; <code>siguiente-paso</code><br><br>
+<strong>Slide types Charla (keynote):</strong><br>
+<code>hero</code> \u2014 cover con hairline + autor/fecha<br>
+<code>agenda</code> \u2014 titular + item1..6 (+ activo: 2)<br>
+<code>manifiesto</code> \u2014 titular en it\u00e1lica XL (default amarillo)<br>
+<code>divisor-charla</code> \u2014 numero + eyebrow + titulo (n\u00famero gigante)<br>
+<code>standard</code> \u2014 titular + cuerpo (h1 editorial + body)<br>
+<code>stat-hero</code> \u2014 numero + sufijo + descripcion + fuente (stat lateral)<br>
+<code>compare</code> \u2014 titular + a1..6/b1..6 + label_a/label_b<br>
+<code>framework</code> \u2014 titular + paso1..3_label/titulo<br>
+<code>timeline-charla</code> \u2014 titular + fase1..4_label/titulo/descripcion<br>
+<code>imagen-full</code> \u2014 imagen: img1 + eyebrow + titular (full-bleed)<br>
+<code>imagen-split</code> \u2014 imagen + titular + cuerpo + posicion (izquierda/derecha)<br>
+<code>diptych</code> \u2014 imagen_a/imagen_b + label/titulo/cuerpo por panel<br>
+<code>triptych</code> \u2014 imagen1..3 + num1..3 + titulo1..3 + descripcion1..3<br>
+<code>mosaic</code> \u2014 imagen1..5 + label/titulo por celda (1 big + 4)<br>
+<code>portrait-quote</code> \u2014 imagen + eyebrow + cita + nombre + rol<br>
+<code>quote-big</code> \u2014 cita + foto + nombre + rol (quote central)<br>
+<code>tabla</code> \u2014 titular + col1..4 + row1..10 (row con <code>|</code>; <code>row1_hi: si</code> destaca)<br>
+<code>equipo</code> \u2014 persona1..8_nombre/rol/foto<br>
+<code>pricing</code> \u2014 plan1..3_nombre/label/precio/unidad/feat1..6 (<code>plan2_destacado: si</code>)<br>
+<code>cta-final</code> \u2014 eyebrow + titular + contacto (amarillo grande)<br>
+<code>cierre</code> \u2014 titular ('GRACIAS') + contacto<br><br>
+<strong>Fondo por slide:</strong> <code>fondo: oscuro | claro | amarillo</code> en la mayor\u00eda<br>
+<strong>Im\u00e1genes:</strong> sube arriba y refer\u00e9ncialas como <code>img1</code>, <code>img2</code>...<br>
+<strong>Speaker notes:</strong> <code>notas:</code> por slide (solo en PPTX).<br>
+<strong>Highlights:</strong> <code>[palabra]</code> destaca en amarillo.`,
     example: `tipo: presentacion
 titulo: Diagnostico de Marca
 autor: Magnify
@@ -1221,6 +1613,81 @@ cta: magnify.ing/agendar`
     example: `nombre: David Carrasco
 cargo: Founder & SEO Strategist
 link: https://magnify.ing/agendar`
+  },
+  'documento': {
+    title: 'Documento (MD)',
+    desc: 'Pitch, propuesta o informe largo desde markdown → PDF A4',
+    exportLabel: 'Descargar PDF',
+    hint: `<strong>Markdown est\u00e1ndar</strong> (GFM). Renderiza con la tipograf\u00eda y los acentos de marca.<br><br>
+<strong>Salto de p\u00e1gina:</strong> dos <code>---</code> seguidos en l\u00edneas separadas.<br>
+<strong>Regla horizontal dentro de p\u00e1gina:</strong> un solo <code>---</code>.<br><br>
+<strong>Soportado:</strong> <code>#</code>, <code>##</code>, <code>###</code>, listas, tablas GFM, <code>**negrita**</code>, <code>*cursiva*</code>, <code>&gt; blockquote</code>, <code>\`code\`</code>, enlaces.<br><br>
+<strong>Aviso:</strong> si el contenido de una secci\u00f3n no cabe en A4, ver\u00e1s una alerta amarilla en el preview \u2014 a\u00f1ade un <code>---&#10;---</code> para dividir en otra p\u00e1gina.`,
+    example: `# Pitch support document
+
+**Prepared for:** Georgia Tan
+**Subject:** Outdoor sports (B2C) and e-mobility (B2B) proposal \u2014 Spanish market input
+**From:** David Carrasco Pamies \u00b7 Magnify
+**Date:** 22 April 2026
+
+---
+
+## Cover letter
+
+Georgia,
+
+For your proposal on the outdoor sports (B2C) and e-mobility (B2B) brief, I've put together two case studies and a Spanish-market target media map specific to the verticals you described.
+
+The two case studies document work I've led end-to-end that maps directly onto this brief:
+
+\u2014 A European specialist retailer in motorcycle gear: +81% YoY organic revenue on a \u20ac52K annual budget, 14x ROI, +274% free listings impressions, 1,300+ AI Overview citations.
+
+\u2014 A European B2B wholesaler with a ~15,000-PDP catalog recovering from a core update: controlled experiment delivering +11.4% clicks at 99% statistical confidence before scaling.
+
+Best,
+David Carrasco Pamies
+Magnify
+
+---
+---
+
+# Case study 01
+
+## When the SERP Stops Being a Ranking
+
+**Spanish organic revenue grew from \u20ac916K to \u20ac1.65M (+81% YoY) on a \u20ac52K annual budget.**
+
+### Client profile
+
+European specialist retailer of motorcycle gear, multi-country operation.
+
+### Challenge
+
+Between 2023 and 2025 the motorcycle-gear SERP fragmented into visual carousels, free product listings, knowledge panels and AI Overviews.
+
+### Results (Spain, 2025 cycle)
+
+- Organic revenue: **\u20ac916K \u2192 \u20ac1.65M (+81% YoY)**
+- Annual SEO investment: **\u20ac52,200** \u00b7 ROI **~14x**
+- Organic sessions: **+70% YoY**
+- AI Overview citations: from dozens to **1,300+**
+
+---
+---
+
+# Spanish-language target media map
+
+Curated media map for the two verticals in scope, reflecting criteria applied in Spanish-market campaigns.
+
+| # | Medio | Vertical | Audiencia |
+|---|-------|----------|-----------|
+| 1 | Enduro Spain | Extreme MTB | Enduro/DH practitioners |
+| 2 | MTBpro | Extreme MTB | MTB enthusiasts, e-MTB focus |
+| 3 | Desnivel.com | Outdoor Adventure | Mountaineering, alpinism |
+| 4 | Ciclosfera | Consumer Cycling | Urban cyclist community |
+| 5 | movilidadelectrica.com | E-Mobility | EV professional and consumer |
+
+*This is a curated subset. Full 60+ media landscape mapped.*`
   }
 };
 
@@ -1541,7 +2008,231 @@ fase3_duracion: 8 semanas
 ---
 slide: siguiente-paso
 titular: ¿Empezamos el [kickoff?]
-url: magnify.ing` }
+url: magnify.ing` },
+    { id: 'charla', name: 'Charla / Keynote',
+      desc: 'Deck editorial para charlas y conferencias. Mín 20px, soporta logo y handle del evento.',
+      example: `tipo: presentacion
+titulo: Cómo hacer que tu marca importe
+autor: Jorge Gómez
+fecha: 21 de abril, 2026
+evento_nombre: MAGNIFY · KEYNOTE · MADRID 2026
+evento_handle: @magnify_madrid
+---
+slide: hero
+eyebrow: MAGNIFY · KEYNOTE · MADRID 2026
+titular: Cómo hacer que tu marca [importe].
+autor: Jorge Gómez
+fecha: 21 de abril, 2026
+notas: 10 segundos de silencio antes de empezar. Mira al fondo de la sala.
+---
+slide: agenda
+titular: Cuatro [actos].
+eyebrow: AGENDA
+item1: El problema
+item2: El diagnóstico
+item3: La ejecución
+item4: La medida
+activo: 1
+notas: Lee los cuatro actos sin comentar cada uno. 'Vamos a recorrer cuatro actos.'
+---
+slide: divisor-charla
+numero: 01
+eyebrow: ACTO PRIMERO
+titulo: El [problema].
+---
+slide: imagen-full
+eyebrow: EL RUIDO DE FONDO
+titular: Vivimos rodeados de marcas
+  que no dicen [nada].
+notas: Contexto visual. Pausa.
+---
+slide: standard
+titular: No tienes un problema de producto.
+  Tienes uno de [voz].
+cuerpo: Las marcas B2B que escalan no son las mejores.
+  Son las que saben [explicarse].
+---
+slide: manifiesto
+titular: La mejor estrategia
+  es ser [entendible].
+---
+slide: stat-hero
+numero: 73
+sufijo: %
+eyebrow: PERCEPCIÓN B2B
+descripcion: de compradores descarta marcas por mala [claridad].
+fuente: Fuente: Gartner B2B Buyer Report, 2025
+---
+slide: diptych
+label_a: ANTES
+titulo_a: Voz [dispersa].
+cuerpo_a: Cuatro canales, cuatro tonos, cuatro audiencias sin conectar.
+label_b: DESPUÉS
+titulo_b: Voz [única].
+cuerpo_b: Un sistema editorial. Una tesis. Seis meses de trabajo.
+---
+slide: quote-big
+fondo: claro
+cita: Magnify no hizo marketing.
+  Hizo que [entendiéramos]
+  lo que hacemos.
+nombre: Laura Martín
+rol: CEO · Kiln Studio
+---
+slide: divisor-charla
+numero: 02
+eyebrow: ACTO SEGUNDO
+titulo: El [diagnóstico].
+---
+slide: compare
+titular: Dos formas de [hacerlo].
+label_a: MODELO TRADICIONAL
+a1: Campañas sueltas sin tesis
+a2: Métricas de vanidad
+a3: Foco en volumen
+a4: Agencias por canal
+label_b: MAGNIFY
+b1: Sistema editorial único
+b2: Métricas de negocio
+b3: Foco en percepción
+b4: Un solo equipo integrado
+---
+slide: framework
+titular: El método en [tres] pasos.
+paso1_label: DIAGNÓSTICO
+paso1_titulo: Auditoría editorial de tu voz, canales y posicionamiento.
+paso2_label: EJECUCIÓN
+paso2_titulo: Contenido, SEO y sistema visual que refuerzan una tesis.
+paso3_label: MEDIDA
+paso3_titulo: Dashboards accionables conectados a pipeline.
+---
+slide: imagen-split
+eyebrow: ENTREGABLE
+titular: Un sistema editorial vive en [un] documento.
+cuerpo: Tesis, tono, audiencias, canales, ejemplos. Sesenta páginas que reemplazan mil reuniones.
+meta: Sample · Acme Corp · Q3 2025
+posicion: izquierda
+---
+slide: timeline-charla
+titular: Cómo trabajamos [juntos].
+fase1_label: SEMANA 1–2
+fase1_titulo: Kickoff
+fase1_descripcion: Inmersión, stakeholders, hipótesis.
+fase2_label: SEMANA 3–6
+fase2_titulo: Auditoría
+fase2_descripcion: Voz, canales, competencia, SEO.
+fase3_label: SEMANA 7–12
+fase3_titulo: Sistema
+fase3_descripcion: Mensajes, plantillas, piloto.
+fase4_label: SEMANA 12+
+fase4_titulo: Tracking
+fase4_descripcion: Dashboards, iteración.
+---
+slide: stat-hero
+numero: 3.4
+sufijo: ×
+eyebrow: RESULTADO MEDIO
+descripcion: más pipeline cualificado en los primeros [seis] meses.
+fuente: Fuente: datos agregados, 12 cuentas Magnify 2024–2025
+---
+slide: triptych
+num1: 01
+titulo1: Kiln [Studio]
+descripcion1: Reposicionamiento editorial · 2024
+num2: 02
+titulo2: Nord [Robotics]
+descripcion2: Sistema B2B · 2024–2025
+num3: 03
+titulo3: Atelier [Ma]
+descripcion3: Brand voice · 2025
+---
+slide: portrait-quote
+eyebrow: TESTIMONIAL EN EXTENSO
+cita: "Magnify cambió cómo hablamos de lo que hacemos.
+  Y cuando cambias cómo lo dices, cambias [qué] vendes."
+nombre: Laura Martín
+rol: CEO · Kiln Studio
+---
+slide: tabla
+titular: Comparativa de [paquetes].
+col1: FEATURE
+col2: STARTER
+col3: GROWTH
+col4: FLAGSHIP
+row1: Auditoría editorial | ✓ | ✓ | ✓
+row2: Sistema de mensajes | — | ✓ | ✓
+row3: Tracking mensual | — | — | ✓
+row3_hi: si
+row4: Equipo dedicado | — | — | ✓
+row5: Revisión trimestral | — | ✓ | ✓
+---
+slide: manifiesto
+titular: Visibilidad no es ruido.
+  Es [memoria].
+---
+slide: mosaic
+titular: Doce proyectos en [2025].
+label1: FLAGSHIP
+titulo1: Nord Robotics
+  sistema [B2B]
+label2: GROWTH
+titulo2: Kiln Studio
+label3: GROWTH
+titulo3: Atelier Ma
+label4: STARTER
+titulo4: Lumen Labs
+label5: FLAGSHIP
+titulo5: Veritas Group
+---
+slide: equipo
+titular: El [equipo].
+persona1_nombre: Jorge Gómez
+persona1_rol: Director
+persona2_nombre: Laura Pérez
+persona2_rol: Estrategia
+persona3_nombre: Iván Torres
+persona3_rol: Editorial
+persona4_nombre: Marta Díaz
+persona4_rol: Diseño
+---
+slide: pricing
+titular: Tres [formatos].
+plan1_label: STARTER
+plan1_nombre: Audit
+plan1_precio: 3k
+plan1_unidad: project · 4 semanas
+plan1_feat1: Auditoría editorial
+plan1_feat2: Roadmap inicial
+plan1_feat3: 1 workshop
+plan2_label: GROWTH · RECOMENDADO
+plan2_nombre: Sistema
+plan2_precio: 12k
+plan2_unidad: retainer · /mes
+plan2_destacado: si
+plan2_feat1: Todo lo anterior
+plan2_feat2: Sistema de mensajes
+plan2_feat3: Contenido mensual
+plan2_feat4: Revisión trimestral
+plan3_label: FLAGSHIP
+plan3_nombre: Partner
+plan3_precio: 28k
+plan3_unidad: retainer · /mes
+plan3_feat1: Todo lo anterior
+plan3_feat2: Equipo dedicado
+plan3_feat3: Tracking mensual
+plan3_feat4: SLA ejecutivo
+---
+slide: cta-final
+eyebrow: PRÓXIMO PASO
+titular: Empecemos
+  en [mayo].
+contacto: hola@magnify.ing · +34 911 22 33 44
+---
+slide: cierre
+titular: GRACIAS
+contacto: hola@magnify.ing
+  magnify.ing
+  @magnify_madrid` }
   ]
 };
 
@@ -2220,6 +2911,272 @@ function renderReportCover(d) {
 }
 
 // ════════════════════════════════════════════
+// DOCUMENTO (MD → A4 multi-page)
+// ════════════════════════════════════════════
+
+// Split raw MD on "double hr" page breaks: two ---\n--- lines (optionally separated by blank lines).
+// Single --- within a page stays as <hr> in the rendered HTML.
+function splitDocMdPages(raw) {
+  const normalized = raw.replace(/\r\n/g, '\n');
+  const SENTINEL = '\x00PAGE\x00';
+  const withSentinel = normalized.replace(/(^|\n)---\s*\n(?:\s*\n)*---\s*(?=\n|$)/g, `$1${SENTINEL}`);
+  return withSentinel.split(SENTINEL).map(s => s.trim()).filter(Boolean);
+}
+
+// Cover-page detection: the first chunk qualifies for cover treatment when it contains a heading
+// followed by paragraphs only (no lists, hrs, tables, blockquotes). Anything richer goes to body.
+function looksLikeCover(chunkHtml) {
+  const div = document.createElement('div');
+  div.innerHTML = chunkHtml;
+  const kids = Array.from(div.children);
+  if (!kids.length) return false;
+  if (!/^H[1-4]$/i.test(kids[0].tagName)) return false;
+  for (const c of kids) {
+    if (['UL', 'OL', 'TABLE', 'HR', 'BLOCKQUOTE', 'PRE'].includes(c.tagName)) return false;
+  }
+  return true;
+}
+
+// Split the cover chunk into semantic parts: title (first heading), subtitle (second heading),
+// metadata paragraphs (those with <strong>), and confidential line (italic-only paragraph).
+function extractCoverParts(chunkHtml) {
+  const div = document.createElement('div');
+  div.innerHTML = chunkHtml;
+  const kids = Array.from(div.children);
+  let title = '', subtitle = '';
+  const meta = [];
+  let confidential = '';
+  kids.forEach(el => {
+    const tag = el.tagName.toLowerCase();
+    if (/^h[1-4]$/.test(tag)) {
+      if (!title) title = el.innerHTML;
+      else if (!subtitle) subtitle = el.innerHTML;
+    } else if (tag === 'p') {
+      // Italic-only paragraph (just <em>) is treated as the confidential / tagline marker.
+      const onlyEm = el.children.length === 1 && el.firstElementChild && el.firstElementChild.tagName === 'EM';
+      if (onlyEm) {
+        confidential = el.firstElementChild.innerHTML;
+      } else {
+        meta.push(el.innerHTML);
+      }
+    }
+  });
+  return { title, subtitle, meta, confidential };
+}
+
+function renderDocumentoCover(parts, pageN, total) {
+  const eyebrowHtml = parts.subtitle ? `<div class="mc-subtitle">${parts.subtitle}</div>` : '';
+  const metaHtml = parts.meta.length
+    ? `<div class="mc-meta">${parts.meta.map(m => `<p>${m}</p>`).join('')}${parts.confidential ? `<div class="mc-confidential">${parts.confidential}</div>` : ''}</div>`
+    : (parts.confidential ? `<div class="mc-meta"><div class="mc-confidential">${parts.confidential}</div></div>` : '');
+  return `<div class="frame a4 docmd-page docmd-cover">
+    ${wordmark('#FAFAFA')}
+    <h1 class="mc-title">${parts.title || ''}</h1>
+    ${eyebrowHtml}
+    <div class="mc-accent"></div>
+    ${metaHtml}
+    <div class="mc-bottom">
+      <span>${pageN} / ${total}</span>
+      <span>magnify.<span class="ing-ap">ing</span></span>
+    </div>
+  </div>`;
+}
+
+function renderDocumentoPage(bodyHtml, pageN, total) {
+  // Wordmark-only header — the old right-side "running header" duplicated the brand name when the MD
+  // started with "# Magnify" and added noise without information otherwise.
+  return `<div class="frame a4 docmd-page">
+    <div class="docmd-head">
+      ${wordmark('#0A0A0A')}
+    </div>
+    <div class="docmd-sep"></div>
+    <div class="docmd-body">${bodyHtml}</div>
+    <div class="docmd-foot">
+      <span>${pageN} / ${total}</span>
+      <span>magnify.<span class="ing-ap">ing</span></span>
+    </div>
+  </div>`;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
+// Extract the running header and export-slug from the first H1 in the raw MD.
+function deriveDocTitle(raw) {
+  const m = raw.match(/^#\s+(.+)$/m);
+  return m ? m[1].trim().replace(/\s+/g, ' ').slice(0, 80) : '';
+}
+function deriveDocSlug(raw) {
+  const title = deriveDocTitle(raw).toLowerCase();
+  return title.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'doc';
+}
+
+// Pre-process the raw MD before marked runs:
+// - Em-dashes at paragraph start ("— text") are often used as list markers in prose. Convert to real `- ` bullets.
+const SIGNOFFS = ['Best', 'Best regards', 'Kind regards', 'Sincerely', 'Regards',
+                  'Saludos', 'Saludos cordiales', 'Un saludo', 'Atentamente', 'Cordialmente'];
+const SIGNOFF_RE = new RegExp('^(?:' + SIGNOFFS.map(s => s.replace(/\s/g, '\\s+')).join('|') + '),?\\s*$', 'i');
+
+function polishDocMd(md) {
+  let out = md;
+  // The wordmark in the page header already says "Magnify" — a leading `# Magnify` as the first h1
+  // duplicates the brand name in the body. Strip it so we get one Magnify at the top, not two.
+  out = out.replace(/^\s*#\s+Magnify\s*$/im, '');
+  // Em-dashes at line-start are often used as visual list markers in prose. Convert to real bullets.
+  out = out.replace(/(^|\n\n)— /g, '$1- ');
+  return out;
+}
+
+// Post-process marked's HTML output to tighten structure for doc rendering:
+// - A paragraph that is just a bold label (e.g. "**Client profile**") becomes an h4 — but only for short labels.
+// - A paragraph whose first line is a sign-off greeting gets wrapped in `.docmd-signoff` with name+affiliation styling.
+function polishDocHtml(html) {
+  return html
+    .replace(/<p>\s*<strong>([^<]+)<\/strong>\s*<\/p>/g, (m, label) =>
+      label.length <= 60 ? `<h4>${label}</h4>` : m
+    )
+    .replace(/<p>([\s\S]+?)<\/p>/g, (m, inner) => {
+      // Split on <br> (marked with breaks:true emits "<br>" or "<br/>").
+      const lines = inner.split(/<br\s*\/?>/i).map(s => s.trim());
+      if (lines.length < 2) return m;
+      if (!SIGNOFF_RE.test(lines[0].replace(/<[^>]+>/g, ''))) return m;
+      const salutation = lines[0];
+      const name = lines[1] || '';
+      const rest = lines.slice(2).filter(Boolean);
+      const tail = rest.length ? rest.map(l => `<span class="so-affiliation">${l}</span>`).join('<br>') : '';
+      return `<p class="docmd-signoff"><span class="so-salutation">${salutation}</span><br><span class="so-name">${name}</span>${tail ? '<br>' + tail : ''}</p>`;
+    });
+}
+
+// Split an HTML string at top-level element boundaries so we can paginate it. Returns an array of HTML strings,
+// each fitting within `maxHeight` pixels when rendered in a body with `.docmd-body` styles at width 682px.
+// Uses an off-screen measurement container so sizes include real font metrics + margin collapsing.
+function paginateDocHtml(html, maxHeight) {
+  const measure = document.createElement('div');
+  measure.className = 'docmd-body';
+  // width = A4 body width minus the left/right padding of .docmd-body (56*2). Keep styling identical so measurement is accurate.
+  measure.style.cssText = 'position:absolute; left:-9999px; top:0; width:682px; padding:0; overflow:visible;';
+  measure.innerHTML = html;
+  document.body.appendChild(measure);
+
+  const kids = Array.from(measure.children);
+  // Measure each child's outer height (bounding rect + collapsed margins captured as offsets between siblings).
+  // Simpler heuristic: use offsetTop + offsetHeight across siblings vs total scrollHeight.
+  const pages = [[]];
+  let currentPageHeight = 0;
+
+  kids.forEach(el => {
+    const h = el.getBoundingClientRect().height;
+    const styles = getComputedStyle(el);
+    const marginTop = parseFloat(styles.marginTop) || 0;
+    const marginBottom = parseFloat(styles.marginBottom) || 0;
+    // For the first element on a page, don't count marginTop (it collapses against the page top).
+    const effectiveH = h + (pages[pages.length - 1].length === 0 ? 0 : marginTop) + marginBottom;
+
+    // If adding this element would overflow the page AND the page already has content, start a new page.
+    if (currentPageHeight + effectiveH > maxHeight && pages[pages.length - 1].length > 0) {
+      pages.push([]);
+      currentPageHeight = 0;
+    }
+    pages[pages.length - 1].push(el.outerHTML);
+    currentPageHeight += (pages[pages.length - 1].length === 1 ? h + marginBottom : effectiveH);
+  });
+
+  document.body.removeChild(measure);
+  return pages.map(p => p.join(''));
+}
+
+function generateDocumento(raw, preview, renderC) {
+  if (typeof marked === 'undefined' || !marked.parse) {
+    showError('El parser de markdown no ha cargado (bloqueo de CDN, SRI o red). Abre DevTools \u2192 Network y busca <code>marked.min.js</code> para ver el motivo.');
+    return;
+  }
+  const chunks = splitDocMdPages(raw);
+  if (!chunks.length) { showError('El documento est\u00e1 vac\u00edo.'); return; }
+  // breaks:true so single-line-separated metadata lines and sign-offs ("Best,\nDavid\nMagnify") don't collapse into one paragraph.
+  marked.setOptions({ gfm: true, breaks: true });
+
+  // A4 flowable area inside .docmd-body (content box, excluding body's own padding):
+  // 1123 − 46 header − 14 sep − 36 top-pad − 72 bot-pad ≈ 955px. Conservative budget of 880 absorbs
+  // font-load variance + margin-collapse slop + keeps content clear of the absolute-positioned footer.
+  const BODY_BUDGET = 880;
+
+  // The first chunk, if it looks like a cover (heading + prose, no lists/tables), gets dark editorial
+  // cover treatment. Everything else paginates through the standard body flow.
+  let coverParts = null;
+  const renderedPages = [];
+  chunks.forEach((mdChunk, chunkIdx) => {
+    let bodyHtml;
+    try { bodyHtml = polishDocHtml(marked.parse(polishDocMd(mdChunk))); }
+    catch (e) { bodyHtml = `<p>Error parseando: ${e.message}</p>`; }
+    if (chunkIdx === 0 && looksLikeCover(bodyHtml)) {
+      coverParts = extractCoverParts(bodyHtml);
+      return;
+    }
+    const split = paginateDocHtml(bodyHtml, BODY_BUDGET);
+    split.forEach(h => renderedPages.push(h));
+  });
+
+  // Anti-orphan: if a page ends with a heading (h1–h4), move it to the next page so no subtitle is
+  // left floating without its paragraph. The regex uses a back-reference + negative lookahead so it
+  // captures ONLY the last heading — a naïve `<h[1-4]>[\s\S]*?</h[1-4]>$` is lazy in theory but
+  // backtracks to match from the first heading when anchored by $, eating the whole page.
+  const TRAIL_HEADING_RE = /<(h[1-4])[^>]*>(?:(?!<\/\1>)[\s\S])*<\/\1>\s*$/i;
+  for (let i = 0; i < renderedPages.length - 1; i++) {
+    let page = renderedPages[i];
+    while (true) {
+      const trailMatch = page.match(TRAIL_HEADING_RE);
+      if (!trailMatch) break;
+      const afterRemoval = page.slice(0, page.length - trailMatch[0].length).trim();
+      if (!afterRemoval) break;
+      renderedPages[i + 1] = trailMatch[0].replace(/\s*$/, '') + renderedPages[i + 1];
+      page = afterRemoval;
+    }
+    renderedPages[i] = page;
+  }
+
+  // Defensive: remove any page that ended up empty (e.g., from an authored chunk that only contained an h1
+  // which got stripped by polishDocMd, or from a degenerate paginator outcome).
+  const nonEmpty = renderedPages.map(p => p.trim()).filter(Boolean);
+  renderedPages.length = 0;
+  renderedPages.push(...nonEmpty);
+
+  const total = (coverParts ? 1 : 0) + renderedPages.length;
+  const maxW = preview.clientWidth - 80;
+  const scale = Math.min(maxW / 794, 0.55);
+
+  const appendPage = (pageHtml, pageN) => {
+    const actualDiv = document.createElement('div');
+    actualDiv.innerHTML = pageHtml;
+    renderC.appendChild(actualDiv);
+    const frame = actualDiv.querySelector('.frame');
+    renderedFrames.push(frame);
+
+    const card = document.createElement('div');
+    card.className = 'preview-card paper';
+    card.style.width = (794 * scale) + 'px';
+    card.style.height = (1123 * scale) + 'px';
+    card.style.marginBottom = '32px';
+    card.innerHTML = `<div class="slide-label">${pageN} / ${total}</div>` + pageHtml;
+    const inner = card.querySelector('.frame');
+    inner.style.transform = `scale(${scale})`;
+    inner.style.transformOrigin = 'top left';
+    preview.appendChild(card);
+  };
+
+  let pageCursor = 0;
+  if (coverParts) {
+    pageCursor += 1;
+    appendPage(renderDocumentoCover(coverParts, pageCursor, total), pageCursor);
+  }
+  renderedPages.forEach(bodyHtml => {
+    pageCursor += 1;
+    appendPage(renderDocumentoPage(bodyHtml, pageCursor, total), pageCursor);
+  });
+}
+
+// ════════════════════════════════════════════
 // EMAIL SIGNATURE RENDERER
 // ════════════════════════════════════════════
 
@@ -2742,6 +3699,497 @@ function renderPsSiguientePaso(d) {
   </div></div>`;
 }
 
+// ════════════════════════════════════════════
+// CHARLA — slide renderers (keynote talks)
+// All share ps-slide + ps-charla helpers; event chrome (logo + handle)
+// comes from psTopMeta(g) which reads evento_logo / evento_handle from
+// the global block. Brand icon bottom-left is always emitted.
+// ════════════════════════════════════════════
+
+function psIconSvg(color, inner) {
+  return `<svg viewBox="0 0 283 283" xmlns="http://www.w3.org/2000/svg"><rect width="283" height="283" rx="56.6" fill="${color}"/><polygon points="141.7,77.7 97.6,224.7 71,224.7 133.9,57.9 141.7,57.9 149.5,57.9 212.3,224.7 185.7,224.7" fill="${inner}"/></svg>`;
+}
+
+function psBrandIcon(surface) {
+  // surface: 'dk' (dark bg), 'lt' (light bg), 'yl' (yellow bg), 'img' (on image)
+  if (surface === 'lt') return psIconSvg('#0A0A0A', '#FAFAFA');
+  if (surface === 'yl') return psIconSvg('#0A0A0A', '#FFD600');
+  return psIconSvg('#FAFAFA', '#0A0A0A');
+}
+
+function psTopMeta(g) {
+  if (!g) return '';
+  const logoRef = (g.evento_logo || '').trim();
+  const handle = (g.evento_handle || '').trim();
+  const nombre = (g.evento_nombre || '').trim();
+  const logoSrc = uploadedImages[logoRef] || null;
+  const left = logoSrc
+    ? `<img class="logo" src="${logoSrc}" alt="${nombre || 'logo evento'}">`
+    : (nombre ? `<span>${nombre}</span>` : '<span></span>');
+  const right = handle ? `<span class="handle">${handle}</span>` : '<span></span>';
+  if (!logoSrc && !nombre && !handle) return '';
+  return `<div class="ps-top-meta">${left}${right}</div>`;
+}
+
+function psPaginator(n, tot, onImage) {
+  if (!n && n !== 0) return '';
+  const cls = onImage ? 'ps-pag' : 'ps-pag';
+  const style = onImage ? ' style="color:#FAFAFA;opacity:0.75"' : '';
+  return `<div class="${cls}"${style}>${String(n).padStart(2, '0')} / ${String(tot).padStart(2, '0')}</div>`;
+}
+
+function psBgFromImage(imgRef, fallbackClass) {
+  // Returns style string for background or falls back to placeholder class.
+  const src = uploadedImages[imgRef];
+  if (src) return { style: `background-image:url('${src}')`, className: '' };
+  return { style: '', className: fallbackClass };
+}
+
+// Charla — Hero (cover with hairline + author/date)
+function renderPsHero(d, g, n, tot) {
+  const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
+  const title = applyHighlights(d.titular || g.titulo || 'Título');
+  const eyebrow = d.eyebrow || d.kicker || (g.evento_nombre ? g.evento_nombre.toUpperCase() : '');
+  const author = d.autor || g.autor || '';
+  const fecha = d.fecha || g.fecha || '';
+  const meta = [author, fecha].filter(Boolean).join(' · ');
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    ${psTopMeta(g)}
+    <div class="ps-hero">
+      ${eyebrow ? `<div class="eyebrow">${eyebrow}</div>` : ''}
+      <div class="title">${title}</div>
+      <div class="hairline"></div>
+      ${meta ? `<div class="author">${meta}</div>` : ''}
+    </div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    ${psPaginator(n, tot)}
+  </div></div>`;
+}
+
+// Charla — Agenda (numbered list)
+function renderPsAgenda(d, g, n, tot) {
+  const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
+  const items = [];
+  for (let i = 1; i <= 6; i++) if (d['item' + i]) items.push(d['item' + i]);
+  const activeIdx = parseInt(d.activo || '1', 10);
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    ${psTopMeta(g)}
+    <div class="ps-charla">
+      <div class="eyebrow">${d.eyebrow || 'AGENDA'}</div>
+      <h1 class="h1" style="margin-top:32px">${applyHighlights(d.titular || 'Agenda')}</h1>
+      <ul class="ps-agenda-list">
+        ${items.map((it, i) => `<li class="${i + 1 === activeIdx ? 'active' : ''}"><span class="n">${String(i + 1).padStart(2, '0')}</span><span>${it}</span></li>`).join('')}
+      </ul>
+    </div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    ${psPaginator(n, tot)}
+  </div></div>`;
+}
+
+// Charla — Manifiesto (big italic sentence, yellow default)
+function renderPsManifiesto(d, g, n, tot) {
+  const surface = d.fondo === 'oscuro' ? 'dk' : d.fondo === 'claro' ? 'lt' : 'yl';
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    ${psTopMeta(g)}
+    <div class="ps-manif">
+      <div class="hero-xxl">${applyHighlights(d.titular || d.frase || '').replace(/\n/g, '<br>')}</div>
+    </div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    ${psPaginator(n, tot)}
+  </div></div>`;
+}
+
+// Charla — Divisor (act number + title on yellow)
+function renderPsDivisorC(d, g, n, tot) {
+  const surface = d.fondo === 'oscuro' ? 'dk' : d.fondo === 'claro' ? 'lt' : 'yl';
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    ${psTopMeta(g)}
+    <div class="ps-divisor-c">
+      <div class="num">${d.numero || '01'}</div>
+      <div class="sep"></div>
+      <div class="right">
+        <div class="meta-s">${d.eyebrow || 'ACTO'}</div>
+        <div class="title">${applyHighlights(d.titulo || d.titular || '')}</div>
+      </div>
+    </div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    ${psPaginator(n, tot)}
+  </div></div>`;
+}
+
+// Charla — Standard (h1 + body-l)
+function renderPsStandard(d, g, n, tot) {
+  const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    ${psTopMeta(g)}
+    <div class="ps-charla ps-std">
+      ${d.eyebrow ? `<div class="eyebrow" style="margin-bottom:48px">${d.eyebrow}</div>` : ''}
+      <div class="h1-m">${applyHighlights(d.titular || '').replace(/\n/g, '<br>')}</div>
+      ${d.cuerpo ? `<div class="body-xl">${applyHighlights(d.cuerpo).replace(/\n/g, '<br>')}</div>` : ''}
+    </div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    ${psPaginator(n, tot)}
+  </div></div>`;
+}
+
+// Charla — Stat Hero (big number + explanation side-by-side)
+function renderPsStatHero(d, g, n, tot) {
+  const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
+  const num = d.numero || '0';
+  const suf = d.sufijo || '';
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    ${psTopMeta(g)}
+    <div class="ps-stat-hero">
+      <div class="num">${num}${suf}</div>
+      <div class="explain">
+        ${d.eyebrow ? `<span class="eyebrow">${d.eyebrow}</span>` : ''}
+        <h2>${applyHighlights(d.descripcion || '')}</h2>
+        ${d.fuente ? `<div class="src">${d.fuente}</div>` : ''}
+      </div>
+    </div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    ${psPaginator(n, tot)}
+  </div></div>`;
+}
+
+// Charla — Compare (horizontal 2-col with hairlines)
+function renderPsCompare(d, g, n, tot) {
+  const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
+  const a = [], b = [];
+  for (let i = 1; i <= 6; i++) {
+    if (d['a' + i]) a.push(d['a' + i]);
+    if (d['b' + i]) b.push(d['b' + i]);
+  }
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    ${psTopMeta(g)}
+    <div class="ps-compare">
+      <h2>${applyHighlights(d.titular || '')}</h2>
+      <div class="grid">
+        <div class="col"><span class="lbl">${d.label_a || 'MODELO TRADICIONAL'}</span><ul>${a.map(x => `<li>${x}</li>`).join('')}</ul></div>
+        <div class="divider"></div>
+        <div class="col magnify"><span class="lbl">${d.label_b || 'MAGNIFY'}</span><ul>${b.map(x => `<li>${x}</li>`).join('')}</ul></div>
+      </div>
+    </div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    ${psPaginator(n, tot)}
+  </div></div>`;
+}
+
+// Charla — Framework (3 numbered steps)
+function renderPsFramework(d, g, n, tot) {
+  const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
+  const steps = [];
+  for (let i = 1; i <= 3; i++) {
+    if (d[`paso${i}_titulo`] || d[`paso${i}_label`]) {
+      steps.push({
+        n: String(i).padStart(2, '0'),
+        label: d[`paso${i}_label`] || d[`paso${i}_etiqueta`] || '',
+        desc: d[`paso${i}_titulo`] || d[`paso${i}_descripcion`] || ''
+      });
+    }
+  }
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    ${psTopMeta(g)}
+    <div class="ps-fw">
+      <h2>${applyHighlights(d.titular || '')}</h2>
+      <div class="grid">
+        ${steps.map(s => `<div class="step"><div class="num">${s.n}</div><div class="label">${s.label}</div><div class="desc">${s.desc}</div></div>`).join('')}
+      </div>
+    </div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    ${psPaginator(n, tot)}
+  </div></div>`;
+}
+
+// Charla — Timeline (4 nodes)
+function renderPsTimelineC(d, g, n, tot) {
+  const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
+  const nodes = [];
+  for (let i = 1; i <= 4; i++) {
+    if (d[`fase${i}_titulo`] || d[`fase${i}_label`]) {
+      nodes.push({
+        label: d[`fase${i}_label`] || d[`fase${i}_etiqueta`] || '',
+        title: d[`fase${i}_titulo`] || '',
+        desc: d[`fase${i}_descripcion`] || d[`fase${i}_desc`] || ''
+      });
+    }
+  }
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    ${psTopMeta(g)}
+    <div class="ps-tl-c">
+      <h2>${applyHighlights(d.titular || '')}</h2>
+      <div class="track"><div class="grid">
+        ${nodes.map(nd => `<div class="node"><div class="dot"></div><div class="label">${nd.label}</div><div class="title">${nd.title}</div><div class="desc">${nd.desc}</div></div>`).join('')}
+      </div></div>
+    </div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    ${psPaginator(n, tot)}
+  </div></div>`;
+}
+
+// Charla — Image full-bleed with overlay
+function renderPsImagenFull(d, g, n, tot) {
+  const bg = psBgFromImage(d.imagen, 'ph');
+  return `<div class="frame ps"><div class="ps-slide dk on-image">
+    <div class="ps-imgfull">
+      <div class="bg ${bg.className}" style="${bg.style}"></div>
+      <div class="scrim"></div>
+      <div class="overlay">
+        ${d.eyebrow ? `<span class="eyebrow">${d.eyebrow}</span>` : ''}
+        <div class="title">${applyHighlights(d.titular || '').replace(/\n/g, '<br>')}</div>
+      </div>
+    </div>
+    ${psTopMeta(g)}
+    <div class="ps-wmk-bl">${psBrandIcon('img')}</div>
+    ${psPaginator(n, tot, true)}
+  </div></div>`;
+}
+
+// Charla — Image split (text + image, or reverse)
+function renderPsImagenSplit(d, g, n, tot) {
+  const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
+  const bg = psBgFromImage(d.imagen, 'ph');
+  const rev = d.posicion === 'derecha' ? ' rev' : '';
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    <div class="ps-imgsplit${rev}">
+      <div class="pane-img ${bg.className}" style="${bg.style}"></div>
+      <div class="pane-txt">
+        ${d.eyebrow ? `<span class="eyebrow">${d.eyebrow}</span>` : ''}
+        <h2>${applyHighlights(d.titular || '').replace(/\n/g, '<br>')}</h2>
+        ${d.cuerpo ? `<div class="body-l">${applyHighlights(d.cuerpo).replace(/\n/g, '<br>')}</div>` : ''}
+        ${d.meta ? `<div class="meta-s">${d.meta}</div>` : ''}
+      </div>
+    </div>
+    ${psTopMeta(g)}
+    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    ${psPaginator(n, tot)}
+  </div></div>`;
+}
+
+// Charla — Diptych (2 images with captions)
+function renderPsDiptych(d, g, n, tot) {
+  const bg1 = psBgFromImage(d.imagen_a, 'ph1');
+  const bg2 = psBgFromImage(d.imagen_b, 'ph2');
+  return `<div class="frame ps"><div class="ps-slide dk on-image">
+    <div class="ps-dip">
+      <div class="pane ${bg1.className}" style="${bg1.style}"><div class="cap">
+        <span class="lbl">${d.label_a || 'ANTES'}</span>
+        <div class="title">${applyHighlights(d.titulo_a || '').replace(/\n/g, '<br>')}</div>
+        ${d.cuerpo_a ? `<div class="body">${d.cuerpo_a}</div>` : ''}
+      </div></div>
+      <div class="pane ${bg2.className}" style="${bg2.style}"><div class="cap">
+        <span class="lbl">${d.label_b || 'DESPUÉS'}</span>
+        <div class="title">${applyHighlights(d.titulo_b || '').replace(/\n/g, '<br>')}</div>
+        ${d.cuerpo_b ? `<div class="body">${d.cuerpo_b}</div>` : ''}
+      </div></div>
+    </div>
+    ${psTopMeta(g)}
+    <div class="ps-wmk-bl">${psBrandIcon('img')}</div>
+    ${psPaginator(n, tot, true)}
+  </div></div>`;
+}
+
+// Charla — Triptych (3 image tiles)
+function renderPsTriptych(d, g, n, tot) {
+  const tiles = [];
+  for (let i = 1; i <= 3; i++) {
+    const bg = psBgFromImage(d[`imagen${i}`], `ph${i}`);
+    tiles.push({
+      style: bg.style,
+      className: bg.className,
+      num: d[`num${i}`] || String(i).padStart(2, '0'),
+      t: d[`titulo${i}`] || '',
+      s: d[`descripcion${i}`] || d[`meta${i}`] || ''
+    });
+  }
+  return `<div class="frame ps"><div class="ps-slide dk on-image">
+    <div class="ps-trp">
+      ${tiles.map(t => `<div class="tile ${t.className}" style="${t.style}"><div class="cap"><div class="num">${t.num}</div><div class="t">${applyHighlights(t.t)}</div>${t.s ? `<div class="s">${t.s}</div>` : ''}</div></div>`).join('')}
+    </div>
+    ${psTopMeta(g)}
+    <div class="ps-wmk-bl">${psBrandIcon('img')}</div>
+    ${psPaginator(n, tot, true)}
+  </div></div>`;
+}
+
+// Charla — Mosaic (1 big + 4 small with head)
+function renderPsMosaic(d, g, n, tot) {
+  const cells = [];
+  for (let i = 1; i <= 5; i++) {
+    const bg = psBgFromImage(d[`imagen${i}`], `ph${i}`);
+    cells.push({
+      big: i === 1,
+      style: bg.style,
+      className: bg.className,
+      lbl: d[`label${i}`] || '',
+      t: d[`titulo${i}`] || ''
+    });
+  }
+  return `<div class="frame ps"><div class="ps-slide dk on-image">
+    <div class="ps-mos-head"><h2>${applyHighlights(d.titular || '').replace(/\n/g, '<br>')}</h2><span>${n && tot ? `${String(n).padStart(2, '0')} / ${String(tot).padStart(2, '0')}` : ''}</span></div>
+    <div class="ps-mos">
+      ${cells.map(c => `<div class="cell ${c.big ? 'big' : ''} ${c.className}" style="${c.style}"><div class="cap">${c.lbl ? `<span class="lbl">${c.lbl}</span>` : ''}<div class="t">${applyHighlights(c.t).replace(/\n/g, '<br>')}</div></div></div>`).join('')}
+    </div>
+    ${psTopMeta(g)}
+    <div class="ps-wmk-bl">${psBrandIcon('img')}</div>
+  </div></div>`;
+}
+
+// Charla — Portrait quote (big photo + quote in text panel)
+function renderPsPortrait(d, g, n, tot) {
+  const bg = psBgFromImage(d.imagen, 'ph');
+  return `<div class="frame ps"><div class="ps-slide dk">
+    <div class="ps-port">
+      <div class="pane-img ${bg.className}" style="${bg.style}"></div>
+      <div class="pane-txt">
+        ${d.eyebrow ? `<span class="eyebrow">${d.eyebrow}</span>` : ''}
+        <div class="h-quote">${applyHighlights(d.cita || '').replace(/\n/g, '<br>')}</div>
+        ${d.nombre ? `<div class="name">${d.nombre}</div>` : ''}
+        ${d.rol ? `<div class="role">${d.rol}</div>` : ''}
+      </div>
+    </div>
+    ${psTopMeta(g)}
+    <div class="ps-wmk-bl">${psBrandIcon('dk')}</div>
+    ${psPaginator(n, tot, true)}
+  </div></div>`;
+}
+
+// Charla — Quote big (centered with photo circle)
+function renderPsQuoteBig(d, g, n, tot) {
+  const surface = d.fondo === 'oscuro' ? 'dk' : d.fondo === 'amarillo' ? 'yl' : 'lt';
+  const bg = psBgFromImage(d.foto, '');
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    ${psTopMeta(g)}
+    <div class="ps-qbig">
+      <div class="mark">&ldquo;</div>
+      <div class="text">${applyHighlights(d.cita || '').replace(/\n/g, '<br>')}</div>
+      <div class="attr">
+        <div class="photo" style="${bg.style}"></div>
+        <div><div class="name">${d.nombre || ''}</div>${d.rol ? `<div class="role">${d.rol}</div>` : ''}</div>
+      </div>
+    </div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    ${psPaginator(n, tot)}
+  </div></div>`;
+}
+
+// Charla — Tabla (comparison table with optional highlight row)
+function renderPsTabla(d, g, n, tot) {
+  const surface = 'lt';
+  const cols = [];
+  for (let i = 1; i <= 4; i++) if (d[`col${i}`]) cols.push(d[`col${i}`]);
+  const rows = [];
+  for (let i = 1; i <= 10; i++) {
+    if (d[`row${i}`]) {
+      const parts = d[`row${i}`].split('|').map(s => s.trim());
+      const highlight = (d[`row${i}_hi`] || '').toLowerCase() === 'si';
+      rows.push({ parts, highlight });
+    }
+  }
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    ${psTopMeta(g)}
+    <div class="ps-tabla">
+      <h2>${applyHighlights(d.titular || '')}</h2>
+      <table>
+        <thead><tr>${cols.map((c, i) => `<th ${i > 0 ? 'class="c"' : ''}>${c}</th>`).join('')}</tr></thead>
+        <tbody>
+          ${rows.map(r => `<tr class="${r.highlight ? 'hi' : ''}">${r.parts.map((p, i) => `<td ${i > 0 ? 'class="c"' : ''}>${p}</td>`).join('')}</tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    ${psPaginator(n, tot)}
+  </div></div>`;
+}
+
+// Charla — Equipo (4-col team grid)
+function renderPsEquipo(d, g, n, tot) {
+  const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
+  const members = [];
+  for (let i = 1; i <= 8; i++) {
+    if (d[`persona${i}_nombre`]) {
+      const bg = psBgFromImage(d[`persona${i}_foto`], `ph${((i - 1) % 4) + 1}`);
+      members.push({
+        style: bg.style,
+        className: bg.className,
+        name: d[`persona${i}_nombre`],
+        role: d[`persona${i}_rol`] || ''
+      });
+    }
+  }
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    ${psTopMeta(g)}
+    <div class="ps-team">
+      <h2>${applyHighlights(d.titular || 'El equipo')}</h2>
+      <div class="grid">
+        ${members.map(m => `<div class="card"><div class="photo ${m.className}" style="${m.style}"></div><div class="name">${m.name}</div><div class="role">${m.role}</div></div>`).join('')}
+      </div>
+    </div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    ${psPaginator(n, tot)}
+  </div></div>`;
+}
+
+// Charla — Pricing (3 col, middle can be highlighted)
+function renderPsPricing(d, g, n, tot) {
+  const surface = d.fondo === 'claro' ? 'lt' : 'dk';
+  const cols = [];
+  for (let i = 1; i <= 3; i++) {
+    if (d[`plan${i}_nombre`]) {
+      const feats = [];
+      for (let j = 1; j <= 6; j++) if (d[`plan${i}_feat${j}`]) feats.push(d[`plan${i}_feat${j}`]);
+      cols.push({
+        hi: (d[`plan${i}_destacado`] || '').toLowerCase() === 'si',
+        lbl: d[`plan${i}_label`] || '',
+        name: d[`plan${i}_nombre`],
+        price: d[`plan${i}_precio`] || '',
+        unit: d[`plan${i}_unidad`] || '',
+        feats
+      });
+    }
+  }
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    ${psTopMeta(g)}
+    <div class="ps-pricing">
+      <h2>${applyHighlights(d.titular || '')}</h2>
+      <div class="grid">
+        ${cols.map(c => `<div class="col ${c.hi ? 'hi' : ''}"><div class="lbl">${c.lbl}</div><div class="name">${c.name}</div><div class="price">${c.price}</div><div class="unit">${c.unit}</div><ul>${c.feats.map(f => `<li>${f}</li>`).join('')}</ul></div>`).join('')}
+      </div>
+    </div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    ${psPaginator(n, tot)}
+  </div></div>`;
+}
+
+// Charla — CTA final (big yellow slide)
+function renderPsCtaFinal(d, g, n, tot) {
+  const surface = d.fondo === 'oscuro' ? 'dk' : d.fondo === 'claro' ? 'lt' : 'yl';
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    ${psTopMeta(g)}
+    <div class="ps-ctafinal">
+      ${d.eyebrow ? `<span class="eyebrow">${d.eyebrow}</span>` : ''}
+      <h1>${applyHighlights(d.titular || '').replace(/\n/g, '<br>')}</h1>
+      ${d.contacto ? `<div class="contact">${d.contacto}</div>` : ''}
+    </div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    ${psPaginator(n, tot)}
+  </div></div>`;
+}
+
+// Charla — Cierre (thank you / close)
+function renderPsCierre(d, g, n, tot) {
+  const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
+  const wmColor = surface === 'dk' ? '#FAFAFA' : '#0A0A0A';
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    ${psTopMeta(g)}
+    <div class="ps-cierre">
+      <div class="wm">${wordmark(wmColor)}</div>
+      <div class="thanks">${d.titular || 'GRACIAS'}</div>
+      ${d.contacto ? `<div class="contact">${d.contacto.replace(/\n/g, '<br>')}</div>` : ''}
+    </div>
+  </div></div>`;
+}
+
 const PS_RENDERERS = {
   'portada': renderPsPortada,
   'divisor': renderPsDivisor,
@@ -2752,7 +4200,29 @@ const PS_RENDERERS = {
   'cuadrante': renderPsCuadrante,
   'timeline': renderPsTimeline,
   'imagen': renderPsImagen,
-  'siguiente-paso': renderPsSiguientePaso
+  'siguiente-paso': renderPsSiguientePaso,
+  // Charla
+  'hero': renderPsHero,
+  'agenda': renderPsAgenda,
+  'manifiesto': renderPsManifiesto,
+  'divisor-charla': renderPsDivisorC,
+  'standard': renderPsStandard,
+  'stat-hero': renderPsStatHero,
+  'compare': renderPsCompare,
+  'framework': renderPsFramework,
+  'timeline-charla': renderPsTimelineC,
+  'imagen-full': renderPsImagenFull,
+  'imagen-split': renderPsImagenSplit,
+  'diptych': renderPsDiptych,
+  'triptych': renderPsTriptych,
+  'mosaic': renderPsMosaic,
+  'portrait-quote': renderPsPortrait,
+  'quote-big': renderPsQuoteBig,
+  'tabla': renderPsTabla,
+  'equipo': renderPsEquipo,
+  'pricing': renderPsPricing,
+  'cta-final': renderPsCtaFinal,
+  'cierre': renderPsCierre
 };
 
 // ════════════════════════════════════════════
@@ -3005,6 +4475,453 @@ function buildPptxSiguientePaso(pptx, d) {
   s.addImage({ data: iconDataUri('#0A0A0A'), x: 0.7, y: 6.85, w: 0.42, h: 0.48 });
 }
 
+// ════════════════════════════════════════════
+// CHARLA — PPTX builders (pragmatic, text-first)
+// Image-heavy slides embed the uploaded image when available; otherwise
+// they degrade to a monochrome card with text. PPTX doesn't render
+// layered scrim gradients reliably, so captions sit on an opaque shape.
+// ════════════════════════════════════════════
+
+function addTopMetaPptx(slide, g, onColor) {
+  if (!g) return;
+  const handle = (g.evento_handle || '').trim();
+  const nombre = (g.evento_nombre || '').trim();
+  const logoRef = (g.evento_logo || '').trim();
+  const logoSrc = uploadedImages[logoRef];
+  const color = onColor || COLOR_GREY;
+  if (logoSrc) {
+    slide.addImage({ data: logoSrc, x: 0.7, y: 0.42, w: 1.8, h: 0.4, sizing: { type: 'contain', w: 1.8, h: 0.4 } });
+  } else if (nombre) {
+    slide.addText(nombre, { x: 0.7, y: 0.45, w: 6, h: 0.35, fontFace: FONT_SANS, fontSize: 14, color, charSpacing: 1.2 });
+  }
+  if (handle) {
+    slide.addText(handle, { x: 7, y: 0.45, w: 5.63, h: 0.35, fontFace: FONT_SANS, fontSize: 14, color, align: 'right', bold: true });
+  }
+}
+
+function addBrandIcon(slide, onImage) {
+  const color = onImage ? '#FAFAFA' : '#FAFAFA';
+  slide.addImage({ data: iconDataUri(color), x: 0.7, y: 6.7, w: 0.42, h: 0.48 });
+}
+
+function addBrandIconLt(slide) {
+  slide.addImage({ data: iconDataUri('#0A0A0A'), x: 0.7, y: 6.7, w: 0.42, h: 0.48 });
+}
+
+function addPaginator(slide, n, tot, color) {
+  if (!n || !tot) return;
+  slide.addText(`${String(n).padStart(2, '0')} / ${String(tot).padStart(2, '0')}`, {
+    x: 10.8, y: 6.75, w: 2, h: 0.35, fontFace: FONT_SANS, fontSize: 14, color: color || COLOR_GREY, align: 'right', charSpacing: 1.2
+  });
+}
+
+function surfaceBg(d, defaultDk) {
+  if (d.fondo === 'amarillo') return { bg: COLOR_YELLOW, fg: COLOR_DARK, meta: '444444' };
+  if (d.fondo === 'claro') return { bg: 'FFFFFF', fg: COLOR_DARK, meta: '666666' };
+  if (d.fondo === 'oscuro' || defaultDk) return { bg: COLOR_DARK, fg: COLOR_LIGHT_TEXT, meta: COLOR_GREY };
+  return { bg: 'FFFFFF', fg: COLOR_DARK, meta: '666666' };
+}
+
+function buildPptxHero(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  const surf = surfaceBg(d, true);
+  s.background = { color: surf.bg };
+  addTopMetaPptx(s, g, surf.meta);
+  const eyebrow = d.eyebrow || d.kicker || (g.evento_nombre ? g.evento_nombre.toUpperCase() : '');
+  if (eyebrow) s.addText(eyebrow, { x: 0.7, y: 3.8, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: surf.meta, charSpacing: 2 });
+  s.addText(richWithHighlights(d.titular || g.titulo || 'Titulo', { fontFace: FONT_SERIF, fontSize: 72, color: surf.fg }, d.fondo === 'amarillo' ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark')),
+    { x: 0.7, y: 4.2, w: 12, h: 1.6, valign: 'top' });
+  s.addShape(pptx.ShapeType.rect, { x: 0.7, y: 5.9, w: 0.6, h: 0.02, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
+  const meta = [d.autor || g.autor, d.fecha || g.fecha].filter(Boolean).join(' · ');
+  if (meta) s.addText(meta, { x: 0.7, y: 6.1, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 18, color: surf.fg });
+  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  addPaginator(s, n, tot, surf.meta);
+}
+
+function buildPptxAgenda(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  const surf = surfaceBg(d, true);
+  s.background = { color: surf.bg };
+  addTopMetaPptx(s, g, surf.meta);
+  s.addText(d.eyebrow || 'AGENDA', { x: 0.7, y: 1.2, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: surf.meta, charSpacing: 2 });
+  s.addText(richWithHighlights(d.titular || 'Agenda', { fontFace: FONT_SERIF, fontSize: 56, color: surf.fg }, d.fondo === 'amarillo' ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark')),
+    { x: 0.7, y: 1.7, w: 12, h: 0.9 });
+  const items = [];
+  for (let i = 1; i <= 6; i++) if (d['item' + i]) items.push(d['item' + i]);
+  const active = parseInt(d.activo || '1', 10);
+  items.forEach((it, i) => {
+    const y = 3.1 + i * 0.6;
+    const numColor = (i + 1 === active) ? COLOR_YELLOW : (surf.fg === COLOR_DARK ? '777777' : COLOR_GREY);
+    s.addText(String(i + 1).padStart(2, '0'), { x: 0.7, y, w: 1, h: 0.5, fontFace: FONT_SERIF, fontSize: 28, color: numColor });
+    s.addText(it, { x: 1.8, y, w: 10, h: 0.5, fontFace: FONT_SANS, fontSize: 24, color: surf.fg });
+  });
+  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  addPaginator(s, n, tot, surf.meta);
+}
+
+function buildPptxManifiesto(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  const useYellow = d.fondo !== 'oscuro' && d.fondo !== 'claro';
+  const bg = useYellow ? COLOR_YELLOW : (d.fondo === 'claro' ? 'FFFFFF' : COLOR_DARK);
+  const fg = useYellow || d.fondo === 'claro' ? COLOR_DARK : COLOR_LIGHT_TEXT;
+  s.background = { color: bg };
+  addTopMetaPptx(s, g, useYellow ? '444444' : COLOR_GREY);
+  const mode = useYellow ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark');
+  s.addText(richWithHighlights((d.titular || d.frase || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 76, color: fg, italic: true }, mode),
+    { x: 0.9, y: 1.5, w: 11.5, h: 4.5, valign: 'middle' });
+  fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  addPaginator(s, n, tot, useYellow ? '444444' : COLOR_GREY);
+}
+
+function buildPptxDivisorC(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  const useYellow = d.fondo !== 'oscuro' && d.fondo !== 'claro';
+  const bg = useYellow ? COLOR_YELLOW : (d.fondo === 'claro' ? 'FFFFFF' : COLOR_DARK);
+  const fg = useYellow || d.fondo === 'claro' ? COLOR_DARK : COLOR_LIGHT_TEXT;
+  s.background = { color: bg };
+  addTopMetaPptx(s, g, useYellow ? '444444' : COLOR_GREY);
+  s.addText(d.numero || '01', { x: 0.5, y: 1.6, w: 6, h: 4.5, fontFace: FONT_SERIF, fontSize: 280, color: fg, align: 'center', valign: 'middle' });
+  s.addShape(pptx.ShapeType.rect, { x: 6.5, y: 2.5, w: 0.02, h: 2.5, fill: { color: fg }, line: { color: fg } });
+  s.addText((d.eyebrow || 'ACTO').toUpperCase(), { x: 7, y: 3, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: fg, charSpacing: 2 });
+  s.addText(richWithHighlights(d.titulo || d.titular || '', { fontFace: FONT_SERIF, fontSize: 60, color: fg }, useYellow ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark')),
+    { x: 7, y: 3.6, w: 5.5, h: 2 });
+  fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  addPaginator(s, n, tot, useYellow ? '444444' : COLOR_GREY);
+}
+
+function buildPptxStandard(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  const surf = surfaceBg(d, true);
+  s.background = { color: surf.bg };
+  addTopMetaPptx(s, g, surf.meta);
+  const mode = d.fondo === 'amarillo' ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark');
+  if (d.eyebrow) s.addText(d.eyebrow, { x: 0.7, y: 1.5, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: surf.meta, charSpacing: 2 });
+  s.addText(richWithHighlights((d.titular || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 52, color: surf.fg }, mode),
+    { x: 0.7, y: 2.1, w: 12, h: 2.2, valign: 'top' });
+  if (d.cuerpo) s.addText(richWithHighlights(d.cuerpo.replace(/\n/g, '\n'), { fontFace: FONT_SANS, fontSize: 22, color: surf.fg }, mode),
+    { x: 0.7, y: 4.6, w: 11, h: 1.8 });
+  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  addPaginator(s, n, tot, surf.meta);
+}
+
+function buildPptxStatHero(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  const surf = surfaceBg(d, true);
+  s.background = { color: surf.bg };
+  addTopMetaPptx(s, g, surf.meta);
+  const mode = d.fondo === 'amarillo' ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark');
+  s.addText(`${d.numero || '0'}${d.sufijo || ''}`, { x: 0.6, y: 1.8, w: 5.5, h: 3.8, fontFace: FONT_SERIF, fontSize: 180, color: d.fondo === 'amarillo' ? COLOR_DARK : COLOR_YELLOW, align: 'center', valign: 'middle' });
+  if (d.eyebrow) s.addText(d.eyebrow, { x: 6.4, y: 2, w: 6, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: surf.meta, charSpacing: 2 });
+  s.addText(richWithHighlights(d.descripcion || '', { fontFace: FONT_SERIF, fontSize: 32, color: surf.fg }, mode),
+    { x: 6.4, y: 2.55, w: 6.3, h: 2.5 });
+  if (d.fuente) s.addText(d.fuente, { x: 6.4, y: 5.3, w: 6, h: 0.4, fontFace: FONT_SANS, fontSize: 14, color: surf.meta });
+  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  addPaginator(s, n, tot, surf.meta);
+}
+
+function buildPptxCompare(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  const surf = surfaceBg(d, true);
+  s.background = { color: surf.bg };
+  addTopMetaPptx(s, g, surf.meta);
+  s.addText(richWithHighlights(d.titular || '', { fontFace: FONT_SERIF, fontSize: 40, color: surf.fg }, d.fondo === 'amarillo' ? 'yellow' : 'dark'),
+    { x: 0.7, y: 1.3, w: 12, h: 0.9, align: 'center' });
+  const a = [], b = [];
+  for (let i = 1; i <= 6; i++) { if (d['a' + i]) a.push(d['a' + i]); if (d['b' + i]) b.push(d['b' + i]); }
+  s.addText((d.label_a || 'MODELO TRADICIONAL').toUpperCase(), { x: 0.9, y: 2.8, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: surf.meta, charSpacing: 2 });
+  s.addText((d.label_b || 'MAGNIFY').toUpperCase(), { x: 7, y: 2.8, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: COLOR_YELLOW, charSpacing: 2 });
+  s.addShape(pptx.ShapeType.rect, { x: 6.65, y: 3, w: 0.02, h: 3, fill: { color: surf.meta }, line: { color: surf.meta } });
+  a.forEach((t, i) => s.addText(t, { x: 0.9, y: 3.4 + i * 0.55, w: 5.5, h: 0.5, fontFace: FONT_SANS, fontSize: 22, color: surf.fg }));
+  b.forEach((t, i) => s.addText(t, { x: 7, y: 3.4 + i * 0.55, w: 5.5, h: 0.5, fontFace: FONT_SANS, fontSize: 22, color: surf.fg }));
+  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  addPaginator(s, n, tot, surf.meta);
+}
+
+function buildPptxFramework(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  const surf = surfaceBg(d, true);
+  s.background = { color: surf.bg };
+  addTopMetaPptx(s, g, surf.meta);
+  s.addText(richWithHighlights(d.titular || '', { fontFace: FONT_SERIF, fontSize: 40, color: surf.fg }, d.fondo === 'amarillo' ? 'yellow' : 'dark'),
+    { x: 0.7, y: 1.3, w: 12, h: 0.9 });
+  for (let i = 1; i <= 3; i++) {
+    const lbl = d[`paso${i}_label`] || d[`paso${i}_etiqueta`] || '';
+    const desc = d[`paso${i}_titulo`] || d[`paso${i}_descripcion`] || '';
+    if (!lbl && !desc) continue;
+    const x = 0.7 + (i - 1) * 4.2;
+    s.addText(String(i).padStart(2, '0'), { x, y: 3, w: 4, h: 1.8, fontFace: FONT_SERIF, fontSize: 130, color: COLOR_YELLOW });
+    s.addText(lbl, { x, y: 4.5, w: 4, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: COLOR_YELLOW, charSpacing: 2, bold: true });
+    s.addText(desc, { x, y: 4.95, w: 4, h: 1.5, fontFace: FONT_SANS, fontSize: 20, color: surf.fg });
+  }
+  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  addPaginator(s, n, tot, surf.meta);
+}
+
+function buildPptxTimelineC(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  const surf = surfaceBg(d, true);
+  s.background = { color: surf.bg };
+  addTopMetaPptx(s, g, surf.meta);
+  s.addText(richWithHighlights(d.titular || '', { fontFace: FONT_SERIF, fontSize: 40, color: surf.fg }, 'dark'),
+    { x: 0.7, y: 1.3, w: 12, h: 0.9 });
+  s.addShape(pptx.ShapeType.rect, { x: 0.9, y: 3.2, w: 11.5, h: 0.02, fill: { color: surf.meta }, line: { color: surf.meta } });
+  for (let i = 1; i <= 4; i++) {
+    const lbl = d[`fase${i}_label`] || d[`fase${i}_etiqueta`] || '';
+    const title = d[`fase${i}_titulo`] || '';
+    const desc = d[`fase${i}_descripcion`] || d[`fase${i}_desc`] || '';
+    if (!title && !lbl) continue;
+    const x = 0.9 + (i - 1) * 3;
+    s.addShape(pptx.ShapeType.rect, { x, y: 3.1, w: 0.25, h: 0.25, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
+    s.addText(lbl.toUpperCase(), { x, y: 3.6, w: 2.8, h: 0.35, fontFace: FONT_SANS, fontSize: 14, color: COLOR_YELLOW, charSpacing: 2 });
+    s.addText(title, { x, y: 3.95, w: 2.8, h: 0.6, fontFace: FONT_SERIF, fontSize: 26, color: surf.fg });
+    s.addText(desc, { x, y: 4.6, w: 2.8, h: 1.4, fontFace: FONT_SANS, fontSize: 16, color: surf.fg });
+  }
+  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  addPaginator(s, n, tot, surf.meta);
+}
+
+function buildPptxImgGeneric(pptx, d, g, n, tot, imgKey, textBuilder) {
+  const s = pptx.addSlide();
+  s.background = { color: COLOR_DARK };
+  const src = uploadedImages[d[imgKey]];
+  if (src) s.addImage({ data: src, x: 0, y: 0, w: PPTX_W, h: PPTX_H, sizing: { type: 'cover', w: PPTX_W, h: PPTX_H } });
+  else s.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: PPTX_W, h: PPTX_H, fill: { color: '1a1a1a' }, line: { color: '1a1a1a' } });
+  // Dark scrim bar at bottom for text readability
+  s.addShape(pptx.ShapeType.rect, { x: 0, y: 4.5, w: PPTX_W, h: 3, fill: { color: '000000', transparency: 35 }, line: { color: '000000' } });
+  textBuilder(s);
+  addTopMetaPptx(s, g, 'CCCCCC');
+  addBrandIcon(s);
+  addPaginator(s, n, tot, 'CCCCCC');
+}
+
+function buildPptxImagenFull(pptx, d, g, n, tot) {
+  buildPptxImgGeneric(pptx, d, g, n, tot, 'imagen', (s) => {
+    if (d.eyebrow) s.addText(d.eyebrow, { x: 0.7, y: 5, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: 'FFFFFF', charSpacing: 2 });
+    s.addText(richWithHighlights((d.titular || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 52, color: 'FFFFFF' }, 'dark'),
+      { x: 0.7, y: 5.5, w: 12, h: 1.6 });
+  });
+}
+
+function buildPptxImagenSplit(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  const surf = surfaceBg(d, true);
+  s.background = { color: surf.bg };
+  const src = uploadedImages[d.imagen];
+  const rev = d.posicion === 'derecha';
+  const imgX = rev ? 6.665 : 0, txtX = rev ? 0.7 : 7;
+  if (src) s.addImage({ data: src, x: imgX, y: 0, w: 6.665, h: PPTX_H, sizing: { type: 'cover', w: 6.665, h: PPTX_H } });
+  else s.addShape(pptx.ShapeType.rect, { x: imgX, y: 0, w: 6.665, h: PPTX_H, fill: { color: '2a2a2a' }, line: { color: '2a2a2a' } });
+  if (d.eyebrow) s.addText(d.eyebrow, { x: txtX, y: 2.2, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: surf.meta, charSpacing: 2 });
+  s.addText(richWithHighlights((d.titular || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 36, color: surf.fg }, 'dark'),
+    { x: txtX, y: 2.7, w: 5.5, h: 1.6 });
+  if (d.cuerpo) s.addText(d.cuerpo.replace(/\n/g, '\n'), { x: txtX, y: 4.4, w: 5.5, h: 1.6, fontFace: FONT_SANS, fontSize: 18, color: surf.fg });
+  addTopMetaPptx(s, g, surf.meta);
+  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  addPaginator(s, n, tot, surf.meta);
+}
+
+function buildPptxDiptych(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  s.background = { color: COLOR_DARK };
+  [[d.imagen_a, 0, d.label_a || 'ANTES', d.titulo_a, d.cuerpo_a], [d.imagen_b, PPTX_W / 2, d.label_b || 'DESPUÉS', d.titulo_b, d.cuerpo_b]].forEach(([img, x, lbl, t, body]) => {
+    const src = uploadedImages[img];
+    if (src) s.addImage({ data: src, x, y: 0, w: PPTX_W / 2, h: PPTX_H, sizing: { type: 'cover', w: PPTX_W / 2, h: PPTX_H } });
+    else s.addShape(pptx.ShapeType.rect, { x, y: 0, w: PPTX_W / 2, h: PPTX_H, fill: { color: '2a2a2a' }, line: { color: '2a2a2a' } });
+    s.addShape(pptx.ShapeType.rect, { x, y: 4.5, w: PPTX_W / 2, h: 3, fill: { color: '000000', transparency: 30 }, line: { color: '000000' } });
+    s.addText(lbl.toUpperCase(), { x: x + 0.4, y: 5, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 14, color: COLOR_YELLOW, charSpacing: 2 });
+    s.addText(richWithHighlights(t || '', { fontFace: FONT_SERIF, fontSize: 36, color: 'FFFFFF' }, 'dark'), { x: x + 0.4, y: 5.5, w: 5.5, h: 1 });
+    if (body) s.addText(body, { x: x + 0.4, y: 6.5, w: 5.5, h: 0.6, fontFace: FONT_SANS, fontSize: 16, color: 'EEEEEE' });
+  });
+  addTopMetaPptx(s, g, 'CCCCCC');
+  addBrandIcon(s);
+  addPaginator(s, n, tot, 'CCCCCC');
+}
+
+function buildPptxTriptych(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  s.background = { color: COLOR_DARK };
+  for (let i = 1; i <= 3; i++) {
+    const src = uploadedImages[d[`imagen${i}`]];
+    const x = (PPTX_W / 3) * (i - 1);
+    if (src) s.addImage({ data: src, x, y: 0, w: PPTX_W / 3, h: PPTX_H, sizing: { type: 'cover', w: PPTX_W / 3, h: PPTX_H } });
+    else s.addShape(pptx.ShapeType.rect, { x, y: 0, w: PPTX_W / 3, h: PPTX_H, fill: { color: '2a2a2a' }, line: { color: '2a2a2a' } });
+    s.addShape(pptx.ShapeType.rect, { x, y: 4.5, w: PPTX_W / 3, h: 3, fill: { color: '000000', transparency: 30 }, line: { color: '000000' } });
+    s.addText(d[`num${i}`] || String(i).padStart(2, '0'), { x: x + 0.3, y: 4.9, w: 3.7, h: 0.8, fontFace: FONT_SERIF, fontSize: 40, color: COLOR_YELLOW });
+    s.addText(richWithHighlights(d[`titulo${i}`] || '', { fontFace: FONT_SERIF, fontSize: 22, color: 'FFFFFF' }, 'dark'), { x: x + 0.3, y: 5.7, w: 3.7, h: 0.7 });
+    if (d[`descripcion${i}`]) s.addText(d[`descripcion${i}`], { x: x + 0.3, y: 6.4, w: 3.7, h: 0.4, fontFace: FONT_SANS, fontSize: 14, color: 'DDDDDD' });
+  }
+  addTopMetaPptx(s, g, 'CCCCCC');
+  addBrandIcon(s);
+  addPaginator(s, n, tot, 'CCCCCC');
+}
+
+function buildPptxMosaic(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  s.background = { color: COLOR_DARK };
+  // Big cell (img1): 2fr wide, 2rows
+  const cells = [
+    { x: 1, y: 1.3, w: 5.8, h: 5.9, big: true, i: 1 },
+    { x: 7, y: 1.3, w: 2.8, h: 2.9, i: 2 },
+    { x: 10, y: 1.3, w: 2.8, h: 2.9, i: 3 },
+    { x: 7, y: 4.3, w: 2.8, h: 2.9, i: 4 },
+    { x: 10, y: 4.3, w: 2.8, h: 2.9, i: 5 }
+  ];
+  s.addText(richWithHighlights(d.titular || '', { fontFace: FONT_SERIF, fontSize: 32, color: 'FFFFFF' }, 'dark'),
+    { x: 1, y: 0.5, w: 11, h: 0.7 });
+  cells.forEach(c => {
+    const src = uploadedImages[d[`imagen${c.i}`]];
+    if (src) s.addImage({ data: src, x: c.x, y: c.y, w: c.w, h: c.h, sizing: { type: 'cover', w: c.w, h: c.h } });
+    else s.addShape(pptx.ShapeType.rect, { x: c.x, y: c.y, w: c.w, h: c.h, fill: { color: '2a2a2a' }, line: { color: '1a1a1a' } });
+    if (d[`label${c.i}`]) s.addText(d[`label${c.i}`].toUpperCase(), { x: c.x + 0.2, y: c.y + c.h - 1, w: c.w - 0.4, h: 0.3, fontFace: FONT_SANS, fontSize: 12, color: COLOR_YELLOW, charSpacing: 2 });
+    if (d[`titulo${c.i}`]) s.addText(richWithHighlights(d[`titulo${c.i}`], { fontFace: FONT_SERIF, fontSize: c.big ? 28 : 18, color: 'FFFFFF' }, 'dark'), { x: c.x + 0.2, y: c.y + c.h - 0.7, w: c.w - 0.4, h: 0.6 });
+  });
+  addTopMetaPptx(s, g, 'CCCCCC');
+  addBrandIcon(s);
+}
+
+function buildPptxPortrait(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  s.background = { color: COLOR_DARK };
+  const src = uploadedImages[d.imagen];
+  if (src) s.addImage({ data: src, x: 0, y: 0, w: PPTX_W / 2, h: PPTX_H, sizing: { type: 'cover', w: PPTX_W / 2, h: PPTX_H } });
+  else s.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: PPTX_W / 2, h: PPTX_H, fill: { color: '2a2a2a' }, line: { color: '2a2a2a' } });
+  if (d.eyebrow) s.addText(d.eyebrow, { x: 7, y: 4, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: COLOR_GREY, charSpacing: 2 });
+  s.addText(richWithHighlights((d.cita || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 28, color: 'FFFFFF' }, 'dark'),
+    { x: 7, y: 4.5, w: 5.5, h: 1.8 });
+  if (d.nombre) s.addText(d.nombre, { x: 7, y: 6.3, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 18, color: 'FFFFFF', bold: true });
+  if (d.rol) s.addText(d.rol, { x: 7, y: 6.65, w: 5.5, h: 0.3, fontFace: FONT_SANS, fontSize: 14, color: COLOR_GREY });
+  addTopMetaPptx(s, g, COLOR_GREY);
+  addBrandIcon(s);
+  addPaginator(s, n, tot, COLOR_GREY);
+}
+
+function buildPptxQuoteBig(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  const dk = d.fondo === 'oscuro';
+  const yl = d.fondo === 'amarillo';
+  const bg = dk ? COLOR_DARK : (yl ? COLOR_YELLOW : 'FFFFFF');
+  const fg = dk ? COLOR_LIGHT_TEXT : COLOR_DARK;
+  s.background = { color: bg };
+  addTopMetaPptx(s, g, dk ? COLOR_GREY : '666666');
+  s.addText('"', { x: 0.7, y: 1.3, w: 2, h: 2, fontFace: FONT_SERIF, fontSize: 150, color: fg });
+  s.addText(richWithHighlights((d.cita || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 48, color: fg }, dk ? 'dark' : (yl ? 'yellow' : 'light')),
+    { x: 0.7, y: 2.6, w: 11.5, h: 2.8 });
+  if (d.nombre) s.addText(d.nombre, { x: 0.7, y: 5.8, w: 8, h: 0.4, fontFace: FONT_SANS, fontSize: 18, color: fg, bold: true });
+  if (d.rol) s.addText(d.rol, { x: 0.7, y: 6.2, w: 8, h: 0.3, fontFace: FONT_SANS, fontSize: 14, color: dk ? COLOR_GREY : '666666' });
+  fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  addPaginator(s, n, tot, dk ? COLOR_GREY : '666666');
+}
+
+function buildPptxTabla(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  s.background = { color: 'FFFFFF' };
+  addTopMetaPptx(s, g, '666666');
+  s.addText(richWithHighlights(d.titular || '', { fontFace: FONT_SERIF, fontSize: 36, color: COLOR_DARK }, 'light'),
+    { x: 0.7, y: 1.3, w: 12, h: 0.7 });
+  const cols = [];
+  for (let i = 1; i <= 4; i++) if (d[`col${i}`]) cols.push(d[`col${i}`]);
+  if (cols.length) {
+    const colW = 11.6 / cols.length;
+    // header row
+    cols.forEach((c, i) => s.addText(c.toUpperCase(), { x: 0.7 + colW * i, y: 2.5, w: colW, h: 0.4, fontFace: FONT_SANS, fontSize: 12, color: '444444', charSpacing: 2 }));
+    s.addShape(pptx.ShapeType.rect, { x: 0.7, y: 2.95, w: 11.6, h: 0.02, fill: { color: 'CCCCCC' }, line: { color: 'CCCCCC' } });
+    for (let i = 1; i <= 10; i++) {
+      if (!d[`row${i}`]) continue;
+      const parts = d[`row${i}`].split('|').map(x => x.trim());
+      const y = 3 + (i - 1) * 0.42;
+      const hi = (d[`row${i}_hi`] || '').toLowerCase() === 'si';
+      if (hi) s.addShape(pptx.ShapeType.rect, { x: 0.7, y: y - 0.02, w: 11.6, h: 0.42, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
+      parts.forEach((p, j) => s.addText(p, { x: 0.7 + colW * j + 0.1, y, w: colW - 0.2, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: COLOR_DARK, align: j === 0 ? 'left' : 'center' }));
+    }
+  }
+  addBrandIconLt(s);
+  addPaginator(s, n, tot, '666666');
+}
+
+function buildPptxEquipo(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  const surf = surfaceBg(d, true);
+  s.background = { color: surf.bg };
+  addTopMetaPptx(s, g, surf.meta);
+  s.addText(richWithHighlights(d.titular || 'El equipo', { fontFace: FONT_SERIF, fontSize: 36, color: surf.fg }, 'dark'),
+    { x: 0.7, y: 1.3, w: 12, h: 0.8 });
+  const members = [];
+  for (let i = 1; i <= 8; i++) if (d[`persona${i}_nombre`]) members.push({ name: d[`persona${i}_nombre`], role: d[`persona${i}_rol`] || '', foto: d[`persona${i}_foto`] });
+  const cols = Math.min(members.length, 4);
+  const cardW = 11.5 / cols;
+  members.slice(0, 8).forEach((m, i) => {
+    const col = i % cols, row = Math.floor(i / cols);
+    const x = 0.7 + col * cardW, y = 2.5 + row * 2.8;
+    const src = uploadedImages[m.foto];
+    if (src) s.addImage({ data: src, x, y, w: cardW - 0.3, h: cardW - 0.3, sizing: { type: 'cover', w: cardW - 0.3, h: cardW - 0.3 } });
+    else s.addShape(pptx.ShapeType.rect, { x, y, w: cardW - 0.3, h: cardW - 0.3, fill: { color: '333333' }, line: { color: '333333' } });
+    s.addText(m.name, { x, y: y + cardW - 0.25, w: cardW - 0.3, h: 0.35, fontFace: FONT_SANS, fontSize: 18, color: surf.fg, bold: true });
+    s.addText(m.role, { x, y: y + cardW + 0.1, w: cardW - 0.3, h: 0.3, fontFace: FONT_SANS, fontSize: 14, color: surf.meta });
+  });
+  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  addPaginator(s, n, tot, surf.meta);
+}
+
+function buildPptxPricing(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  const dk = d.fondo !== 'claro';
+  const bg = dk ? COLOR_DARK : 'FFFFFF';
+  const fg = dk ? COLOR_LIGHT_TEXT : COLOR_DARK;
+  s.background = { color: bg };
+  addTopMetaPptx(s, g, dk ? COLOR_GREY : '666666');
+  s.addText(richWithHighlights(d.titular || '', { fontFace: FONT_SERIF, fontSize: 36, color: fg }, 'dark'),
+    { x: 0.7, y: 1.3, w: 12, h: 0.7 });
+  const cols = [];
+  for (let i = 1; i <= 3; i++) {
+    if (d[`plan${i}_nombre`]) {
+      const feats = [];
+      for (let j = 1; j <= 6; j++) if (d[`plan${i}_feat${j}`]) feats.push(d[`plan${i}_feat${j}`]);
+      cols.push({ hi: (d[`plan${i}_destacado`] || '').toLowerCase() === 'si', lbl: d[`plan${i}_label`] || '', name: d[`plan${i}_nombre`], price: d[`plan${i}_precio`] || '', unit: d[`plan${i}_unidad`] || '', feats });
+    }
+  }
+  const colW = 11.6 / Math.max(cols.length, 1);
+  cols.forEach((c, i) => {
+    const x = 0.7 + i * colW;
+    if (c.hi) s.addShape(pptx.ShapeType.rect, { x, y: 2.5, w: colW - 0.1, h: 4.3, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
+    const colFg = c.hi ? COLOR_DARK : fg;
+    const colMeta = c.hi ? '444444' : (dk ? COLOR_GREY : '666666');
+    s.addText(c.lbl.toUpperCase(), { x: x + 0.3, y: 2.7, w: colW - 0.7, h: 0.35, fontFace: FONT_SANS, fontSize: 12, color: colMeta, charSpacing: 2 });
+    s.addText(c.name, { x: x + 0.3, y: 3.1, w: colW - 0.7, h: 0.6, fontFace: FONT_SERIF, fontSize: 30, color: colFg });
+    s.addText(c.price, { x: x + 0.3, y: 3.8, w: colW - 0.7, h: 1.2, fontFace: FONT_SERIF, fontSize: 80, color: c.hi ? COLOR_DARK : COLOR_YELLOW });
+    s.addText(c.unit, { x: x + 0.3, y: 5.05, w: colW - 0.7, h: 0.3, fontFace: FONT_SANS, fontSize: 13, color: colMeta });
+    c.feats.forEach((f, k) => s.addText(f, { x: x + 0.3, y: 5.4 + k * 0.28, w: colW - 0.7, h: 0.3, fontFace: FONT_SANS, fontSize: 13, color: colFg }));
+  });
+  fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  addPaginator(s, n, tot, dk ? COLOR_GREY : '666666');
+}
+
+function buildPptxCtaFinal(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  const useYellow = d.fondo !== 'oscuro' && d.fondo !== 'claro';
+  const bg = useYellow ? COLOR_YELLOW : (d.fondo === 'claro' ? 'FFFFFF' : COLOR_DARK);
+  const fg = useYellow || d.fondo === 'claro' ? COLOR_DARK : COLOR_LIGHT_TEXT;
+  s.background = { color: bg };
+  addTopMetaPptx(s, g, useYellow ? '444444' : COLOR_GREY);
+  if (d.eyebrow) s.addText(d.eyebrow, { x: 0.7, y: 2, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: fg, charSpacing: 2, align: 'center' });
+  s.addText(richWithHighlights((d.titular || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 84, color: fg }, useYellow ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark')),
+    { x: 0.7, y: 2.7, w: 12, h: 2.8, align: 'center', valign: 'middle' });
+  if (d.contacto) s.addText(d.contacto, { x: 0.7, y: 5.8, w: 12, h: 0.5, fontFace: FONT_SANS, fontSize: 20, color: fg, align: 'center' });
+  fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  addPaginator(s, n, tot, useYellow ? '444444' : COLOR_GREY);
+}
+
+function buildPptxCierre(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  const dk = d.fondo !== 'claro' && d.fondo !== 'amarillo';
+  const bg = dk ? COLOR_DARK : (d.fondo === 'amarillo' ? COLOR_YELLOW : 'FFFFFF');
+  const fg = dk ? COLOR_LIGHT_TEXT : COLOR_DARK;
+  s.background = { color: bg };
+  addTopMetaPptx(s, g, dk ? COLOR_GREY : '666666');
+  s.addImage({ data: wordmarkDataUri(dk ? '#FAFAFA' : '#0A0A0A'), x: 4, y: 2.5, w: 5.33, h: 0.44 });
+  s.addText(d.titular || 'GRACIAS', { x: 0.5, y: 3.3, w: 12.33, h: 0.5, fontFace: FONT_SANS, fontSize: 20, color: dk ? COLOR_GREY : '666666', charSpacing: 8, align: 'center' });
+  if (d.contacto) s.addText(d.contacto.replace(/\n/g, '\n'), { x: 0.7, y: 5.5, w: 6, h: 1.5, fontFace: FONT_SANS, fontSize: 18, color: fg });
+}
+
 const PS_BUILDERS = {
   'portada': buildPptxPortada,
   'divisor': buildPptxDivisor,
@@ -3015,7 +4932,29 @@ const PS_BUILDERS = {
   'cuadrante': buildPptxCuadrante,
   'timeline': buildPptxTimeline,
   'imagen': buildPptxImagen,
-  'siguiente-paso': buildPptxSiguientePaso
+  'siguiente-paso': buildPptxSiguientePaso,
+  // Charla
+  'hero': buildPptxHero,
+  'agenda': buildPptxAgenda,
+  'manifiesto': buildPptxManifiesto,
+  'divisor-charla': buildPptxDivisorC,
+  'standard': buildPptxStandard,
+  'stat-hero': buildPptxStatHero,
+  'compare': buildPptxCompare,
+  'framework': buildPptxFramework,
+  'timeline-charla': buildPptxTimelineC,
+  'imagen-full': buildPptxImagenFull,
+  'imagen-split': buildPptxImagenSplit,
+  'diptych': buildPptxDiptych,
+  'triptych': buildPptxTriptych,
+  'mosaic': buildPptxMosaic,
+  'portrait-quote': buildPptxPortrait,
+  'quote-big': buildPptxQuoteBig,
+  'tabla': buildPptxTabla,
+  'equipo': buildPptxEquipo,
+  'pricing': buildPptxPricing,
+  'cta-final': buildPptxCtaFinal,
+  'cierre': buildPptxCierre
 };
 
 function generatePresentacion(raw, preview, renderC) {
@@ -3023,11 +4962,13 @@ function generatePresentacion(raw, preview, renderC) {
   if (sections.length === 0) { toast('A\u00f1ade al menos un slide separado por ---'); return; }
 
   const slides = [];
-  sections.forEach((s, idx) => {
+  // Count valid slides first so renderers can emit N / total pagination.
+  const valid = sections.filter(s => PS_RENDERERS[(s.slide || '').toLowerCase().trim()]);
+  const tot = valid.length;
+  valid.forEach((s, idx) => {
     const key = (s.slide || '').toLowerCase().trim();
     const fn = PS_RENDERERS[key];
-    if (!fn) return;
-    slides.push({ key, data: s, html: fn(s, global) });
+    slides.push({ key, data: s, html: fn(s, global, idx + 1, tot) });
   });
 
   if (slides.length === 0) { toast('Ning\u00fan slide reconocido. Usa slide: portada/divisor/contenido/etc.'); return; }
@@ -3119,8 +5060,11 @@ function generate() {
   const raw = document.getElementById('content').value.trim();
   if (!raw) { showError('Pega tu contenido primero. Copia el ejemplo del panel de ayuda si necesitas una plantilla.'); return; }
 
-  const shapeErr = validateShape(raw);
-  if (shapeErr) { showError('<strong>Formato no reconocido.</strong> ' + shapeErr); return; }
+  // Shape validation only applies to key:value types. The documento type is raw markdown, so skip.
+  if (currentType !== 'documento') {
+    const shapeErr = validateShape(raw);
+    if (shapeErr) { showError('<strong>Formato no reconocido.</strong> ' + shapeErr); return; }
+  }
 
   const preview = document.getElementById('preview');
   const renderC = document.getElementById('render-container');
@@ -3138,6 +5082,7 @@ function generate() {
       case 'report-cover': generateA4(raw, preview, renderC, renderReportCover); break;
       case 'email-sig': generateSig(raw, preview, renderC); break;
       case 'presentacion': generatePresentacion(raw, preview, renderC); break;
+      case 'documento': generateDocumento(raw, preview, renderC); break;
     }
   } catch (e) {
     console.error(e);
@@ -3358,22 +5303,30 @@ async function exportAll() {
 
   toast('Generando...');
 
-  if ((currentType === 'case-study' || currentType === 'propuesta') && renderedFrames.length > 0) {
-    // Multi-page PDF
+  if ((currentType === 'case-study' || currentType === 'propuesta' || currentType === 'documento') && renderedFrames.length > 0) {
+    // Multi-page PDF. scale:1.5 + JPEG @ q0.92 + compress cuts file size ~20× vs scale:2 + PNG while staying
+    // crisp at A4 print resolution (894×1264 per page is >150dpi on A4). A 5-page doc now ends up ~2-3MB
+    // instead of 60-70MB.
     const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
+    const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait', compress: true });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
     for (let i = 0; i < renderedFrames.length; i++) {
-      const canvas = await html2canvas(renderedFrames[i], { scale: 2, useCORS: true, backgroundColor: '#ffffff', logging: false });
-      const imgData = canvas.toDataURL('image/png');
+      const canvas = await html2canvas(renderedFrames[i], { scale: 1.5, useCORS: true, backgroundColor: '#ffffff', logging: false });
+      const imgData = canvas.toDataURL('image/jpeg', 0.92);
       if (i > 0) pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, 0, pageW, pageH);
+      pdf.addImage(imgData, 'JPEG', 0, 0, pageW, pageH, undefined, 'FAST');
     }
     const raw = document.getElementById('content').value.trim();
-    const g = parseMultiDoc(raw).global;
-    const slug = (g.cliente || 'doc').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    const prefix = currentType === 'case-study' ? 'magnify-caso' : 'magnify-propuesta';
+    let slug, prefix;
+    if (currentType === 'documento') {
+      slug = deriveDocSlug(raw);
+      prefix = 'magnify-doc';
+    } else {
+      const g = parseMultiDoc(raw).global;
+      slug = (g.cliente || 'doc').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      prefix = currentType === 'case-study' ? 'magnify-caso' : 'magnify-propuesta';
+    }
     pdf.save(`${prefix}-${slug}.pdf`);
     toast('\u2713 PDF descargado');
     return;
