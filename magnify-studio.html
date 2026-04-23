@@ -987,6 +987,9 @@
   .ps-fw h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:96px; color:#FAFAFA; }
   .ps-slide.lt .ps-fw h2, .ps-slide.yl .ps-fw h2 { color:var(--bg); }
   .ps-fw .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:80px; }
+  .ps-fw .grid.cols4 { grid-template-columns:repeat(4, 1fr); gap:48px; }
+  .ps-fw .grid.cols4 .step .num { font-size:170px; }
+  .ps-fw .grid.cols4 .step .desc { font-size:26px; }
   .ps-fw .step .num { color:var(--yellow); font-family:var(--serif); font-size:220px; line-height:0.9; letter-spacing:-0.04em; margin-bottom:32px; }
   .ps-fw .step .label { font-family:var(--sans); font-size:28px; letter-spacing:0.1em; color:var(--yellow); margin-bottom:24px; text-transform:uppercase; }
   .ps-slide.lt .ps-fw .step .label, .ps-slide.yl .ps-fw .step .label { color:#B8A000; }
@@ -1161,6 +1164,68 @@
   .ps-ctafinal h1 { font-family:var(--serif); font-size:140px; line-height:1.0; color:var(--bg); margin-bottom:56px; font-weight:400; letter-spacing:-0.02em; }
   .ps-ctafinal .contact { font-family:var(--sans); font-size:32px; color:var(--bg); }
   .ps-ctafinal em { font-style:italic; }
+
+  /* stats-charla (grid of big numbers, 2x2 or 1xN) */
+  .ps-statsc { padding:160px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
+  .ps-statsc h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:80px; color:#FAFAFA; font-weight:400; }
+  .ps-slide.lt .ps-statsc h2, .ps-slide.yl .ps-statsc h2 { color:var(--bg); }
+  .ps-statsc .grid { display:grid; gap:64px 80px; }
+  .ps-statsc .grid.cols2 { grid-template-columns:repeat(2, 1fr); }
+  .ps-statsc .grid.cols3 { grid-template-columns:repeat(3, 1fr); gap:48px; }
+  .ps-statsc .grid.cols4 { grid-template-columns:repeat(4, 1fr); gap:40px; }
+  .ps-statsc .cell .num { font-family:var(--serif); font-weight:400; font-size:180px; line-height:0.9; letter-spacing:-0.04em; color:var(--yellow); margin-bottom:16px; }
+  .ps-statsc .grid.cols3 .cell .num { font-size:140px; }
+  .ps-statsc .grid.cols4 .cell .num { font-size:110px; }
+  .ps-statsc .cell.hi .num { color:#FF5A5A; }
+  .ps-slide.yl .ps-statsc .cell .num { color:var(--bg); }
+  .ps-slide.yl .ps-statsc .cell.hi .num { color:#C81E1E; }
+  .ps-statsc .cell .lbl { font-family:var(--sans); font-size:26px; letter-spacing:0.08em; color:var(--yellow); text-transform:uppercase; margin-bottom:12px; display:block; }
+  .ps-slide.lt .ps-statsc .cell .lbl, .ps-slide.yl .ps-statsc .cell .lbl { color:#B8A000; }
+  .ps-statsc .cell .desc { font-family:var(--sans); font-size:26px; line-height:1.4; color:#FAFAFA; max-width:420px; }
+  .ps-slide.lt .ps-statsc .cell .desc, .ps-slide.yl .ps-statsc .cell .desc { color:var(--bg); }
+  .ps-statsc .grid.cols4 .cell .desc { font-size:22px; }
+  .ps-statsc .src { font-family:var(--sans); font-size:22px; color:#999; margin-top:56px; }
+  .ps-slide.lt .ps-statsc .src { color:#666; }
+  .ps-slide.yl .ps-statsc .src { color:var(--bg); opacity:0.7; }
+
+  /* citas-grid (2x2 testimonial grid) */
+  .ps-citas { padding:140px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
+  .ps-citas h2 { font-family:var(--serif); font-size:44px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:56px; color:#FAFAFA; font-weight:400; }
+  .ps-slide.lt .ps-citas h2, .ps-slide.yl .ps-citas h2 { color:var(--bg); }
+  .ps-citas .grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:56px 72px; }
+  .ps-citas .grid.cols3 { grid-template-columns:repeat(3, 1fr); gap:40px 48px; }
+  .ps-citas .cell { display:flex; flex-direction:column; gap:16px; border-left:2px solid var(--yellow); padding-left:32px; }
+  .ps-citas .cell .q { font-family:var(--serif); font-style:italic; font-size:32px; line-height:1.25; letter-spacing:-0.01em; color:#FAFAFA; font-weight:400; }
+  .ps-slide.lt .ps-citas .cell .q, .ps-slide.yl .ps-citas .cell .q { color:var(--bg); }
+  .ps-citas .grid.cols3 .cell .q { font-size:26px; }
+  .ps-citas .cell .who { font-family:var(--sans); font-size:22px; color:#999; margin-top:8px; }
+  .ps-slide.lt .ps-citas .cell .who { color:#666; }
+  .ps-slide.yl .ps-citas .cell .who { color:var(--bg); opacity:0.7; }
+
+  /* cta-final QR variant (keeps text layout but splits with QR tile on one side) */
+  .ps-ctafinal.with-qr { flex-direction:row; text-align:left; gap:80px; align-items:center; justify-content:center; }
+  .ps-ctafinal.with-qr .qr-box { flex-shrink:0; width:380px; height:380px; background:#FFF; padding:32px; display:flex; align-items:center; justify-content:center; }
+  .ps-ctafinal.with-qr .qr-box img { width:100%; height:100%; object-fit:contain; }
+  .ps-ctafinal.with-qr .qr-box.empty { border:4px dashed rgba(10,10,10,0.3); background:transparent; color:var(--bg); font-family:var(--sans); font-size:22px; letter-spacing:2px; text-transform:uppercase; }
+  .ps-ctafinal.with-qr .txt { max-width:900px; }
+  .ps-ctafinal.with-qr h1 { font-size:100px; margin-bottom:40px; }
+  .ps-ctafinal.with-qr .contact { font-size:28px; }
+
+  /* recursos-agrupados (list grouped by category) */
+  .ps-recursos { padding:140px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
+  .ps-recursos h2 { font-family:var(--serif); font-size:56px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:48px; color:#FAFAFA; font-weight:400; }
+  .ps-slide.lt .ps-recursos h2, .ps-slide.yl .ps-recursos h2 { color:var(--bg); }
+  .ps-recursos .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:48px; }
+  .ps-recursos .grid.cols2 { grid-template-columns:repeat(2, 1fr); gap:56px 72px; }
+  .ps-recursos .cat .hd { font-family:var(--sans); font-size:22px; letter-spacing:0.12em; color:var(--yellow); text-transform:uppercase; margin-bottom:24px; padding-bottom:12px; border-bottom:1px solid rgba(255,214,0,0.3); }
+  .ps-slide.lt .ps-recursos .cat .hd, .ps-slide.yl .ps-recursos .cat .hd { color:#B8A000; border-bottom-color:rgba(184,160,0,0.35); }
+  .ps-recursos .cat ul { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:16px; }
+  .ps-recursos .cat li { font-family:var(--sans); font-size:22px; line-height:1.35; color:#FAFAFA; }
+  .ps-slide.lt .ps-recursos .cat li, .ps-slide.yl .ps-recursos .cat li { color:var(--bg); }
+  .ps-recursos .cat li b { font-weight:600; display:block; margin-bottom:2px; }
+  .ps-recursos .cat li .src { color:#999; font-size:20px; }
+  .ps-slide.lt .ps-recursos .cat li .src { color:#666; }
+  .ps-slide.yl .ps-recursos .cat li .src { color:var(--bg); opacity:0.6; }
 
   /* cierre (final thank you) */
   .ps-cierre { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; position:relative; }
@@ -1508,7 +1573,7 @@ confidencial: si`
 <code>standard</code> \u2014 titular + cuerpo (h1 editorial + body)<br>
 <code>stat-hero</code> \u2014 numero + sufijo + descripcion + fuente (stat lateral)<br>
 <code>compare</code> \u2014 titular + a1..6/b1..6 + label_a/label_b<br>
-<code>framework</code> \u2014 titular + paso1..3_label/titulo<br>
+<code>framework</code> \u2014 titular + paso1..4_label/titulo (grid auto 3 \u00f3 4 cols)<br>
 <code>timeline-charla</code> \u2014 titular + fase1..4_label/titulo/descripcion<br>
 <code>imagen-full</code> \u2014 imagen: img1 + eyebrow + titular (full-bleed)<br>
 <code>imagen-split</code> \u2014 imagen + titular + cuerpo + posicion (izquierda/derecha)<br>
@@ -1520,7 +1585,10 @@ confidencial: si`
 <code>tabla</code> \u2014 titular + col1..4 + row1..10 (row con <code>|</code>; <code>row1_hi: si</code> destaca)<br>
 <code>equipo</code> \u2014 persona1..8_nombre/rol/foto<br>
 <code>pricing</code> \u2014 plan1..3_nombre/label/precio/unidad/feat1..6 (<code>plan2_destacado: si</code>)<br>
-<code>cta-final</code> \u2014 eyebrow + titular + contacto (amarillo grande)<br>
+<code>stats-charla</code> \u2014 titular + num1..4/label1..4/desc1..4 (<code>hi2: si</code> rojo; <code>layout: 2x2 | 1x3 | 1x4</code>)<br>
+<code>citas-grid</code> \u2014 titular + cita1..6 + autor1..6 (grid 2x2 \u00f3 2x3)<br>
+<code>cta-final</code> \u2014 eyebrow + titular + contacto + <code>qr: imgN</code> opcional (split con QR)<br>
+<code>recursos-agrupados</code> \u2014 titular + cat1..4_titulo + cat1..4_item1..6 (formato <code>Nombre — fuente</code>)<br>
 <code>cierre</code> \u2014 titular ('GRACIAS') + contacto<br><br>
 <strong>Fondo por slide:</strong> <code>fondo: oscuro | claro | amarillo</code> en la mayor\u00eda<br>
 <strong>Im\u00e1genes:</strong> sube arriba y refer\u00e9ncialas como <code>img1</code>, <code>img2</code>...<br>
@@ -3872,12 +3940,12 @@ function renderPsCompare(d, g, n, tot) {
   </div></div>`;
 }
 
-// Charla — Framework (3 numbered steps)
+// Charla — Framework (3 or 4 numbered steps, grid adapts)
 function renderPsFramework(d, g, n, tot) {
   const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
   const steps = [];
-  for (let i = 1; i <= 3; i++) {
-    if (d[`paso${i}_titulo`] || d[`paso${i}_label`]) {
+  for (let i = 1; i <= 4; i++) {
+    if (d[`paso${i}_titulo`] || d[`paso${i}_label`] || d[`paso${i}_descripcion`]) {
       steps.push({
         n: String(i).padStart(2, '0'),
         label: d[`paso${i}_label`] || d[`paso${i}_etiqueta`] || '',
@@ -3885,11 +3953,12 @@ function renderPsFramework(d, g, n, tot) {
       });
     }
   }
+  const gridCls = steps.length >= 4 ? 'grid cols4' : 'grid';
   return `<div class="frame ps"><div class="ps-slide ${surface}">
     ${psTopMeta(g)}
     <div class="ps-fw">
       <h2>${applyHighlights(d.titular || '')}</h2>
-      <div class="grid">
+      <div class="${gridCls}">
         ${steps.map(s => `<div class="step"><div class="num">${s.n}</div><div class="label">${s.label}</div><div class="desc">${s.desc}</div></div>`).join('')}
       </div>
     </div>
@@ -4158,15 +4227,127 @@ function renderPsPricing(d, g, n, tot) {
   </div></div>`;
 }
 
-// Charla — CTA final (big yellow slide)
+// Charla — CTA final (big yellow slide; optional QR image slot via `qr: imgN`)
 function renderPsCtaFinal(d, g, n, tot) {
   const surface = d.fondo === 'oscuro' ? 'dk' : d.fondo === 'claro' ? 'lt' : 'yl';
+  const qrSrc = uploadedImages[(d.qr || '').trim()];
+  const withQr = !!(d.qr && d.qr.trim());
+  const qrBox = withQr
+    ? (qrSrc
+      ? `<div class="qr-box"><img src="${qrSrc}" alt="QR"></div>`
+      : `<div class="qr-box empty">QR</div>`)
+    : '';
+  const txtWrap = withQr ? 'div class="txt"' : 'div';
+  const inner = `${d.eyebrow ? `<span class="eyebrow">${d.eyebrow}</span>` : ''}
+      <h1>${applyHighlights(d.titular || '').replace(/\n/g, '<br>')}</h1>
+      ${d.contacto ? `<div class="contact">${d.contacto.replace(/\n/g, '<br>')}</div>` : ''}`;
   return `<div class="frame ps"><div class="ps-slide ${surface}">
     ${psTopMeta(g)}
-    <div class="ps-ctafinal">
-      ${d.eyebrow ? `<span class="eyebrow">${d.eyebrow}</span>` : ''}
-      <h1>${applyHighlights(d.titular || '').replace(/\n/g, '<br>')}</h1>
-      ${d.contacto ? `<div class="contact">${d.contacto}</div>` : ''}
+    <div class="ps-ctafinal${withQr ? ' with-qr' : ''}">
+      ${qrBox}
+      ${withQr ? `<div class="txt">${inner}</div>` : inner}
+    </div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    ${psPaginator(n, tot)}
+  </div></div>`;
+}
+
+// Charla — Stats Charla (grid 2x2, 1x3 or 1x4 of big numbers)
+function renderPsStatsCharla(d, g, n, tot) {
+  const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
+  const cells = [];
+  for (let i = 1; i <= 4; i++) {
+    if (d[`num${i}`] || d[`desc${i}`]) {
+      cells.push({
+        num: d[`num${i}`] || '',
+        lbl: d[`label${i}`] || '',
+        desc: d[`desc${i}`] || '',
+        hi: (d[`hi${i}`] || '').toLowerCase() === 'si'
+      });
+    }
+  }
+  const layout = (d.layout || '').toLowerCase();
+  let gridCls = 'cols2';
+  if (layout === '1x3' || cells.length === 3) gridCls = 'cols3';
+  else if (layout === '1x4' || cells.length === 4 && layout === 'fila') gridCls = 'cols4';
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    ${psTopMeta(g)}
+    <div class="ps-statsc">
+      ${d.titular ? `<h2>${applyHighlights(d.titular)}</h2>` : ''}
+      <div class="grid ${gridCls}">
+        ${cells.map(c => `<div class="cell ${c.hi ? 'hi' : ''}">
+          <div class="num">${c.num}</div>
+          ${c.lbl ? `<span class="lbl">${c.lbl}</span>` : ''}
+          ${c.desc ? `<div class="desc">${c.desc}</div>` : ''}
+        </div>`).join('')}
+      </div>
+      ${d.fuente ? `<div class="src">${d.fuente}</div>` : ''}
+    </div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    ${psPaginator(n, tot)}
+  </div></div>`;
+}
+
+// Charla — Citas Grid (2x2 or 2x3 of short quotes + attributions)
+function renderPsCitasGrid(d, g, n, tot) {
+  const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
+  const cells = [];
+  for (let i = 1; i <= 6; i++) {
+    if (d[`cita${i}`]) {
+      cells.push({
+        q: d[`cita${i}`],
+        who: d[`autor${i}`] || ''
+      });
+    }
+  }
+  const gridCls = cells.length > 4 ? 'cols3' : '';
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    ${psTopMeta(g)}
+    <div class="ps-citas">
+      ${d.titular ? `<h2>${applyHighlights(d.titular)}</h2>` : ''}
+      <div class="grid ${gridCls}">
+        ${cells.map(c => `<div class="cell">
+          <div class="q">${applyHighlights(c.q).replace(/\n/g, '<br>')}</div>
+          ${c.who ? `<div class="who">— ${c.who}</div>` : ''}
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    ${psPaginator(n, tot)}
+  </div></div>`;
+}
+
+// Charla — Recursos Agrupados (list grouped by category, 2-3 columns)
+function renderPsRecursos(d, g, n, tot) {
+  const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
+  const cats = [];
+  for (let c = 1; c <= 4; c++) {
+    const head = d[`cat${c}_titulo`];
+    if (!head) continue;
+    const items = [];
+    for (let i = 1; i <= 6; i++) {
+      if (d[`cat${c}_item${i}`]) items.push(d[`cat${c}_item${i}`]);
+    }
+    cats.push({ head, items });
+  }
+  const gridCls = cats.length === 2 ? 'cols2' : '';
+  // Each item can be "Nombre — fuente" or "Nombre | fuente"; we split and style.
+  const renderItem = (s) => {
+    const sep = /\s+[—–|-]\s+/;
+    const parts = s.split(sep);
+    if (parts.length >= 2) return `<b>${parts[0]}</b><span class="src">${parts.slice(1).join(' — ')}</span>`;
+    return s;
+  };
+  return `<div class="frame ps"><div class="ps-slide ${surface}">
+    ${psTopMeta(g)}
+    <div class="ps-recursos">
+      ${d.titular ? `<h2>${applyHighlights(d.titular)}</h2>` : ''}
+      <div class="grid ${gridCls}">
+        ${cats.map(c => `<div class="cat">
+          <div class="hd">${c.head}</div>
+          <ul>${c.items.map(it => `<li>${renderItem(it)}</li>`).join('')}</ul>
+        </div>`).join('')}
+      </div>
     </div>
     <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
     ${psPaginator(n, tot)}
@@ -4219,6 +4400,10 @@ const PS_RENDERERS = {
   'equipo': renderPsEquipo,
   'pricing': renderPsPricing,
   'cta-final': renderPsCtaFinal,
+  'stats-charla': renderPsStatsCharla,
+  'citas-grid': renderPsCitasGrid,
+  'recursos': renderPsRecursos,
+  'recursos-agrupados': renderPsRecursos,
   'cierre': renderPsCierre
 };
 
@@ -4641,15 +4826,22 @@ function buildPptxFramework(pptx, d, g, n, tot) {
   addTopMetaPptx(s, g, surf.meta);
   s.addText(richWithHighlights(d.titular || '', { fontFace: FONT_SERIF, fontSize: 40, color: surf.fg }, d.fondo === 'amarillo' ? 'yellow' : 'dark'),
     { x: 0.7, y: 1.3, w: 12, h: 0.9 });
-  for (let i = 1; i <= 3; i++) {
+  const steps = [];
+  for (let i = 1; i <= 4; i++) {
     const lbl = d[`paso${i}_label`] || d[`paso${i}_etiqueta`] || '';
     const desc = d[`paso${i}_titulo`] || d[`paso${i}_descripcion`] || '';
-    if (!lbl && !desc) continue;
-    const x = 0.7 + (i - 1) * 4.2;
-    s.addText(String(i).padStart(2, '0'), { x, y: 3, w: 4, h: 1.8, fontFace: FONT_SERIF, fontSize: 130, color: COLOR_YELLOW });
-    s.addText(lbl, { x, y: 4.5, w: 4, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: COLOR_YELLOW, charSpacing: 2, bold: true });
-    s.addText(desc, { x, y: 4.95, w: 4, h: 1.5, fontFace: FONT_SANS, fontSize: 20, color: surf.fg });
+    if (lbl || desc) steps.push({ i, lbl, desc });
   }
+  const four = steps.length >= 4;
+  const colW = four ? 3.1 : 4.2;
+  const numSize = four ? 100 : 130;
+  const descSize = four ? 16 : 20;
+  steps.forEach((st, idx) => {
+    const x = 0.7 + idx * (colW + (four ? 0.1 : 0));
+    s.addText(String(st.i).padStart(2, '0'), { x, y: 3, w: colW, h: 1.8, fontFace: FONT_SERIF, fontSize: numSize, color: COLOR_YELLOW });
+    s.addText(st.lbl, { x, y: 4.5, w: colW, h: 0.4, fontFace: FONT_SANS, fontSize: 14, color: COLOR_YELLOW, charSpacing: 2, bold: true });
+    s.addText(st.desc, { x, y: 4.95, w: colW, h: 1.5, fontFace: FONT_SANS, fontSize: descSize, color: surf.fg });
+  });
   surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
   addPaginator(s, n, tot, surf.meta);
 }
@@ -4899,12 +5091,123 @@ function buildPptxCtaFinal(pptx, d, g, n, tot) {
   const fg = useYellow || d.fondo === 'claro' ? COLOR_DARK : COLOR_LIGHT_TEXT;
   s.background = { color: bg };
   addTopMetaPptx(s, g, useYellow ? '444444' : COLOR_GREY);
-  if (d.eyebrow) s.addText(d.eyebrow, { x: 0.7, y: 2, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: fg, charSpacing: 2, align: 'center' });
-  s.addText(richWithHighlights((d.titular || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 84, color: fg }, useYellow ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark')),
-    { x: 0.7, y: 2.7, w: 12, h: 2.8, align: 'center', valign: 'middle' });
-  if (d.contacto) s.addText(d.contacto, { x: 0.7, y: 5.8, w: 12, h: 0.5, fontFace: FONT_SANS, fontSize: 20, color: fg, align: 'center' });
+  const qrSrc = uploadedImages[(d.qr || '').trim()];
+  const withQr = !!(d.qr && d.qr.trim());
+  const mode = useYellow ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark');
+  if (withQr) {
+    // QR on the left, text on the right
+    if (qrSrc) s.addImage({ data: qrSrc, x: 1, y: 2.4, w: 3, h: 3, sizing: { type: 'contain', w: 3, h: 3 } });
+    else s.addShape(pptx.ShapeType.rect, { x: 1, y: 2.4, w: 3, h: 3, fill: { color: 'FFFFFF' }, line: { color: fg, width: 2, dashType: 'dash' } });
+    if (d.eyebrow) s.addText(d.eyebrow, { x: 4.5, y: 2.2, w: 8, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: fg, charSpacing: 2 });
+    s.addText(richWithHighlights((d.titular || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 60, color: fg }, mode),
+      { x: 4.5, y: 2.7, w: 8, h: 2.2, valign: 'top' });
+    if (d.contacto) s.addText(d.contacto.replace(/\n/g, '\n'), { x: 4.5, y: 5.2, w: 8, h: 1.2, fontFace: FONT_SANS, fontSize: 20, color: fg });
+  } else {
+    if (d.eyebrow) s.addText(d.eyebrow, { x: 0.7, y: 2, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: fg, charSpacing: 2, align: 'center' });
+    s.addText(richWithHighlights((d.titular || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 84, color: fg }, mode),
+      { x: 0.7, y: 2.7, w: 12, h: 2.8, align: 'center', valign: 'middle' });
+    if (d.contacto) s.addText(d.contacto.replace(/\n/g, '\n'), { x: 0.7, y: 5.8, w: 12, h: 0.8, fontFace: FONT_SANS, fontSize: 20, color: fg, align: 'center' });
+  }
   fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
   addPaginator(s, n, tot, useYellow ? '444444' : COLOR_GREY);
+}
+
+function buildPptxStatsCharla(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  const surf = surfaceBg(d, true);
+  s.background = { color: surf.bg };
+  addTopMetaPptx(s, g, surf.meta);
+  if (d.titular) s.addText(richWithHighlights(d.titular, { fontFace: FONT_SERIF, fontSize: 40, color: surf.fg }, 'dark'),
+    { x: 0.7, y: 1.3, w: 12, h: 0.9 });
+  const cells = [];
+  for (let i = 1; i <= 4; i++) {
+    if (d[`num${i}`] || d[`desc${i}`]) {
+      cells.push({ num: d[`num${i}`] || '', lbl: d[`label${i}`] || '', desc: d[`desc${i}`] || '', hi: (d[`hi${i}`] || '').toLowerCase() === 'si' });
+    }
+  }
+  const layout = (d.layout || '').toLowerCase();
+  const four = cells.length >= 4 && layout !== '2x2';
+  const cols = cells.length === 3 ? 3 : (cells.length === 4 && (layout === '2x2' || !layout.includes('x')) ? 2 : (cells.length >= 4 ? 4 : 2));
+  const rows = Math.ceil(cells.length / cols);
+  const cellW = 11.6 / cols;
+  const cellH = rows === 1 ? 4.5 : 2.2;
+  const numSize = cols === 4 ? 72 : (cols === 3 ? 100 : 120);
+  cells.forEach((c, i) => {
+    const col = i % cols, row = Math.floor(i / cols);
+    const x = 0.7 + col * cellW;
+    const y = 2.5 + row * (cellH + 0.3);
+    const numColor = c.hi ? 'D32F2F' : (surf.fg === COLOR_DARK ? '888800' : COLOR_YELLOW);
+    s.addText(c.num, { x, y, w: cellW - 0.3, h: cellH * 0.55, fontFace: FONT_SERIF, fontSize: numSize, color: numColor });
+    if (c.lbl) s.addText(c.lbl.toUpperCase(), { x, y: y + cellH * 0.58, w: cellW - 0.3, h: 0.3, fontFace: FONT_SANS, fontSize: 14, color: COLOR_YELLOW, charSpacing: 2, bold: true });
+    if (c.desc) s.addText(c.desc, { x, y: y + cellH * 0.73, w: cellW - 0.3, h: cellH * 0.27, fontFace: FONT_SANS, fontSize: cols === 4 ? 14 : 16, color: surf.fg });
+  });
+  if (d.fuente) s.addText(d.fuente, { x: 0.7, y: 6.6, w: 12, h: 0.3, fontFace: FONT_SANS, fontSize: 14, color: surf.meta });
+  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  addPaginator(s, n, tot, surf.meta);
+}
+
+function buildPptxCitasGrid(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  const surf = surfaceBg(d, true);
+  s.background = { color: surf.bg };
+  addTopMetaPptx(s, g, surf.meta);
+  if (d.titular) s.addText(richWithHighlights(d.titular, { fontFace: FONT_SERIF, fontSize: 32, color: surf.fg }, 'dark'),
+    { x: 0.7, y: 1.3, w: 12, h: 0.7 });
+  const cells = [];
+  for (let i = 1; i <= 6; i++) if (d[`cita${i}`]) cells.push({ q: d[`cita${i}`], who: d[`autor${i}`] || '' });
+  const cols = cells.length > 4 ? 3 : 2;
+  const rows = Math.ceil(cells.length / cols);
+  const cellW = 11.6 / cols;
+  const cellH = rows === 1 ? 4 : 1.9;
+  const qSize = cols === 3 ? 18 : 22;
+  cells.forEach((c, i) => {
+    const col = i % cols, row = Math.floor(i / cols);
+    const x = 0.7 + col * cellW;
+    const y = 2.3 + row * (cellH + 0.25);
+    s.addShape(pptx.ShapeType.rect, { x, y, w: 0.03, h: cellH, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
+    s.addText(c.q.replace(/\n/g, '\n'), { x: x + 0.2, y, w: cellW - 0.4, h: cellH * 0.75, fontFace: FONT_SERIF, fontSize: qSize, color: surf.fg, italic: true });
+    if (c.who) s.addText('— ' + c.who, { x: x + 0.2, y: y + cellH * 0.78, w: cellW - 0.4, h: 0.3, fontFace: FONT_SANS, fontSize: 13, color: surf.meta });
+  });
+  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  addPaginator(s, n, tot, surf.meta);
+}
+
+function buildPptxRecursos(pptx, d, g, n, tot) {
+  const s = pptx.addSlide();
+  const surf = surfaceBg(d, true);
+  s.background = { color: surf.bg };
+  addTopMetaPptx(s, g, surf.meta);
+  if (d.titular) s.addText(richWithHighlights(d.titular, { fontFace: FONT_SERIF, fontSize: 36, color: surf.fg }, 'dark'),
+    { x: 0.7, y: 1.3, w: 12, h: 0.7 });
+  const cats = [];
+  for (let c = 1; c <= 4; c++) {
+    const head = d[`cat${c}_titulo`];
+    if (!head) continue;
+    const items = [];
+    for (let i = 1; i <= 6; i++) if (d[`cat${c}_item${i}`]) items.push(d[`cat${c}_item${i}`]);
+    cats.push({ head, items });
+  }
+  const cols = Math.max(cats.length, 1);
+  const colW = 11.6 / cols;
+  cats.forEach((c, i) => {
+    const x = 0.7 + i * colW;
+    s.addText(c.head.toUpperCase(), { x, y: 2.4, w: colW - 0.3, h: 0.4, fontFace: FONT_SANS, fontSize: 15, color: COLOR_YELLOW, charSpacing: 2, bold: true });
+    s.addShape(pptx.ShapeType.rect, { x, y: 2.9, w: colW - 0.3, h: 0.02, fill: { color: COLOR_YELLOW, transparency: 60 }, line: { color: COLOR_YELLOW } });
+    const rich = [];
+    c.items.forEach((it, k) => {
+      const parts = it.split(/\s+[—–|-]\s+/);
+      if (parts.length >= 2) {
+        rich.push({ text: parts[0], options: { bold: true, fontSize: 16, color: surf.fg, fontFace: FONT_SANS, breakLine: false } });
+        rich.push({ text: '\n' + parts.slice(1).join(' — '), options: { fontSize: 14, color: surf.meta, fontFace: FONT_SANS, breakLine: true } });
+      } else {
+        rich.push({ text: it, options: { fontSize: 16, color: surf.fg, fontFace: FONT_SANS, breakLine: true } });
+      }
+      if (k < c.items.length - 1) rich.push({ text: '\n', options: { fontSize: 8 } });
+    });
+    s.addText(rich, { x, y: 3.1, w: colW - 0.3, h: 3.6, valign: 'top' });
+  });
+  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  addPaginator(s, n, tot, surf.meta);
 }
 
 function buildPptxCierre(pptx, d, g, n, tot) {
@@ -4951,6 +5254,10 @@ const PS_BUILDERS = {
   'equipo': buildPptxEquipo,
   'pricing': buildPptxPricing,
   'cta-final': buildPptxCtaFinal,
+  'stats-charla': buildPptxStatsCharla,
+  'citas-grid': buildPptxCitasGrid,
+  'recursos': buildPptxRecursos,
+  'recursos-agrupados': buildPptxRecursos,
   'cierre': buildPptxCierre
 };
 
