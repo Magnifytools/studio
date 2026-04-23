@@ -107,6 +107,30 @@
   .err strong { color:#FF8080; font-weight:600; }
   .err code { font-family:'SF Mono', monospace; font-size:12px; color:#FFD0D0; background:rgba(255,80,80,0.12); padding:1px 5px; border-radius:3px; }
 
+  /* Warning panel: yellow, soft. Non-blocking hints at rule violations (titulares largos, demasiados bullets, ritmo sin respiro). Distinto de .err porque el preview igual se genera. */
+  .warn {
+    display:none; background:rgba(255,214,0,0.06); border:1px solid rgba(255,214,0,0.35);
+    border-radius:8px; padding:10px 14px; font-size:13px; color:#F0E59A; line-height:1.5;
+    margin-top:8px;
+  }
+  .warn.show { display:block; }
+  .warn strong { color:var(--yellow); font-weight:600; }
+  .warn ul { list-style:none; padding:0; margin:8px 0 0; }
+  .warn li { padding:2px 0; }
+  .warn li::before { content:"⚠ "; color:var(--yellow); margin-right:4px; }
+  .warn code { font-family:'SF Mono', monospace; font-size:12px; color:#FFECB0; background:rgba(255,214,0,0.1); padding:1px 5px; border-radius:3px; }
+
+  /* Stats panel: slide count, estimated time, word count. Non-critical UI, discreto. */
+  .stats {
+    display:none; font-size:11.5px; color:#888; margin-top:10px;
+    display:flex; gap:16px; flex-wrap:wrap; padding:8px 12px;
+    background:rgba(255,255,255,0.02); border-radius:6px;
+  }
+  .stats.show { display:flex; }
+  .stats .stat { display:flex; gap:4px; align-items:baseline; }
+  .stats .stat b { color:#DDD; font-weight:500; }
+  .stats .stat .warn-inline { color:var(--yellow); }
+
   /* Image uploads: only rendered for content types that support images (see TYPE_META.supportsImages). Images are embedded as data URIs in state, referenced from the textarea as img1, img2… */
   .uploads { display:none; }
   .uploads.on { display:block; }
@@ -1324,6 +1348,8 @@
       </div>
       <div class="hint" id="hint"></div>
       <div class="err" id="err"></div>
+      <div class="warn" id="warn"></div>
+      <div class="stats" id="stats"></div>
     </div>
 
     <div class="color-bar" id="color-bar"></div>
@@ -5313,6 +5339,10 @@ function generatePresentacion(raw, preview, renderC) {
 
   if (slides.length === 0) { toast('Ning\u00fan slide reconocido. Usa slide: portada/divisor/contenido/etc.'); return; }
 
+  // Non-blocking validations against the 12 canonical rules.
+  showWarnings(validatePresentacion(valid, global));
+  showStats(statsPresentacion(valid));
+
   const w = 1920, h = 1080;
   const maxW = preview.clientWidth - 80;
   const colW = (maxW - 32) / 2;
@@ -5385,6 +5415,146 @@ function clearError() {
   el.classList.remove('show');
   el.innerHTML = '';
 }
+function showWarnings(items) {
+  const el = document.getElementById('warn');
+  if (!items || !items.length) { el.classList.remove('show'); el.innerHTML = ''; return; }
+  el.innerHTML = '<strong>Avisos de diseño</strong><ul>' + items.map(i => `<li>${i}</li>`).join('') + '</ul>';
+  el.classList.add('show');
+}
+function clearWarnings() {
+  const el = document.getElementById('warn');
+  el.classList.remove('show');
+  el.innerHTML = '';
+}
+function showStats(parts) {
+  const el = document.getElementById('stats');
+  if (!parts || !parts.length) { el.classList.remove('show'); el.innerHTML = ''; return; }
+  el.innerHTML = parts.map(p => `<span class="stat">${p}</span>`).join('');
+  el.classList.add('show');
+}
+function clearStats() {
+  const el = document.getElementById('stats');
+  el.classList.remove('show');
+  el.innerHTML = '';
+}
+
+// Word counter that strips bracket syntax and HTML.
+function countWords(s) {
+  if (!s) return 0;
+  return String(s).replace(/\[([^\]]+)\]/g, '$1').replace(/<[^>]+>/g, ' ').trim().split(/\s+/).filter(Boolean).length;
+}
+
+// ───── Presentacion: validator + stats ─────
+// Applies the 12 canonical rules (Anderson / Kawasaki / Naegle / C4C / Smallppt)
+// as non-blocking warnings. Returns { warnings: string[], stats: string[] }.
+const PS_META_FIELDS = new Set(['slide', 'fondo', 'layout', 'posicion', 'notas', 'notes', 'activo', 'color']);
+
+function validatePresentacion(sections, global) {
+  const warnings = [];
+  const imageSlideTypes = new Set(['hero', 'imagen', 'imagen-full', 'imagen-split', 'diptych', 'triptych', 'mosaic', 'portrait-quote', 'cierre']);
+  const manifiestoTypes = new Set(['manifiesto', 'divisor-charla', 'divisor']);
+
+  let consecutiveManifiestos = 0;
+
+  sections.forEach((s, idx) => {
+    const n = idx + 1;
+    const key = (s.slide || '').toLowerCase().trim();
+
+    // Rule 4 — titular longitud
+    const titWords = countWords(s.titular || s.titulo);
+    if (titWords > 12) warnings.push(`Slide <code>${n}</code> (<code>${key}</code>): titular con <code>${titWords}</code> palabras — regla 4 sugiere ≤ 12.`);
+
+    // Rule 4 — cuerpo longitud
+    const cuerpoWords = countWords(s.cuerpo);
+    if (cuerpoWords > 40) warnings.push(`Slide <code>${n}</code> (<code>${key}</code>): cuerpo con <code>${cuerpoWords}</code> palabras — regla 4 sugiere ≤ 40.`);
+
+    // Rule 6 — demasiados bullets en contenido
+    if (key === 'contenido') {
+      let bullets = 0;
+      for (let i = 1; i <= 10; i++) if (s['bullet' + i]) bullets++;
+      if (bullets > 5) warnings.push(`Slide <code>${n}</code> (<code>contenido</code>): <code>${bullets}</code> bullets — regla 6 sugiere ≤ 5, o partir en dos slides.`);
+    }
+
+    // Rules 1+5 — densidad de campos. Solo aplica a slide types de texto/hero/manifesto
+    // donde cada campo = 1 elemento visual. Los grids (pricing, equipo, timeline, framework,
+    // stats-charla, citas-grid, recursos-agrupados, mosaic, triptych, tabla, compare) usan
+    // muchos campos por diseño, así que contamos items lógicos y avisamos solo si son > 8.
+    const textSlides = new Set(['portada', 'hero', 'standard', 'manifiesto', 'divisor', 'divisor-charla', 'quote', 'quote-big', 'stat', 'stat-hero', 'siguiente-paso', 'cta-final', 'imagen', 'imagen-full', 'imagen-split', 'contenido', 'diptych', 'portrait-quote', 'cierre']);
+    if (textSlides.has(key)) {
+      const fields = Object.keys(s).filter(k => !PS_META_FIELDS.has(k) && s[k]);
+      if (fields.length > 8) warnings.push(`Slide <code>${n}</code> (<code>${key}</code>): <code>${fields.length}</code> campos rellenados — reglas 1+5 avisan que >6 elementos visuales saturan. Revisa si caben todos.`);
+    }
+
+    // Rule 10 — respiro cada 5, no acumular manifiestos
+    if (manifiestoTypes.has(key)) {
+      consecutiveManifiestos++;
+      if (consecutiveManifiestos > 3) warnings.push(`Slide <code>${n}</code>: <code>${consecutiveManifiestos}</code> manifiestos/divisores consecutivos — regla 10 sugiere intercalar una slide de respiro (<code>imagen-full</code>, <code>quote-big</code>, dato) entre ellos.`);
+    } else {
+      consecutiveManifiestos = 0;
+    }
+
+    // Sub-rule — imagen slide sin imagen referenciada
+    const needsImage = ['imagen-full', 'imagen-split', 'portrait-quote'];
+    if (needsImage.includes(key) && !uploadedImages[(s.imagen || '').trim()]) {
+      warnings.push(`Slide <code>${n}</code> (<code>${key}</code>): falta imagen (<code>imagen: imgN</code> no sube). El slide renderizará placeholder.`);
+    }
+  });
+
+  // Rule 10 global — al menos 1 slide "imagen/respiro" cada 7
+  const imageSlideCount = sections.filter(s => imageSlideTypes.has((s.slide || '').toLowerCase().trim())).length;
+  const total = sections.length;
+  if (total > 10 && imageSlideCount / total < 0.15) {
+    warnings.push(`Deck muy text-heavy: solo <code>${imageSlideCount}</code> slides de imagen/respiro en <code>${total}</code> totales. Regla 10 + Anderson sugieren romper ritmo cada ~5 slides.`);
+  }
+
+  return warnings;
+}
+
+function statsPresentacion(sections) {
+  let totalWords = 0;
+  sections.forEach(s => {
+    for (const k of Object.keys(s)) {
+      if (PS_META_FIELDS.has(k)) continue;
+      totalWords += countWords(s[k]);
+    }
+  });
+  const slides = sections.length;
+  // Avg ~35-45s per slide for conversational keynote. Use 40s as baseline.
+  const estSec = slides * 40;
+  const estMin = Math.round(estSec / 60 * 10) / 10;
+  // Kawasaki 10/20/30: <=10 slides + <=20min. TED/keynote: 15-25 slides / 18 min.
+  const targetMin = 18;
+  const timeFlag = estMin > targetMin + 5 ? '<span class="warn-inline">largo</span>' : (estMin < targetMin - 8 ? '<span class="warn-inline">corto</span>' : '');
+  return [
+    `<b>${slides}</b> slides`,
+    `≈ <b>${estMin} min</b> ${timeFlag}`.trim(),
+    `<b>${totalWords}</b> palabras`,
+    `<b>${(slides / (estSec / 60)).toFixed(1)}</b> slides/min`,
+  ];
+}
+
+// One-time font check on load. Returns true if DM Serif Display is resolvable locally.
+// Browsers lie if the font isn't installed but reports "available" via Google Fonts CDN —
+// using `document.fonts.check()` against a specific size is the reliable probe.
+function checkBrandFonts() {
+  try {
+    // Wait until font loading resolves then check.
+    if (!document.fonts) return;
+    document.fonts.ready.then(() => {
+      const hasDM = document.fonts.check('16px "DM Serif Display"');
+      if (!hasDM) {
+        const el = document.getElementById('warn');
+        if (!el) return;
+        const msg = '<strong>Fuente Magnify no instalada</strong><ul><li>DM Serif Display no está disponible localmente. El PPTX exportado se renderizará con una itálica sans genérica en Keynote/PowerPoint (preview HTML sí la carga via Google Fonts CDN).</li><li>Instala desde <code>fonts.google.com/specimen/DM+Serif+Display</code> (30 seg) antes de exportar slides para presentar.</li></ul>';
+        // Show once on load, but don't override dynamic warnings from generate().
+        if (!el.classList.contains('show')) {
+          el.innerHTML = msg;
+          el.classList.add('show');
+        }
+      }
+    });
+  } catch (e) { /* no-op */ }
+}
 
 // Quick sanity check on the raw input: looks like key:value at all?
 function validateShape(raw) {
@@ -5397,6 +5567,8 @@ function validateShape(raw) {
 
 function generate() {
   clearError();
+  clearWarnings();
+  clearStats();
   const raw = document.getElementById('content').value.trim();
   if (!raw) { showError('Pega tu contenido primero. Copia el ejemplo del panel de ayuda si necesitas una plantilla.'); return; }
 
@@ -5718,6 +5890,7 @@ async function exportAll() {
 document.getElementById('sidebar-logo').innerHTML = icon('#FAFAFA');
 wireUploadZone();
 selectType('linkedin-post');
+checkBrandFonts();
 </script>
 </body>
 </html>
