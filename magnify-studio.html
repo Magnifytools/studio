@@ -3706,15 +3706,12 @@ function renderPsSiguientePaso(d) {
 // the global block. Brand icon bottom-left is always emitted.
 // ════════════════════════════════════════════
 
-function psIconSvg(color, inner) {
-  return `<svg viewBox="0 0 283 283" xmlns="http://www.w3.org/2000/svg"><rect width="283" height="283" rx="56.6" fill="${color}"/><polygon points="141.7,77.7 97.6,224.7 71,224.7 133.9,57.9 141.7,57.9 149.5,57.9 212.3,224.7 185.7,224.7" fill="${inner}"/></svg>`;
-}
-
 function psBrandIcon(surface) {
-  // surface: 'dk' (dark bg), 'lt' (light bg), 'yl' (yellow bg), 'img' (on image)
-  if (surface === 'lt') return psIconSvg('#0A0A0A', '#FAFAFA');
-  if (surface === 'yl') return psIconSvg('#0A0A0A', '#FFD600');
-  return psIconSvg('#FAFAFA', '#0A0A0A');
+  // Uses the bare A-polygon (no surrounding box) to stay consistent with the
+  // rest of the studio (sidebar, LinkedIn post footers, existing presentacion
+  // slides). On dark / on-image: white A. On light / yellow: black A.
+  if (surface === 'lt' || surface === 'yl') return icon('#0A0A0A');
+  return icon('#FAFAFA');
 }
 
 function psTopMeta(g) {
