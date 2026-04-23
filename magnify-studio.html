@@ -2473,17 +2473,30 @@ function parseBlock(text) {
   const data = {};
   const lines = text.trim().split('\n');
   let currentKey = null;
+  // Strip surrounding single/double quotes if the whole value is wrapped in them.
+  // Without this, users writing `sufijo: ":1"` end up with the literal quotes in output.
+  const unquote = (v) => {
+    const s = v.trim();
+    if ((s.startsWith('"') && s.endsWith('"') && s.length > 1) ||
+        (s.startsWith("'") && s.endsWith("'") && s.length > 1)) {
+      return s.slice(1, -1);
+    }
+    return s;
+  };
   for (const line of lines) {
-    // Comment lines (# ...) are ignored outright — they neither open a new key nor append to the previous one.
     if (/^\s*#/.test(line)) { continue; }
     const m = line.match(/^(\w+(?:[-_]\w+)*):\s*(.*)$/);
     if (m) {
       currentKey = m[1].toLowerCase();
-      data[currentKey] = m[2].trim();
+      data[currentKey] = unquote(m[2]);
     } else if (currentKey) {
-      data[currentKey] += '\n' + line;
+      // Continuation lines: trim leading whitespace so YAML-style 2-space indentation
+      // doesn't leak into rendered output as visible indents. Preserve the text content.
+      data[currentKey] += '\n' + line.replace(/^\s+/, '');
     }
   }
+  // Re-unquote once more in case the whole multi-line value was quoted.
+  for (const k of Object.keys(data)) data[k] = unquote(data[k]);
   return data;
 }
 
@@ -4432,8 +4445,10 @@ function richWithHighlights(text, baseOpts, bgMode) {
     } else if (bgMode === 'yellow') {
       hlOpts = { ...baseOpts, color: COLOR_DARK, bold: true, italic: true };
     } else {
-      // light: yellow color + bold reads well on white
-      hlOpts = { ...baseOpts, color: 'B8A000', bold: true };
+      // light: yellow highlight background + dark text = "stamp" style matching
+      // the HTML preview. Olive (#B8A000) solid yellow without backgroundfill reads
+      // muddy on white; the stamp treatment preserves the editorial brand.
+      hlOpts = { ...baseOpts, color: COLOR_DARK, bold: true, highlight: COLOR_YELLOW };
     }
     // Extract trailing punctuation from the highlight so the bold/yellow run doesn't include it — punctuation stays in the normal baseOpts run.
     const inner = m[1];
@@ -4681,13 +4696,17 @@ function addTopMetaPptx(slide, g, onColor) {
   }
 }
 
-function addBrandIcon(slide, onImage) {
-  const color = onImage ? '#FAFAFA' : '#FAFAFA';
-  slide.addImage({ data: iconDataUri(color), x: 0.7, y: 6.7, w: 0.42, h: 0.48 });
+// Brand icon placement: kept tucked into the lower-left corner and smaller than
+// before so it doesn't collide with caption bodies. Call sites pass `skip:true`
+// when the slide content (image panes, grids) already fills that zone.
+function addBrandIcon(slide, opts) {
+  if (opts && opts.skip) return;
+  slide.addImage({ data: iconDataUri('#FAFAFA'), x: 0.55, y: 6.95, w: 0.32, h: 0.37 });
 }
 
-function addBrandIconLt(slide) {
-  slide.addImage({ data: iconDataUri('#0A0A0A'), x: 0.7, y: 6.7, w: 0.42, h: 0.48 });
+function addBrandIconLt(slide, opts) {
+  if (opts && opts.skip) return;
+  slide.addImage({ data: iconDataUri('#0A0A0A'), x: 0.55, y: 6.95, w: 0.32, h: 0.37 });
 }
 
 function addPaginator(slide, n, tot, color) {
@@ -4749,8 +4768,13 @@ function buildPptxManifiesto(pptx, d, g, n, tot) {
   s.background = { color: bg };
   addTopMetaPptx(s, g, useYellow ? '444444' : COLOR_GREY);
   const mode = useYellow ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark');
-  s.addText(richWithHighlights((d.titular || d.frase || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 76, color: fg, italic: true }, mode),
-    { x: 0.9, y: 1.5, w: 11.5, h: 4.5, valign: 'middle' });
+  const raw = (d.titular || d.frase || '').replace(/\s+/g, ' ').trim();
+  // Scale font by content length. With the fallback font (no DM Serif Display installed),
+  // each glyph is ~1.3× wider than intended, so we size conservatively to avoid overflow.
+  const len = raw.length;
+  const size = len < 30 ? 80 : len < 60 ? 64 : len < 100 ? 52 : 42;
+  s.addText(richWithHighlights((d.titular || d.frase || ''), { fontFace: FONT_SERIF, fontSize: size, color: fg, italic: true }, mode),
+    { x: 0.7, y: 1.2, w: 11.9, h: 5.3, valign: 'middle', align: 'left' });
   fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
   addPaginator(s, n, tot, useYellow ? '444444' : COLOR_GREY);
 }
@@ -4792,11 +4816,19 @@ function buildPptxStatHero(pptx, d, g, n, tot) {
   s.background = { color: surf.bg };
   addTopMetaPptx(s, g, surf.meta);
   const mode = d.fondo === 'amarillo' ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark');
-  s.addText(`${d.numero || '0'}${d.sufijo || ''}`, { x: 0.6, y: 1.8, w: 5.5, h: 3.8, fontFace: FONT_SERIF, fontSize: 180, color: d.fondo === 'amarillo' ? COLOR_DARK : COLOR_YELLOW, align: 'center', valign: 'middle' });
+  // Combine numero + sufijo cleanly. parseBlock already strips surrounding quotes.
+  const num = (d.numero || '0').toString();
+  const suf = (d.sufijo || '').toString();
+  const statText = num + suf;
+  // Shrink the number size when the combined string is long (e.g. "3.4×", "8:1") so it fits the column.
+  const statSize = statText.length <= 3 ? 180 : statText.length <= 5 ? 140 : 110;
+  s.addText(statText, { x: 0.4, y: 1.8, w: 5.8, h: 3.8, fontFace: FONT_SERIF, fontSize: statSize, color: d.fondo === 'amarillo' ? COLOR_DARK : COLOR_YELLOW, align: 'center', valign: 'middle' });
   if (d.eyebrow) s.addText(d.eyebrow, { x: 6.4, y: 2, w: 6, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: surf.meta, charSpacing: 2 });
-  s.addText(richWithHighlights(d.descripcion || '', { fontFace: FONT_SERIF, fontSize: 32, color: surf.fg }, mode),
-    { x: 6.4, y: 2.55, w: 6.3, h: 2.5 });
-  if (d.fuente) s.addText(d.fuente, { x: 6.4, y: 5.3, w: 6, h: 0.4, fontFace: FONT_SANS, fontSize: 14, color: surf.meta });
+  const descLen = (d.descripcion || '').length;
+  const descSize = descLen < 80 ? 28 : descLen < 140 ? 22 : 18;
+  s.addText(richWithHighlights(d.descripcion || '', { fontFace: FONT_SERIF, fontSize: descSize, color: surf.fg }, mode),
+    { x: 6.4, y: 2.55, w: 6.3, h: 3 });
+  if (d.fuente) s.addText(d.fuente, { x: 6.4, y: 5.7, w: 6, h: 0.4, fontFace: FONT_SANS, fontSize: 14, color: surf.meta });
   surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
   addPaginator(s, n, tot, surf.meta);
 }
@@ -4806,15 +4838,21 @@ function buildPptxCompare(pptx, d, g, n, tot) {
   const surf = surfaceBg(d, true);
   s.background = { color: surf.bg };
   addTopMetaPptx(s, g, surf.meta);
-  s.addText(richWithHighlights(d.titular || '', { fontFace: FONT_SERIF, fontSize: 40, color: surf.fg }, d.fondo === 'amarillo' ? 'yellow' : 'dark'),
-    { x: 0.7, y: 1.3, w: 12, h: 0.9, align: 'center' });
+  // Compute title size based on length so multi-line titles don't collide with content.
+  const titleLen = (d.titular || '').length;
+  const titleSize = titleLen < 50 ? 34 : titleLen < 90 ? 28 : 24;
+  s.addText(richWithHighlights(d.titular || '', { fontFace: FONT_SERIF, fontSize: titleSize, color: surf.fg }, d.fondo === 'amarillo' ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark')),
+    { x: 0.7, y: 0.95, w: 12, h: 1.4, align: 'center', valign: 'top' });
   const a = [], b = [];
   for (let i = 1; i <= 6; i++) { if (d['a' + i]) a.push(d['a' + i]); if (d['b' + i]) b.push(d['b' + i]); }
-  s.addText((d.label_a || 'MODELO TRADICIONAL').toUpperCase(), { x: 0.9, y: 2.8, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: surf.meta, charSpacing: 2 });
-  s.addText((d.label_b || 'MAGNIFY').toUpperCase(), { x: 7, y: 2.8, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: COLOR_YELLOW, charSpacing: 2 });
-  s.addShape(pptx.ShapeType.rect, { x: 6.65, y: 3, w: 0.02, h: 3, fill: { color: surf.meta }, line: { color: surf.meta } });
-  a.forEach((t, i) => s.addText(t, { x: 0.9, y: 3.4 + i * 0.55, w: 5.5, h: 0.5, fontFace: FONT_SANS, fontSize: 22, color: surf.fg }));
-  b.forEach((t, i) => s.addText(t, { x: 7, y: 3.4 + i * 0.55, w: 5.5, h: 0.5, fontFace: FONT_SANS, fontSize: 22, color: surf.fg }));
+  const topList = 3.2;
+  const rowH = 1.15; // generous: accommodates 2-line bullets without overlap
+  const itemSize = 18;
+  s.addText((d.label_a || 'MODELO TRADICIONAL').toUpperCase(), { x: 0.9, y: 2.55, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 15, color: surf.meta, charSpacing: 2 });
+  s.addText((d.label_b || 'MAGNIFY').toUpperCase(), { x: 7, y: 2.55, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 15, color: COLOR_YELLOW, charSpacing: 2 });
+  s.addShape(pptx.ShapeType.rect, { x: 6.65, y: 3, w: 0.02, h: Math.max(a.length, b.length) * rowH + 0.2, fill: { color: surf.meta, transparency: 70 }, line: { color: surf.meta } });
+  a.forEach((t, i) => s.addText(t, { x: 0.9, y: topList + i * rowH, w: 5.5, h: rowH - 0.1, fontFace: FONT_SANS, fontSize: itemSize, color: surf.fg, valign: 'top' }));
+  b.forEach((t, i) => s.addText(t, { x: 7, y: topList + i * rowH, w: 5.5, h: rowH - 0.1, fontFace: FONT_SANS, fontSize: itemSize, color: surf.fg, valign: 'top' }));
   surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
   addPaginator(s, n, tot, surf.meta);
 }
@@ -4879,7 +4917,7 @@ function buildPptxImgGeneric(pptx, d, g, n, tot, imgKey, textBuilder) {
   s.addShape(pptx.ShapeType.rect, { x: 0, y: 4.5, w: PPTX_W, h: 3, fill: { color: '000000', transparency: 35 }, line: { color: '000000' } });
   textBuilder(s);
   addTopMetaPptx(s, g, 'CCCCCC');
-  addBrandIcon(s);
+  // Skip brand icon on full-bleed image slides — it would sit on top of caption text.
   addPaginator(s, n, tot, 'CCCCCC');
 }
 
@@ -4922,7 +4960,6 @@ function buildPptxDiptych(pptx, d, g, n, tot) {
     if (body) s.addText(body, { x: x + 0.4, y: 6.5, w: 5.5, h: 0.6, fontFace: FONT_SANS, fontSize: 16, color: 'EEEEEE' });
   });
   addTopMetaPptx(s, g, 'CCCCCC');
-  addBrandIcon(s);
   addPaginator(s, n, tot, 'CCCCCC');
 }
 
@@ -4940,7 +4977,6 @@ function buildPptxTriptych(pptx, d, g, n, tot) {
     if (d[`descripcion${i}`]) s.addText(d[`descripcion${i}`], { x: x + 0.3, y: 6.4, w: 3.7, h: 0.4, fontFace: FONT_SANS, fontSize: 14, color: 'DDDDDD' });
   }
   addTopMetaPptx(s, g, 'CCCCCC');
-  addBrandIcon(s);
   addPaginator(s, n, tot, 'CCCCCC');
 }
 
