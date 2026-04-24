@@ -147,6 +147,10 @@
   .upload-thumb .id { position:absolute; top:4px; left:4px; background:var(--yellow); color:var(--bg); font-size:10px; font-weight:700; padding:2px 6px; border-radius:3px; letter-spacing:0.04em; font-family:'SF Mono', monospace; }
   .upload-thumb .rm { position:absolute; top:4px; right:4px; background:rgba(0,0,0,0.75); color:#fff; width:20px; height:20px; border-radius:50%; border:none; cursor:pointer; font-size:12px; line-height:1; padding:0; display:flex; align-items:center; justify-content:center; }
   .upload-thumb .rm:hover { background:#c33; }
+  /* Botones ↑/↓ para reordenar imágenes: al mover se reasignan los IDs (img1 queda siempre el primero). */
+  .upload-thumb .move { position:absolute; bottom:4px; right:4px; display:flex; gap:2px; }
+  .upload-thumb .mv { background:rgba(0,0,0,0.75); color:#fff; width:20px; height:20px; border-radius:3px; border:none; cursor:pointer; font-size:13px; line-height:1; padding:0; display:flex; align-items:center; justify-content:center; }
+  .upload-thumb .mv:hover { background:var(--yellow); color:var(--bg); }
 
   /* Color selector: appears only for variants that declare `colors`. Segmented-control look. */
   .color-bar { display:none; align-items:center; gap:10px; padding:14px 24px 0; }
@@ -1205,26 +1209,35 @@
   .ps-ctafinal .contact { font-family:var(--sans); font-size:32px; color:var(--bg); }
   .ps-ctafinal em { font-style:italic; }
 
-  /* stats-charla (grid of big numbers, 2x2 or 1xN) */
-  .ps-statsc { padding:160px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
-  .ps-statsc h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:80px; color:#FAFAFA; font-weight:400; }
+  /* stats-charla (grid of big numbers, 2x2 or 1xN)
+     - Layout: padding-bottom grande para que .src no se solape con la fila inferior en 2x2 (B9).
+     - .num nowrap para que "55/45" o "3.4×" no se partan en slash/punto (B8).
+     - .hi con variantes .hi-neg (rojo, default) y .hi-pos (destacado brand) para darle semántica
+       al highlight — un 5% puede ser alerta, un 92% puede ser logro (B11). */
+  .ps-statsc { padding:140px 160px 120px; height:100%; display:flex; flex-direction:column; justify-content:center; position:relative; }
+  .ps-statsc h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:72px; color:#FAFAFA; font-weight:400; }
   .ps-slide.lt .ps-statsc h2, .ps-slide.yl .ps-statsc h2 { color:var(--bg); }
-  .ps-statsc .grid { display:grid; gap:64px 80px; }
+  .ps-statsc .grid { display:grid; gap:56px 80px; }
   .ps-statsc .grid.cols2 { grid-template-columns:repeat(2, 1fr); }
   .ps-statsc .grid.cols3 { grid-template-columns:repeat(3, 1fr); gap:48px; }
   .ps-statsc .grid.cols4 { grid-template-columns:repeat(4, 1fr); gap:40px; }
-  .ps-statsc .cell .num { font-family:var(--serif); font-weight:400; font-size:180px; line-height:0.9; letter-spacing:-0.04em; color:var(--yellow); margin-bottom:16px; }
+  .ps-statsc .cell .num { font-family:var(--serif); font-weight:400; font-size:180px; line-height:0.9; letter-spacing:-0.04em; color:var(--yellow); margin-bottom:16px; white-space:nowrap; }
   .ps-statsc .grid.cols3 .cell .num { font-size:140px; }
   .ps-statsc .grid.cols4 .cell .num { font-size:110px; }
-  .ps-statsc .cell.hi .num { color:#FF5A5A; }
+  /* Variantes semánticas de highlight (B11). hi sin tipo = hi-neg para compat. */
+  .ps-statsc .cell.hi .num, .ps-statsc .cell.hi-neg .num { color:#FF5A5A; }
+  .ps-statsc .cell.hi-pos .num { color:var(--yellow); text-shadow:0 0 0 var(--yellow); }
+  .ps-statsc .cell.hi-pos .lbl { color:var(--yellow); }
   .ps-slide.yl .ps-statsc .cell .num { color:var(--bg); }
-  .ps-slide.yl .ps-statsc .cell.hi .num { color:#C81E1E; }
+  .ps-slide.yl .ps-statsc .cell.hi .num, .ps-slide.yl .ps-statsc .cell.hi-neg .num { color:#C81E1E; }
+  .ps-slide.yl .ps-statsc .cell.hi-pos .num { color:var(--bg); font-weight:700; }
   .ps-statsc .cell .lbl { font-family:var(--sans); font-size:26px; letter-spacing:0.08em; color:var(--yellow); text-transform:uppercase; margin-bottom:12px; display:block; }
   .ps-slide.lt .ps-statsc .cell .lbl, .ps-slide.yl .ps-statsc .cell .lbl { color:#B8A000; }
   .ps-statsc .cell .desc { font-family:var(--sans); font-size:26px; line-height:1.4; color:#FAFAFA; max-width:420px; }
   .ps-slide.lt .ps-statsc .cell .desc, .ps-slide.yl .ps-statsc .cell .desc { color:var(--bg); }
   .ps-statsc .grid.cols4 .cell .desc { font-size:22px; }
-  .ps-statsc .src { font-family:var(--sans); font-size:22px; color:#999; margin-top:56px; }
+  /* .src anclada abajo del container, fuera del grid — evita colisión con celdas en 2x2 (B9). */
+  .ps-statsc .src { position:absolute; bottom:60px; left:160px; right:160px; font-family:var(--sans); font-size:22px; color:#999; margin:0; }
   .ps-slide.lt .ps-statsc .src { color:#666; }
   .ps-slide.yl .ps-statsc .src { color:var(--bg); opacity:0.7; }
 
@@ -2409,15 +2422,40 @@ function removeUploadedImage(id) {
   renderImageThumbs();
 }
 
+// Reordenar imágenes moviendo una imagen arriba/abajo en la lista. Al mover, los IDs se
+// reasignan (img1, img2... en orden actual) para que el YAML refleje la posición visual.
+// Esto evita que el usuario tenga que contar 7 thumbs para saber cuál es img7 (B10).
+function moveUploadedImage(id, delta) {
+  const ids = Object.keys(uploadedImages);
+  const idx = ids.indexOf(id);
+  if (idx < 0) return;
+  const newIdx = idx + delta;
+  if (newIdx < 0 || newIdx >= ids.length) return;
+  // Reordenar el array y reconstruir uploadedImages con nuevos IDs consecutivos.
+  const dataUrls = ids.map(k => uploadedImages[k]);
+  const [moved] = dataUrls.splice(idx, 1);
+  dataUrls.splice(newIdx, 0, moved);
+  uploadedImages = {};
+  dataUrls.forEach((url, i) => { uploadedImages['img' + (i + 1)] = url; });
+  uploadCounter = dataUrls.length;
+  renderImageThumbs();
+  // Regenerar preview si hay deck para que el usuario vea el nuevo orden inmediatamente.
+  if (document.getElementById('render-container').children.length > 0) generate();
+}
+
 function renderImageThumbs() {
   const host = document.getElementById('upload-thumbs');
   if (!host) return;
   const ids = Object.keys(uploadedImages);
-  host.innerHTML = ids.map(id => `
+  host.innerHTML = ids.map((id, i) => `
     <div class="upload-thumb">
       <img src="${uploadedImages[id]}" alt="${id}">
       <span class="id">${id}</span>
       <button class="rm" title="Eliminar" onclick="removeUploadedImage('${id}')">×</button>
+      <div class="move">
+        ${i > 0 ? `<button class="mv" title="Subir (${id} → img${i})" onclick="moveUploadedImage('${id}', -1)">↑</button>` : ''}
+        ${i < ids.length - 1 ? `<button class="mv" title="Bajar (${id} → img${i + 2})" onclick="moveUploadedImage('${id}', 1)">↓</button>` : ''}
+      </div>
     </div>
   `).join('');
 }
@@ -4338,6 +4376,15 @@ function renderPsCtaFinal(d, g, n, tot) {
 // Charla — Stats Charla (grid 2x2, 1x3 or 1x4 of big numbers)
 function renderPsStatsCharla(d, g, n, tot) {
   const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
+  // hi admite variantes semánticas (B11): 'si' / 'negativo' / 'neg' → rojo (alerta).
+  // 'positivo' / 'pos' / 'ok' → amarillo brand realzado. Cualquier otro valor = sin highlight.
+  const hiClass = (v) => {
+    const x = (v || '').toLowerCase().trim();
+    if (!x) return '';
+    if (['si', 'yes', 'true', 'negativo', 'neg', '1'].includes(x)) return 'hi hi-neg';
+    if (['positivo', 'pos', 'ok', 'good'].includes(x)) return 'hi hi-pos';
+    return '';
+  };
   const cells = [];
   for (let i = 1; i <= 4; i++) {
     if (d[`num${i}`] || d[`desc${i}`]) {
@@ -4345,7 +4392,7 @@ function renderPsStatsCharla(d, g, n, tot) {
         num: d[`num${i}`] || '',
         lbl: d[`label${i}`] || '',
         desc: d[`desc${i}`] || '',
-        hi: (d[`hi${i}`] || '').toLowerCase() === 'si'
+        hiCls: hiClass(d[`hi${i}`])
       });
     }
   }
@@ -4358,7 +4405,7 @@ function renderPsStatsCharla(d, g, n, tot) {
     <div class="ps-statsc">
       ${d.titular ? `<h2>${applyHighlights(d.titular)}</h2>` : ''}
       <div class="grid ${gridCls}">
-        ${cells.map(c => `<div class="cell ${c.hi ? 'hi' : ''}">
+        ${cells.map(c => `<div class="cell ${c.hiCls}">
           <div class="num">${c.num}</div>
           ${c.lbl ? `<span class="lbl">${c.lbl}</span>` : ''}
           ${c.desc ? `<div class="desc">${c.desc}</div>` : ''}
