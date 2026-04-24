@@ -4571,16 +4571,19 @@ function richWithHighlights(text, baseOpts, bgMode) {
   let last = 0, m;
   while ((m = re.exec(text)) !== null) {
     if (m.index > last) parts.push({ text: text.slice(last, m.index), options: baseOpts });
-    // Tratamiento editorial: fondo amarillo sólido + texto negro en itálica del serif,
-    // igual que .hero_title .highlight + <em> en magnify.ing. Sobre fondo amarillo
-    // invertimos (fondo negro + texto amarillo) porque amarillo-sobre-amarillo
-    // sería invisible. No bold: el impacto viene del stamp y la cursiva.
+    // Keynote NO renderiza el atributo highlight de OOXML (.pptx). Probado v8: las
+    // palabras con highlight salen invisibles sobre fondo oscuro. Por eso en PPTX
+    // usamos color + italic (+ bold en claros para compensar la ausencia de stamp).
+    // El preview HTML sí usa stamp amarillo sólido (regla .hl). Sincronizados
+    // estéticamente, compatibles por capa.
     let hlOpts;
-    if (bgMode === 'yellow') {
-      hlOpts = { ...baseOpts, color: COLOR_YELLOW, italic: true, highlight: COLOR_DARK };
+    if (bgMode === 'dark') {
+      hlOpts = { ...baseOpts, color: COLOR_YELLOW, italic: true };
+    } else if (bgMode === 'yellow') {
+      hlOpts = { ...baseOpts, color: COLOR_DARK, italic: true, bold: true };
     } else {
-      // dark y light usan el mismo tratamiento: stamp amarillo + texto negro italic.
-      hlOpts = { ...baseOpts, color: COLOR_DARK, italic: true, highlight: COLOR_YELLOW };
+      // light: texto oscuro italic + bold para compensar ausencia de fondo amarillo.
+      hlOpts = { ...baseOpts, color: COLOR_DARK, italic: true, bold: true };
     }
     // Extract trailing punctuation from the highlight so the bold/yellow run doesn't include it — punctuation stays in the normal baseOpts run.
     const inner = m[1];
