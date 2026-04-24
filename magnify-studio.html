@@ -283,10 +283,13 @@
   .eyebrow.eyebrow-lt .ing-ap { color:var(--bg); background:var(--yellow); padding:2px 6px; border-radius:2px; margin-left:1px; }
 
   /* Highlight uses linear-gradient with explicit background-size so the yellow band stays ~x-height + buffer, never overflowing into adjacent lines — critical for serif display fonts with tall ascenders (DM Serif Display) set at tight line-heights (1.0-1.1). */
-  .hl { background-image:linear-gradient(var(--yellow), var(--yellow)); background-size:100% 0.92em; background-position:0 55%; background-repeat:no-repeat; color:var(--bg); padding:0 0.22em; display:inline; box-decoration-break:clone; -webkit-box-decoration-break:clone; border-radius:2px; }
-  /* Sobre fondo amarillo invertimos: stamp negro + texto amarillo. Si no, highlight amarillo sobre amarillo = invisible.
-     El selector .ps-slide.yl cubre slides de presentación (donde la clase yl vive en ps-slide, no en .frame). */
-  .frame.yl .hl, .ps-slide.yl .hl { background-image:linear-gradient(var(--bg), var(--bg)); color:var(--yellow); }
+  /* Replica el tratamiento editorial de magnify.ing (.hero_title .highlight + <em>):
+     fondo amarillo sólido, texto negro itálica del serif, padding horizontal generoso.
+     Antes era gradient-size 92% + bold; ahora es el stamp amarillo real de la web. */
+  .hl { background:var(--yellow); color:var(--bg); font-style:italic; padding:0.02em 0.3em; display:inline; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
+  /* Sobre fondo amarillo invertimos: stamp negro + texto amarillo (amarillo sobre amarillo sería invisible).
+     La italic se mantiene para preservar el tratamiento editorial. */
+  .frame.yl .hl, .ps-slide.yl .hl { background:var(--bg); color:var(--yellow); }
   .ing { color:var(--yellow); }
   .ing-dk { color:var(--bg); }
   .accent { width:56px; height:3px; margin-top:20px; }
@@ -4568,16 +4571,16 @@ function richWithHighlights(text, baseOpts, bgMode) {
   let last = 0, m;
   while ((m = re.exec(text)) !== null) {
     if (m.index > last) parts.push({ text: text.slice(last, m.index), options: baseOpts });
+    // Tratamiento editorial: fondo amarillo sólido + texto negro en itálica del serif,
+    // igual que .hero_title .highlight + <em> en magnify.ing. Sobre fondo amarillo
+    // invertimos (fondo negro + texto amarillo) porque amarillo-sobre-amarillo
+    // sería invisible. No bold: el impacto viene del stamp y la cursiva.
     let hlOpts;
-    if (bgMode === 'dark') {
-      hlOpts = { ...baseOpts, color: COLOR_YELLOW, bold: true };
-    } else if (bgMode === 'yellow') {
-      hlOpts = { ...baseOpts, color: COLOR_DARK, bold: true, italic: true };
+    if (bgMode === 'yellow') {
+      hlOpts = { ...baseOpts, color: COLOR_YELLOW, italic: true, highlight: COLOR_DARK };
     } else {
-      // light: yellow highlight background + dark text = "stamp" style matching
-      // the HTML preview. Olive (#B8A000) solid yellow without backgroundfill reads
-      // muddy on white; the stamp treatment preserves the editorial brand.
-      hlOpts = { ...baseOpts, color: COLOR_DARK, bold: true, highlight: COLOR_YELLOW };
+      // dark y light usan el mismo tratamiento: stamp amarillo + texto negro italic.
+      hlOpts = { ...baseOpts, color: COLOR_DARK, italic: true, highlight: COLOR_YELLOW };
     }
     // Extract trailing punctuation from the highlight so the bold/yellow run doesn't include it — punctuation stays in the normal baseOpts run.
     const inner = m[1];
