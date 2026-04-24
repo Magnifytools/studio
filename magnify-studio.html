@@ -1634,7 +1634,8 @@ confidencial: si`
 <code>cta-final</code> \u2014 eyebrow + titular + contacto + <code>qr: imgN</code> opcional (split con QR)<br>
 <code>recursos-agrupados</code> \u2014 titular + cat1..4_titulo + cat1..4_item1..6 (formato <code>Nombre — fuente</code>)<br>
 <code>cierre</code> \u2014 titular ('GRACIAS') + contacto<br><br>
-<strong>Fondo por slide:</strong> <code>fondo: oscuro | claro | amarillo</code> en la mayor\u00eda<br>
+<strong>Global \u2014 paginaci\u00f3n:</strong> <code>paginacion: no</code> en el bloque global desactiva el contador N/total en todas las slides.<br>
+<strong>Fondo por slide:</strong> <code>fondo: oscuro | claro | amarillo</code> sobreescribe el default en hero, agenda, manifiesto, divisor-charla, standard, stat-hero, compare, framework, timeline-charla, imagen-split, quote-big, citas-grid, equipo, pricing, cta-final, cierre, stats-charla, recursos-agrupados. Los templates imagen-heavy (diptych, triptych, mosaic, imagen-full, portrait-quote) y los cl\u00e1sicos (portada, divisor, contenido, stat, quote, etc.) tienen fondo fijo.<br>
 <strong>Im\u00e1genes:</strong> sube arriba y refer\u00e9ncialas como <code>img1</code>, <code>img2</code>...<br>
 <strong>Speaker notes:</strong> <code>notas:</code> por slide (solo en PPTX).<br>
 <strong>Highlights:</strong> <code>[palabra]</code> destaca en amarillo.`,
@@ -3855,7 +3856,13 @@ function psTopMeta(g) {
   return `<div class="ps-top-meta">${left}${right}</div>`;
 }
 
+// Flag global que el runtime pone antes de generar cada deck. Si el usuario declara
+// `paginacion: no` (también acepta `off` / `false` / `0`) en el bloque global, psPaginator
+// devuelve vacío y todas las slides salen sin el contador N/tot.
+let PS_PAGINATION_ENABLED = true;
+
 function psPaginator(n, tot, onImage) {
+  if (!PS_PAGINATION_ENABLED) return '';
   if (!n && n !== 0) return '';
   const cls = onImage ? 'ps-pag' : 'ps-pag';
   const style = onImage ? ' style="color:#FAFAFA;opacity:0.75"' : '';
@@ -4773,6 +4780,7 @@ function addBrandIconLt(slide, opts) {
 }
 
 function addPaginator(slide, n, tot, color) {
+  if (!PS_PAGINATION_ENABLED) return;
   if (!n || !tot) return;
   slide.addText(`${String(n).padStart(2, '0')} / ${String(tot).padStart(2, '0')}`, {
     x: 10.8, y: 6.75, w: 2, h: 0.35, fontFace: FONT_SANS, fontSize: 14, color: color || COLOR_GREY, align: 'right', charSpacing: 1.2
@@ -5364,6 +5372,10 @@ function generatePresentacion(raw, preview, renderC) {
   const { global, sections } = parseMultiDoc(raw);
   if (sections.length === 0) { toast('A\u00f1ade al menos un slide separado por ---'); return; }
 
+  // Toggle global de paginación. Acepta varios valores off-ish para ser permisivo.
+  const pagVal = (global.paginacion || global.numeracion || '').toString().toLowerCase().trim();
+  PS_PAGINATION_ENABLED = !['no', 'off', 'false', '0', 'none'].includes(pagVal);
+
   const slides = [];
   // Count valid slides first so renderers can emit N / total pagination.
   const valid = sections.filter(s => PS_RENDERERS[(s.slide || '').toLowerCase().trim()]);
@@ -5408,6 +5420,10 @@ async function exportPptx() {
   const raw = document.getElementById('content').value.trim();
   const { global, sections } = parseMultiDoc(raw);
   if (!window.PptxGenJS) { toast('pptxgenjs no cargado'); return; }
+  // Honor el toggle de paginación también al exportar, por si el usuario exporta sin haber
+  // pulsado Generar Preview antes (el flag se setea en ambos caminos).
+  const pagVal = (global.paginacion || global.numeracion || '').toString().toLowerCase().trim();
+  PS_PAGINATION_ENABLED = !['no', 'off', 'false', '0', 'none'].includes(pagVal);
   const pptx = new PptxGenJS();
   pptx.layout = 'LAYOUT_WIDE';
   pptx.title = global.titulo || 'Presentacion Magnify';
