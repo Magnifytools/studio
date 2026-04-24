@@ -5080,14 +5080,26 @@ function buildPptxImagenSplit(pptx, d, g, n, tot) {
 function buildPptxDiptych(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   s.background = { color: COLOR_DARK };
+  // Layout 70% imagen / 30% caption opaca, mismo split que el HTML preview.
+  // Antes: imagen cover en todo el frame + scrim semi-transparente → contenido de la
+  // captura se veía tras la caption (iconos Instagram, remate ChatGPT). Ahora la imagen
+  // vive en y:0..5.25 con sizing:contain (no se crope ninguna información) y la caption
+  // va en y:5.25..7.5 con fondo sólido COLOR_DARK + borde amarillo superior.
+  const imgH = 5.25;
+  const capY = 5.25;
+  const capH = 2.25;
   [[d.imagen_a, 0, d.label_a || 'ANTES', d.titulo_a, d.cuerpo_a], [d.imagen_b, PPTX_W / 2, d.label_b || 'DESPUÉS', d.titulo_b, d.cuerpo_b]].forEach(([img, x, lbl, t, body]) => {
+    const halfW = PPTX_W / 2;
     const src = uploadedImages[img];
-    if (src) s.addImage({ data: src, x, y: 0, w: PPTX_W / 2, h: PPTX_H, sizing: { type: 'cover', w: PPTX_W / 2, h: PPTX_H } });
-    else s.addShape(pptx.ShapeType.rect, { x, y: 0, w: PPTX_W / 2, h: PPTX_H, fill: { color: '2a2a2a' }, line: { color: '2a2a2a' } });
-    s.addShape(pptx.ShapeType.rect, { x, y: 4.5, w: PPTX_W / 2, h: 3, fill: { color: '000000', transparency: 30 }, line: { color: '000000' } });
-    s.addText(lbl.toUpperCase(), { x: x + 0.4, y: 5, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 14, color: COLOR_YELLOW, charSpacing: 2 });
-    s.addText(richWithHighlights(t || '', { fontFace: FONT_SERIF, fontSize: 36, color: 'FFFFFF' }, 'dark'), { x: x + 0.4, y: 5.5, w: 5.5, h: 1 });
-    if (body) s.addText(body, { x: x + 0.4, y: 6.5, w: 5.5, h: 0.6, fontFace: FONT_SANS, fontSize: 16, color: 'EEEEEE' });
+    // Zona imagen: background más claro para distinguir el letterbox de contain.
+    s.addShape(pptx.ShapeType.rect, { x, y: 0, w: halfW, h: imgH, fill: { color: '141414' }, line: { color: '141414' } });
+    if (src) s.addImage({ data: src, x: x + 0.2, y: 0.2, w: halfW - 0.4, h: imgH - 0.4, sizing: { type: 'contain', w: halfW - 0.4, h: imgH - 0.4 } });
+    // Caption sólida.
+    s.addShape(pptx.ShapeType.rect, { x, y: capY, w: halfW, h: capH, fill: { color: COLOR_DARK }, line: { color: COLOR_DARK } });
+    s.addShape(pptx.ShapeType.rect, { x, y: capY, w: halfW, h: 0.04, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
+    s.addText(lbl.toUpperCase(), { x: x + 0.5, y: capY + 0.2, w: halfW - 1, h: 0.35, fontFace: FONT_SANS, fontSize: 13, color: COLOR_YELLOW, charSpacing: 2, bold: true });
+    s.addText(richWithHighlights(t || '', { fontFace: FONT_SERIF, fontSize: 28, color: 'FFFFFF' }, 'dark'), { x: x + 0.5, y: capY + 0.6, w: halfW - 1, h: 1, valign: 'top' });
+    if (body) s.addText(body, { x: x + 0.5, y: capY + 1.55, w: halfW - 1, h: 0.5, fontFace: FONT_SANS, fontSize: 13, color: 'CCCCCC' });
   });
   addTopMetaPptx(s, g, 'CCCCCC');
   addPaginator(s, n, tot, 'CCCCCC');
