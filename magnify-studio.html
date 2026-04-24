@@ -5041,7 +5041,10 @@ function buildPptxImgGeneric(pptx, d, g, n, tot, imgKey, textBuilder) {
   const s = pptx.addSlide();
   s.background = { color: COLOR_DARK };
   const src = uploadedImages[d[imgKey]];
-  if (src) s.addImage({ data: src, x: 0, y: 0, w: PPTX_W, h: PPTX_H, sizing: { type: 'cover', w: PPTX_W, h: PPTX_H } });
+  // `ajuste: contain` preserva la imagen completa con letterbox (útil para treemaps
+  // 2:1, infografías portrait, etc.). Default cover llena el frame cropeando lo que sobre.
+  const fit = (d.ajuste || d.fit || 'cover').toLowerCase() === 'contain' ? 'contain' : 'cover';
+  if (src) s.addImage({ data: src, x: 0, y: 0, w: PPTX_W, h: PPTX_H, sizing: { type: fit, w: PPTX_W, h: PPTX_H } });
   else s.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: PPTX_W, h: PPTX_H, fill: { color: '1a1a1a' }, line: { color: '1a1a1a' } });
   // Dark scrim bar at bottom for text readability
   s.addShape(pptx.ShapeType.rect, { x: 0, y: 4.5, w: PPTX_W, h: 3, fill: { color: '000000', transparency: 35 }, line: { color: '000000' } });
