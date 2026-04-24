@@ -5272,30 +5272,46 @@ function buildPptxStatsCharla(pptx, d, g, n, tot) {
   s.background = { color: surf.bg };
   addTopMetaPptx(s, g, surf.meta);
   if (d.titular) s.addText(richWithHighlights(d.titular, { fontFace: FONT_SERIF, fontSize: 40, color: surf.fg }, 'dark'),
-    { x: 0.7, y: 1.3, w: 12, h: 0.9 });
+    { x: 0.7, y: 1.1, w: 12, h: 0.9 });
+  // hi semántico: si/negativo = rojo, positivo = amarillo realzado (B11).
+  const hiColor = (v) => {
+    const x = (v || '').toLowerCase().trim();
+    if (['si', 'yes', 'true', 'negativo', 'neg', '1'].includes(x)) return 'D32F2F';
+    if (['positivo', 'pos', 'ok', 'good'].includes(x)) return COLOR_YELLOW;
+    return null;
+  };
   const cells = [];
   for (let i = 1; i <= 4; i++) {
     if (d[`num${i}`] || d[`desc${i}`]) {
-      cells.push({ num: d[`num${i}`] || '', lbl: d[`label${i}`] || '', desc: d[`desc${i}`] || '', hi: (d[`hi${i}`] || '').toLowerCase() === 'si' });
+      cells.push({
+        num: d[`num${i}`] || '',
+        lbl: d[`label${i}`] || '',
+        desc: d[`desc${i}`] || '',
+        hi: hiColor(d[`hi${i}`])
+      });
     }
   }
   const layout = (d.layout || '').toLowerCase();
-  const four = cells.length >= 4 && layout !== '2x2';
   const cols = cells.length === 3 ? 3 : (cells.length === 4 && (layout === '2x2' || !layout.includes('x')) ? 2 : (cells.length >= 4 ? 4 : 2));
   const rows = Math.ceil(cells.length / cols);
+  // Geometría: reservamos y:6.7-7.0 para la fuente (.src). El grid nunca se mete ahí.
+  // En 2x2 antes las celdas ocupaban hasta y:6.9 y la fuente aparecía ENCIMA de las celdas
+  // inferiores. Ahora cellH en 2x2 se reduce a 1.7 para que el grid acabe en y:6.4 con aire.
+  const gridTop = 2.3;
+  const cellH = rows === 1 ? 4.2 : 1.8;
+  const rowGap = 0.25;
   const cellW = 11.6 / cols;
-  const cellH = rows === 1 ? 4.5 : 2.2;
-  const numSize = cols === 4 ? 72 : (cols === 3 ? 100 : 120);
+  const numSize = cols === 4 ? 68 : (cols === 3 ? 96 : 110);
   cells.forEach((c, i) => {
     const col = i % cols, row = Math.floor(i / cols);
     const x = 0.7 + col * cellW;
-    const y = 2.5 + row * (cellH + 0.3);
-    const numColor = c.hi ? 'D32F2F' : (surf.fg === COLOR_DARK ? '888800' : COLOR_YELLOW);
+    const y = gridTop + row * (cellH + rowGap);
+    const numColor = c.hi || (surf.fg === COLOR_DARK ? '888800' : COLOR_YELLOW);
     s.addText(c.num, { x, y, w: cellW - 0.3, h: cellH * 0.55, fontFace: FONT_SERIF, fontSize: numSize, color: numColor });
-    if (c.lbl) s.addText(c.lbl.toUpperCase(), { x, y: y + cellH * 0.58, w: cellW - 0.3, h: 0.3, fontFace: FONT_SANS, fontSize: 14, color: COLOR_YELLOW, charSpacing: 2, bold: true });
-    if (c.desc) s.addText(c.desc, { x, y: y + cellH * 0.73, w: cellW - 0.3, h: cellH * 0.27, fontFace: FONT_SANS, fontSize: cols === 4 ? 14 : 16, color: surf.fg });
+    if (c.lbl) s.addText(c.lbl.toUpperCase(), { x, y: y + cellH * 0.6, w: cellW - 0.3, h: 0.3, fontFace: FONT_SANS, fontSize: 13, color: COLOR_YELLOW, charSpacing: 2, bold: true });
+    if (c.desc) s.addText(c.desc, { x, y: y + cellH * 0.78, w: cellW - 0.3, h: cellH * 0.22, fontFace: FONT_SANS, fontSize: cols === 4 ? 13 : 15, color: surf.fg });
   });
-  if (d.fuente) s.addText(d.fuente, { x: 0.7, y: 6.6, w: 12, h: 0.3, fontFace: FONT_SANS, fontSize: 14, color: surf.meta });
+  if (d.fuente) s.addText(d.fuente, { x: 0.7, y: 6.85, w: 12, h: 0.3, fontFace: FONT_SANS, fontSize: 13, color: surf.meta });
   surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
   addPaginator(s, n, tot, surf.meta);
 }
