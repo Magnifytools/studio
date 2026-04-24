@@ -280,7 +280,9 @@
 
   /* Highlight uses linear-gradient with explicit background-size so the yellow band stays ~x-height + buffer, never overflowing into adjacent lines — critical for serif display fonts with tall ascenders (DM Serif Display) set at tight line-heights (1.0-1.1). */
   .hl { background-image:linear-gradient(var(--yellow), var(--yellow)); background-size:100% 0.92em; background-position:0 55%; background-repeat:no-repeat; color:var(--bg); padding:0 0.22em; display:inline; box-decoration-break:clone; -webkit-box-decoration-break:clone; border-radius:2px; }
-  .frame.yl .hl { background-image:linear-gradient(var(--bg), var(--bg)); color:var(--yellow); }
+  /* Sobre fondo amarillo invertimos: stamp negro + texto amarillo. Si no, highlight amarillo sobre amarillo = invisible.
+     El selector .ps-slide.yl cubre slides de presentación (donde la clase yl vive en ps-slide, no en .frame). */
+  .frame.yl .hl, .ps-slide.yl .hl { background-image:linear-gradient(var(--bg), var(--bg)); color:var(--yellow); }
   .ing { color:var(--yellow); }
   .ing-dk { color:var(--bg); }
   .accent { width:56px; height:3px; margin-top:20px; }
@@ -926,7 +928,11 @@
   .ps-top-meta .handle { font-weight:500; }
   .ps-slide.lt .ps-pag, .ps-slide.lt .ps-top-meta { color:#666; }
   .ps-slide.yl .ps-pag, .ps-slide.yl .ps-top-meta { color:rgba(10,10,10,0.6); }
-  .ps-slide.on-image .ps-pag, .ps-slide.on-image .ps-top-meta { color:#FAFAFA; opacity:0.85; }
+  .ps-slide.on-image .ps-pag, .ps-slide.on-image .ps-top-meta { color:#FAFAFA; opacity:0.95; }
+  /* Scrim sobre slides con imagen: evita que el top-meta y paginator colisionen con contenido de capturas
+     (chips de ChatGPT, header de SERP, etc.). 140px de degradado suave arriba + 120px abajo. */
+  .ps-slide.on-image::before { content:""; position:absolute; top:0; left:0; right:0; height:160px; background:linear-gradient(to bottom, rgba(0,0,0,0.65), rgba(0,0,0,0)); pointer-events:none; z-index:2; }
+  .ps-slide.on-image::after { content:""; position:absolute; bottom:0; left:0; right:0; height:140px; background:linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0)); pointer-events:none; z-index:2; }
 
   /* Generic charla body area (matches Deck template geometry). 20px min enforced. */
   .ps-charla { padding:160px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
@@ -974,7 +980,11 @@
 
   /* stat-hero (big number + side explanation) */
   .ps-stat-hero { padding:0 160px; display:flex; align-items:center; gap:120px; height:100%; }
-  .ps-stat-hero .num { font-family:var(--serif); font-weight:400; font-size:320px; line-height:0.9; letter-spacing:-0.04em; color:var(--yellow); flex-shrink:0; }
+  /* white-space:nowrap evita que sufijos con espacio (' · KD 72', '/mes') se partan en dos líneas.
+     Cuando numero+sufijo suman muchos caracteres, el renderer ya baja el font-size dinámicamente. */
+  .ps-stat-hero .num { font-family:var(--serif); font-weight:400; font-size:320px; line-height:0.9; letter-spacing:-0.04em; color:var(--yellow); flex-shrink:0; white-space:nowrap; }
+  .ps-stat-hero .num.long { font-size:200px; }
+  .ps-stat-hero .num.xlong { font-size:140px; letter-spacing:-0.02em; }
   .ps-stat-hero .explain { max-width:800px; }
   .ps-stat-hero .explain .eyebrow { display:block; margin-bottom:32px; font-size:26px; }
   .ps-stat-hero .explain h2 { font-family:var(--serif); font-weight:400; font-size:72px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:40px; color:#FAFAFA; }
@@ -1067,15 +1077,19 @@
   .ps-imgsplit em { font-style:italic; }
 
   /* diptych (2 images with captions) */
+  /* Diptych: 2 columns, cada una partida en 70% imagen / 30% caption sólida abajo.
+     Antes el caption iba superpuesto sobre la imagen tapando contenido crítico (SERPs, chips de ChatGPT).
+     Ahora la imagen respira arriba y el caption va en zona exclusiva con fondo opaco del brand. */
   .ps-dip { position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr; }
-  .ps-dip .pane { position:relative; overflow:hidden; display:flex; align-items:flex-end; padding:80px 80px 200px; background-size:cover; background-position:center; }
-  .ps-dip .pane.ph1 { background:linear-gradient(135deg,#3a3a3a 0%,#1a1a1a 100%); }
-  .ps-dip .pane.ph2 { background:linear-gradient(135deg,#555,#1c1c1c 100%); }
-  .ps-dip .pane::after { content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.65), transparent 55%); pointer-events:none; }
-  .ps-dip .pane .cap { position:relative; z-index:1; }
-  .ps-dip .pane .lbl { font-family:var(--sans); font-size:26px; letter-spacing:0.15em; color:var(--yellow); margin-bottom:16px; display:block; text-transform:uppercase; }
-  .ps-dip .pane .title { font-family:var(--serif); font-size:72px; line-height:1.05; letter-spacing:-0.02em; color:#FAFAFA; font-weight:400; }
-  .ps-dip .pane .body { font-family:var(--sans); font-size:30px; line-height:1.45; color:#FAFAFA; margin-top:24px; max-width:540px; opacity:0.92; }
+  .ps-dip .pane { position:relative; overflow:hidden; display:grid; grid-template-rows:70% 30%; background:var(--bg); }
+  .ps-dip .pane .img { position:relative; background-size:contain; background-repeat:no-repeat; background-position:center; background-color:#0A0A0A; }
+  .ps-dip .pane .img.ph1 { background:linear-gradient(135deg,#3a3a3a 0%,#1a1a1a 100%); }
+  .ps-dip .pane .img.ph2 { background:linear-gradient(135deg,#555,#1c1c1c 100%); }
+  .ps-dip .pane .cap { padding:32px 48px 40px; display:flex; flex-direction:column; justify-content:center; background:#0A0A0A; border-top:4px solid var(--yellow); }
+  .ps-dip .pane:nth-child(2) .cap { border-top-color:var(--yellow); }
+  .ps-dip .pane .lbl { font-family:var(--sans); font-size:22px; letter-spacing:0.15em; color:var(--yellow); margin-bottom:12px; display:block; text-transform:uppercase; font-weight:500; }
+  .ps-dip .pane .title { font-family:var(--serif); font-size:44px; line-height:1.08; letter-spacing:-0.01em; color:#FAFAFA; font-weight:400; }
+  .ps-dip .pane .body { font-family:var(--sans); font-size:22px; line-height:1.4; color:#CCC; margin-top:10px; max-width:540px; }
   .ps-dip em { font-style:italic; }
 
   /* triptych (3 image tiles + caption overlay) */
@@ -1125,10 +1139,12 @@
   .ps-port em { font-style:italic; }
 
   /* quote-big (single centered quote with photo) */
-  .ps-qbig { padding:160px 160px 200px; height:100%; display:flex; flex-direction:column; justify-content:center; }
-  .ps-qbig .mark { font-family:var(--serif); font-size:260px; line-height:0.5; color:var(--bg); margin-bottom:24px; }
-  .ps-slide.lt .ps-qbig .mark, .ps-slide.yl .ps-qbig .mark { color:var(--bg); }
-  .ps-qbig .text { font-family:var(--serif); font-weight:400; font-size:88px; line-height:1.1; letter-spacing:-0.01em; color:var(--bg); max-width:1500px; }
+  .ps-qbig { padding:160px 160px 200px; height:100%; display:flex; flex-direction:column; justify-content:center; position:relative; }
+  /* Comilla decorativa flotante arriba-izquierda del bloque, fuera del flujo para no empujar ni solapar la primera letra.
+     (Antes iba inline y chocaba visualmente con "A" o cualquier palabra que empezara por letra alta.) */
+  .ps-qbig .mark { position:absolute; top:140px; left:100px; font-family:var(--serif); font-size:260px; line-height:0.9; color:var(--bg); opacity:0.9; pointer-events:none; }
+  .ps-slide.lt .ps-qbig .mark, .ps-slide.yl .ps-qbig .mark { color:var(--bg); opacity:0.85; }
+  .ps-qbig .text { font-family:var(--serif); font-weight:400; font-size:88px; line-height:1.1; letter-spacing:-0.01em; color:var(--bg); max-width:1500px; margin-top:80px; padding-left:48px; position:relative; z-index:1; }
   .ps-qbig .attr { display:flex; align-items:center; gap:24px; margin-top:64px; }
   .ps-qbig .attr .photo { width:120px; height:120px; background:#0A0A0A; background-size:cover; background-position:center; flex-shrink:0; border-radius:50%; }
   .ps-qbig .attr .name { font-family:var(--sans); font-size:28px; color:var(--bg); font-weight:500; }
@@ -1227,13 +1243,15 @@
   .ps-slide.yl .ps-citas .cell .who { color:var(--bg); opacity:0.7; }
 
   /* cta-final QR variant (keeps text layout but splits with QR tile on one side) */
-  .ps-ctafinal.with-qr { flex-direction:row; text-align:left; gap:80px; align-items:center; justify-content:center; }
-  .ps-ctafinal.with-qr .qr-box { flex-shrink:0; width:380px; height:380px; background:#FFF; padding:32px; display:flex; align-items:center; justify-content:center; }
+  /* CTA con QR: el QR legible desde 5m ocupa ~25-30% del ancho. Dejamos espacio al titular para que domine. */
+  .ps-ctafinal.with-qr { flex-direction:row; text-align:left; gap:100px; align-items:center; justify-content:center; }
+  .ps-ctafinal.with-qr .qr-box { flex-shrink:0; width:280px; height:280px; background:#FFF; padding:24px; display:flex; align-items:center; justify-content:center; }
   .ps-ctafinal.with-qr .qr-box img { width:100%; height:100%; object-fit:contain; }
   .ps-ctafinal.with-qr .qr-box.empty { border:4px dashed rgba(10,10,10,0.3); background:transparent; color:var(--bg); font-family:var(--sans); font-size:22px; letter-spacing:2px; text-transform:uppercase; }
-  .ps-ctafinal.with-qr .txt { max-width:900px; }
-  .ps-ctafinal.with-qr h1 { font-size:100px; margin-bottom:40px; }
-  .ps-ctafinal.with-qr .contact { font-size:28px; }
+  .ps-ctafinal.with-qr .txt { max-width:1100px; }
+  .ps-ctafinal.with-qr h1 { font-size:120px; margin-bottom:32px; }
+  .ps-ctafinal.with-qr .eyebrow { margin-bottom:24px; }
+  .ps-ctafinal.with-qr .contact { font-size:30px; }
 
   /* recursos-agrupados (list grouped by category) */
   .ps-recursos { padding:140px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
@@ -1599,7 +1617,7 @@ confidencial: si`
 <code>standard</code> \u2014 titular + cuerpo (h1 editorial + body)<br>
 <code>stat-hero</code> \u2014 numero + sufijo + descripcion + fuente (stat lateral)<br>
 <code>compare</code> \u2014 titular + a1..6/b1..6 + label_a/label_b<br>
-<code>framework</code> \u2014 titular + paso1..4_label/titulo (grid auto 3 \u00f3 4 cols)<br>
+<code>framework</code> \u2014 titular + paso1..4_label/titulo (<code>label</code> = etiqueta texto tipo 'DIAGN\u00d3STICO'; el n\u00famero 01..04 es autom\u00e1tico)<br>
 <code>timeline-charla</code> \u2014 titular + fase1..4_label/titulo/descripcion<br>
 <code>imagen-full</code> \u2014 imagen: img1 + eyebrow + titular (full-bleed)<br>
 <code>imagen-split</code> \u2014 imagen + titular + cuerpo + posicion (izquierda/derecha)<br>
@@ -2518,7 +2536,9 @@ function parseBlock(text) {
     } else if (currentKey) {
       // Continuation lines: trim leading whitespace so YAML-style 2-space indentation
       // doesn't leak into rendered output as visible indents. Preserve the text content.
-      data[currentKey] += '\n' + line.replace(/^\s+/, '');
+      // También quitamos comillas que envuelvan la línea entera — casos típicos: handles
+      // tipo @SearchLDN escritos como '@SearchLDN' para evitar que YAML los interprete como alias.
+      data[currentKey] += '\n' + unquote(line.replace(/^\s+/, ''));
     }
   }
   // Re-unquote once more in case the whole multi-line value was quoted.
@@ -3941,10 +3961,14 @@ function renderPsStatHero(d, g, n, tot) {
   const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
   const num = d.numero || '0';
   const suf = d.sufijo || '';
+  // Auto-shrink del número cuando num+sufijo es largo (ej. '40 · KD 72'). Sin esto el sufijo
+  // se rompe en dos líneas o se sale del frame. El CSS aplica white-space:nowrap en todos los casos.
+  const combined = String(num) + String(suf);
+  const sizeCls = combined.length > 12 ? 'num xlong' : combined.length > 6 ? 'num long' : 'num';
   return `<div class="frame ps"><div class="ps-slide ${surface}">
     ${psTopMeta(g)}
     <div class="ps-stat-hero">
-      <div class="num">${num}${suf}</div>
+      <div class="${sizeCls}">${num}${suf}</div>
       <div class="explain">
         ${d.eyebrow ? `<span class="eyebrow">${d.eyebrow}</span>` : ''}
         <h2>${applyHighlights(d.descripcion || '')}</h2>
@@ -3985,9 +4009,15 @@ function renderPsFramework(d, g, n, tot) {
   const steps = [];
   for (let i = 1; i <= 4; i++) {
     if (d[`paso${i}_titulo`] || d[`paso${i}_label`] || d[`paso${i}_descripcion`]) {
+      const autoN = String(i).padStart(2, '0');
+      let label = d[`paso${i}_label`] || d[`paso${i}_etiqueta`] || '';
+      // Si el usuario escribió el mismo número que el auto (típico: paso1_label: '01'),
+      // evitamos duplicar. label es para palabras como 'DIAGNÓSTICO', no el número.
+      const labelDigits = String(label).replace(/\D/g, '');
+      if (labelDigits && labelDigits === String(i)) label = '';
       steps.push({
-        n: String(i).padStart(2, '0'),
-        label: d[`paso${i}_label`] || d[`paso${i}_etiqueta`] || '',
+        n: autoN,
+        label,
         desc: d[`paso${i}_titulo`] || d[`paso${i}_descripcion`] || ''
       });
     }
@@ -4075,22 +4105,29 @@ function renderPsImagenSplit(d, g, n, tot) {
 function renderPsDiptych(d, g, n, tot) {
   const bg1 = psBgFromImage(d.imagen_a, 'ph1');
   const bg2 = psBgFromImage(d.imagen_b, 'ph2');
-  return `<div class="frame ps"><div class="ps-slide dk on-image">
+  // Imagen en su propio <div class="img"> (70% alto) + caption opaco (30%).
+  // Antes la imagen era bg del .pane y el caption iba overlay — tapaba contenido crítico.
+  return `<div class="frame ps"><div class="ps-slide dk">
     <div class="ps-dip">
-      <div class="pane ${bg1.className}" style="${bg1.style}"><div class="cap">
-        <span class="lbl">${d.label_a || 'ANTES'}</span>
-        <div class="title">${applyHighlights(d.titulo_a || '').replace(/\n/g, '<br>')}</div>
-        ${d.cuerpo_a ? `<div class="body">${d.cuerpo_a}</div>` : ''}
-      </div></div>
-      <div class="pane ${bg2.className}" style="${bg2.style}"><div class="cap">
-        <span class="lbl">${d.label_b || 'DESPUÉS'}</span>
-        <div class="title">${applyHighlights(d.titulo_b || '').replace(/\n/g, '<br>')}</div>
-        ${d.cuerpo_b ? `<div class="body">${d.cuerpo_b}</div>` : ''}
-      </div></div>
+      <div class="pane">
+        <div class="img ${bg1.className}" style="${bg1.style}"></div>
+        <div class="cap">
+          <span class="lbl">${d.label_a || 'ANTES'}</span>
+          <div class="title">${applyHighlights(d.titulo_a || '').replace(/\n/g, '<br>')}</div>
+          ${d.cuerpo_a ? `<div class="body">${d.cuerpo_a}</div>` : ''}
+        </div>
+      </div>
+      <div class="pane">
+        <div class="img ${bg2.className}" style="${bg2.style}"></div>
+        <div class="cap">
+          <span class="lbl">${d.label_b || 'DESPUÉS'}</span>
+          <div class="title">${applyHighlights(d.titulo_b || '').replace(/\n/g, '<br>')}</div>
+          ${d.cuerpo_b ? `<div class="body">${d.cuerpo_b}</div>` : ''}
+        </div>
+      </div>
     </div>
     ${psTopMeta(g)}
-    <div class="ps-wmk-bl">${psBrandIcon('img')}</div>
-    ${psPaginator(n, tot, true)}
+    ${psPaginator(n, tot)}
   </div></div>`;
 }
 
