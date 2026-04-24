@@ -2398,17 +2398,29 @@ function setColor(color) {
 const MAX_IMG_BYTES = 5 * 1024 * 1024;
 
 function handleImageFiles(files) {
-  const list = Array.from(files || []).filter(f => f.type.startsWith('image/'));
+  // Orden determinístico por nombre para que drag-drop múltiple respete el orden
+  // alfabético del filesystem (01_*, 02_*, 03_*...). Antes el ID dependía de cuándo
+  // terminaba FileReader cada archivo: archivos pequeños ganaban ID bajos y los grandes
+  // quedaban al final, rompiendo el mapping esperado por el YAML.
+  const list = Array.from(files || [])
+    .filter(f => f.type.startsWith('image/'))
+    .filter(f => {
+      if (f.size > MAX_IMG_BYTES) { toast(`${f.name}: supera los 5MB`); return false; }
+      return true;
+    })
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
   if (!list.length) return;
-  list.forEach(file => {
-    if (file.size > MAX_IMG_BYTES) {
-      toast(`${file.name}: supera los 5MB`);
-      return;
-    }
+
+  // Reservamos el ID ANTES del async: así img(N) queda asignado al archivo en la posición N
+  // independientemente del orden en que FileReader termine.
+  const assignments = list.map(file => {
+    uploadCounter += 1;
+    return { id: 'img' + uploadCounter, file };
+  });
+
+  assignments.forEach(({ id, file }) => {
     const reader = new FileReader();
     reader.onload = () => {
-      uploadCounter += 1;
-      const id = 'img' + uploadCounter;
       uploadedImages[id] = reader.result;
       renderImageThumbs();
     };
