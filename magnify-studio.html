@@ -22,8 +22,12 @@
     --bg: #0A0A0A; --yellow: #FFD600; --h1: #F0F0F0; --h2: #FAFAFA;
     --body-dk: #999999; --body-lt: #444444;
     --border-dk: rgba(255,255,255,0.1); --border-lt: rgba(0,0,0,0.1);
-    --serif: 'DM Serif Display', Georgia, serif;
-    --sans: 'NM', system-ui, sans-serif;
+    /* PP Editorial New va primera: instalada localmente en máquinas Magnify y la fuente real
+       que veis en los decks. DM Serif Display y Georgia son fallbacks para máquinas sin EN.
+       Helvetica Neue/Arial cubren glyphs griegos que NM no incluye (B14: τέλος, Έ, etc.) —
+       per-glyph fallback, NM se sigue usando para latín. */
+    --serif: 'PP Editorial New', 'DM Serif Display', Georgia, serif;
+    --sans: 'NM', 'Helvetica Neue', Arial, system-ui, sans-serif;
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -292,6 +296,13 @@
      sin fondo de color. Funciona con la tipografía serif sin romper el amarillo
      dominante del slide. */
   .frame.yl .hl, .ps-slide.yl .hl { background:transparent; color:var(--bg); text-decoration:underline; text-decoration-thickness:0.08em; text-underline-offset:0.14em; padding:0; }
+  /* Sobre fondo oscuro el stamp amarillo compite con el fondo y rompe la legibilidad.
+     Espejo del richWithHighlights (mode='dark'): texto amarillo italic bold sin fondo —
+     así el preview predice lo que Keynote pinta en el PPTX. */
+  .ps-slide.dk .hl, .frame.dk .hl { background:transparent; color:var(--yellow); font-style:italic; font-weight:700; text-decoration:none; padding:0; }
+  /* Sobre fondo claro/hueso el highlighter amarillo queda flojo. Tratamiento editorial
+     alternativo: texto negro italic con underline grueso negro (mismo patrón que yellow). */
+  .ps-slide.lt .hl, .frame.lt .hl { background:transparent; color:var(--bg); text-decoration:underline; text-decoration-thickness:0.08em; text-underline-offset:0.14em; padding:0; font-style:italic; font-weight:400; }
   .ing { color:var(--yellow); }
   .ing-dk { color:var(--bg); }
   .accent { width:56px; height:3px; margin-top:20px; }
@@ -623,7 +634,29 @@
   /* ════════════════════════════════════════════
      CASE STUDY MULTI-PAGE & PROPUESTA (A4)
      ════════════════════════════════════════════ */
-  .doc-page { width:794px; height:1123px; background:#FFF; display:flex; flex-direction:column; position:relative; overflow:hidden; }
+  .doc-page { width:794px; height:1123px; background:#FFF; display:flex; flex-direction:column; position:relative; overflow:hidden; color:#1A1A1A; }
+  /* Per-page fondo overrides (case-study + propuesta). Misma lógica visual que el dossier. */
+  .doc-page.dk { background:var(--bg); color:#FAFAFA; }
+  .doc-page.dk .cs-page-title, .doc-page.dk .pr-page-title, .doc-page.dk .cs-page-body,
+  .doc-page.dk .cs-step-body h4, .doc-page.dk .cs-step-body p, .doc-page.dk .cs-cierre h2,
+  .doc-page.dk .cs-cierre p { color:#FAFAFA; }
+  .doc-page.dk .doc-eyebrow { color:var(--yellow); }
+  .doc-page.dk .doc-footer { color:rgba(250,250,250,0.5); border-top-color:rgba(250,250,250,0.1); }
+  .doc-page.dk .doc-footer .ing-ap { color:var(--yellow); font-weight:500; }
+  .doc-page.dk .doc-sep { background:var(--yellow); }
+  .doc-page.dk .cs-inline-stat { background:rgba(255,255,255,0.06); }
+  .doc-page.dk .cs-inline-stat .n { color:#FAFAFA; }
+  .doc-page.dk .cs-inline-stat .l { color:rgba(250,250,250,0.7); }
+  .doc-page.dk .cs-step { border-bottom-color:rgba(250,250,250,0.12); }
+  .doc-page.dk .cs-quote { border-top-color:rgba(250,250,250,0.15); }
+  .doc-page.dk .cs-quote blockquote { color:#FAFAFA; }
+  .doc-page.dk .cs-quote cite { color:rgba(250,250,250,0.6); }
+  .doc-page.yl { background:var(--yellow); color:var(--bg); }
+  .doc-page.yl .cs-page-title, .doc-page.yl .pr-page-title, .doc-page.yl .cs-page-body { color:var(--bg); }
+  .doc-page.yl .doc-eyebrow { color:var(--bg); font-weight:600; }
+  .doc-page.yl .cs-page-title-accent, .doc-page.yl .pr-page-title-accent { background:var(--bg); }
+  .doc-page.yl .doc-sep { background:var(--bg); }
+  .doc-page.yl .doc-footer { color:rgba(10,10,10,0.55); border-top-color:rgba(10,10,10,0.15); }
   .doc-header { display:flex; justify-content:space-between; align-items:center; padding:32px 56px 0; }
   .doc-header .doc-wm { height:16px; }
   .doc-header .doc-eyebrow { font-family:var(--sans); font-size:13px; font-weight:600; letter-spacing:2.4px; text-transform:uppercase; color:var(--yellow); }
@@ -714,6 +747,170 @@
   .pr-cta .txt { font-family:var(--serif); font-size:22px; color:var(--bg); margin:0; line-height:1.2; letter-spacing:-0.4px; }
   .pr-cta .url { font-family:var(--sans); font-size:14px; color:var(--bg); font-weight:600; letter-spacing:0.08em; display:flex; align-items:center; gap:10px; white-space:nowrap; }
   .pr-cta .url .arrow { font-size:18px; }
+
+  /* ════════════════════════════════════════════
+     CASE STUDY LONGFORM (DOSSIER) — multi-página A4 editorial
+     Sistema cromático: oscuro para divisores conceptuales (01,05,06,07),
+     claro/hueso para bloque caso (02,03,04), amarillo crescendo solo en cierre (08).
+     Tipografía: DM Serif Display titulares + DM Serif citas / Inter ExtraBold sección /
+     Inter 11/16 body / JetBrains Mono pies y .ing.
+     ════════════════════════════════════════════ */
+  .csl-page { width:794px; height:1123px; background:#FAFAFA; display:flex; flex-direction:column; position:relative; overflow:hidden; color:#1A1A1A; }
+  .csl-page.dk { background:var(--bg); color:#FAFAFA; }
+  .csl-page.yl { background:var(--yellow); color:var(--bg); }
+  /* Header institucional + footer en cada página (excepto divisores full-bleed). */
+  .csl-head { display:flex; justify-content:space-between; align-items:center; padding:32px 56px 0; font-family:var(--mono,'JetBrains Mono','SF Mono',monospace); font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(26,26,26,0.55); }
+  .csl-page.dk .csl-head { color:rgba(250,250,250,0.55); }
+  .csl-page.yl .csl-head { color:rgba(10,10,10,0.55); }
+  .csl-head .csl-doc { font-weight:600; }
+  .csl-foot { position:absolute; bottom:0; left:0; right:0; padding:18px 56px; display:flex; justify-content:space-between; align-items:center; font-family:var(--mono,'JetBrains Mono','SF Mono',monospace); font-size:10px; letter-spacing:0.16em; color:rgba(26,26,26,0.45); border-top:1px solid rgba(26,26,26,0.08); }
+  .csl-page.dk .csl-foot { color:rgba(250,250,250,0.4); border-top-color:rgba(250,250,250,0.08); }
+  .csl-page.yl .csl-foot { color:rgba(10,10,10,0.55); border-top-color:rgba(10,10,10,0.12); }
+  .csl-foot .csl-num { font-weight:600; }
+  .csl-foot .ing-ap { color:var(--yellow); font-weight:600; }
+  .csl-page.yl .csl-foot .ing-ap { color:var(--bg); text-decoration:underline; text-decoration-thickness:1.5px; }
+  .csl-body { flex:1; padding:56px 64px 84px; display:flex; flex-direction:column; }
+
+  /* Highlight `[palabra]` editorial: amarillo subrayado sobre claro, italic sobre oscuro/amarillo. */
+  .csl-page .hl-c { font-style:italic; text-decoration:underline; text-decoration-thickness:0.08em; text-underline-offset:0.14em; text-decoration-color:var(--yellow); color:inherit; }
+  .csl-page.dk .hl-c { color:var(--yellow); text-decoration:none; font-weight:700; font-style:italic; }
+  .csl-page.yl .hl-c { color:var(--bg); text-decoration:underline; text-decoration-thickness:0.1em; text-decoration-color:var(--bg); font-style:italic; }
+
+  /* PORTADA — dossier hero, dark, large serif title */
+  .csl-portada { background:var(--bg); color:#FAFAFA; padding:84px 64px; display:flex; flex-direction:column; height:100%; position:relative; }
+  .csl-portada .pt-wm { height:24px; margin-bottom:auto; }
+  .csl-portada .pt-eyebrow { font-family:var(--mono,monospace); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--yellow); margin-bottom:24px; font-weight:600; }
+  .csl-portada h1 { font-family:var(--serif); font-size:64px; font-weight:400; line-height:1.04; letter-spacing:-1.4px; color:#FAFAFA; max-width:660px; margin:0; }
+  .csl-portada .pt-sub { font-size:20px; line-height:1.45; color:#D0D0D0; margin-top:30px; max-width:600px; font-weight:400; }
+  .csl-portada .pt-accent { width:44px; height:3px; background:var(--yellow); margin:36px 0 28px; }
+  .csl-portada .pt-meta { font-family:var(--mono,monospace); font-size:11px; line-height:2.0; color:rgba(255,255,255,0.5); letter-spacing:0.08em; }
+  .csl-portada .pt-meta strong { color:#FAFAFA; font-weight:600; }
+  .csl-portada .pt-bottom { position:absolute; bottom:48px; left:64px; right:64px; display:flex; justify-content:space-between; align-items:flex-end; font-family:var(--mono,monospace); font-size:10px; color:rgba(255,255,255,0.4); letter-spacing:0.18em; text-transform:uppercase; }
+  .csl-portada .pt-bottom .ing-ap { color:var(--yellow); }
+
+  /* TL;DR — hueso, lista numerada con números amarillos grandes */
+  .csl-tldr { background:#F5F1EA; }
+  .csl-tldr .csl-body { padding:88px 76px 96px; }
+  .csl-tldr .tl-eyebrow { font-family:var(--mono,monospace); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:#666; font-weight:600; margin-bottom:18px; }
+  .csl-tldr h2 { font-family:var(--serif); font-size:42px; font-weight:400; line-height:1.05; letter-spacing:-0.7px; color:var(--bg); margin:0 0 12px; }
+  .csl-tldr .tl-deck { font-family:var(--serif); font-style:italic; font-size:19px; line-height:1.5; color:#444; margin-bottom:48px; max-width:580px; }
+  .csl-tldr ol { list-style:none; padding:0; margin:0; counter-reset:tldr; display:flex; flex-direction:column; gap:24px; }
+  .csl-tldr ol li { counter-increment:tldr; display:grid; grid-template-columns:64px 1fr; gap:18px; align-items:baseline; }
+  .csl-tldr ol li::before { content:counter(tldr,decimal-leading-zero); font-family:var(--serif); font-size:38px; font-weight:400; color:var(--yellow); line-height:0.9; letter-spacing:-1px; }
+  .csl-tldr ol li p { font-family:var(--serif); font-size:17px; line-height:1.55; color:var(--bg); margin:0; }
+  .csl-tldr ol li p strong { font-weight:600; }
+
+  /* DIVISOR-SECCION — full-bleed chapter break (oscuro / claro / amarillo según fondo) */
+  .csl-divisor { display:flex; flex-direction:column; height:100%; padding:84px 76px; position:relative; }
+  .csl-divisor .num { font-family:var(--serif); font-size:240px; font-weight:400; line-height:0.85; letter-spacing:-7px; margin:0 0 24px; color:inherit; }
+  .csl-divisor.yl .num, .csl-divisor.lt .num { color:var(--bg); }
+  .csl-divisor .num-line { width:80px; height:3px; background:var(--yellow); margin-bottom:48px; }
+  .csl-divisor.yl .num-line { background:var(--bg); }
+  .csl-divisor .eyebrow { font-family:var(--mono,monospace); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--yellow); font-weight:600; margin-bottom:20px; }
+  .csl-divisor.yl .eyebrow { color:var(--bg); }
+  .csl-divisor.lt .eyebrow { color:#666; }
+  .csl-divisor h2 { font-family:var(--serif); font-size:56px; font-weight:400; line-height:1.05; letter-spacing:-1.2px; color:inherit; margin:0; max-width:620px; }
+  .csl-divisor .deck { font-family:var(--serif); font-style:italic; font-size:18px; line-height:1.55; margin-top:24px; max-width:520px; opacity:0.8; }
+
+  /* SECCION-CUERPO — texto editorial denso con visuals */
+  .csl-section .sec-eyebrow { font-family:var(--mono,monospace); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:#666; font-weight:600; margin-bottom:12px; }
+  .csl-page.dk .csl-section .sec-eyebrow { color:rgba(250,250,250,0.55); }
+  .csl-section h2 { font-family:var(--serif); font-size:36px; font-weight:400; line-height:1.1; letter-spacing:-0.6px; color:inherit; margin:0 0 28px; max-width:620px; }
+  .csl-section .sec-body { font-size:14px; line-height:1.75; color:inherit; margin-bottom:18px; max-width:580px; }
+  .csl-page.dk .csl-section .sec-body { color:rgba(250,250,250,0.85); }
+  .csl-section .sec-body p { margin:0 0 14px; }
+  .csl-section .sec-pull { font-family:var(--serif); font-style:italic; font-size:20px; line-height:1.45; color:var(--bg); border-left:3px solid var(--yellow); padding:6px 0 6px 22px; margin:24px 0 24px; max-width:560px; }
+  .csl-page.dk .csl-section .sec-pull { color:#FAFAFA; }
+
+  /* VISUAL slot — placeholder for SVG/PNG with editorial caption */
+  .csl-visual { background:#fff; border:1px solid rgba(0,0,0,0.08); padding:28px; display:flex; flex-direction:column; gap:18px; margin:18px 0; }
+  .csl-page.dk .csl-visual { background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.1); }
+  .csl-visual .v-slot { aspect-ratio:16/9; background:repeating-linear-gradient(45deg,#F0F0F0 0 12px,#FAFAFA 12px 24px); display:flex; align-items:center; justify-content:center; font-family:var(--mono,monospace); font-size:11px; letter-spacing:0.2em; color:#999; text-transform:uppercase; }
+  .csl-visual .v-slot.has-img { background:none; padding:0; }
+  .csl-visual .v-slot.has-img img { width:100%; height:100%; object-fit:contain; display:block; }
+  .csl-page.dk .csl-visual .v-slot { background:repeating-linear-gradient(45deg,#1a1a1a 0 12px,#222 12px 24px); color:#666; }
+  .csl-visual .v-cap { font-family:var(--sans); font-size:11.5px; line-height:1.6; color:#444; max-width:600px; }
+  .csl-page.dk .csl-visual .v-cap { color:#B8B8B8; }
+  .csl-visual .v-cap strong { font-weight:600; color:var(--bg); }
+  .csl-page.dk .csl-visual .v-cap strong { color:#FAFAFA; }
+  .csl-visual .v-id { font-family:var(--mono,monospace); font-size:9.5px; color:#999; letter-spacing:0.18em; text-transform:uppercase; margin-bottom:6px; }
+
+  /* CITAS-CLIENTES — grid 2x3 sobre hueso */
+  .csl-citas { background:#F5F1EA; }
+  .csl-citas .csl-body { padding:88px 64px 96px; }
+  .csl-citas .ct-eyebrow { font-family:var(--mono,monospace); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:#666; font-weight:600; margin-bottom:14px; }
+  .csl-citas h2 { font-family:var(--serif); font-size:34px; font-weight:400; line-height:1.1; letter-spacing:-0.6px; color:var(--bg); margin:0 0 36px; max-width:560px; }
+  .csl-citas .ct-grid { display:grid; grid-template-columns:1fr 1fr; gap:28px 32px; }
+  .csl-citas .ct-cell { padding-left:18px; border-left:3px solid var(--yellow); display:flex; flex-direction:column; gap:8px; }
+  .csl-citas .ct-cell .q { font-family:var(--serif); font-style:italic; font-size:18px; line-height:1.4; color:var(--bg); margin:0; }
+  .csl-citas .ct-cell .a { font-family:var(--mono,monospace); font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:#666; margin-top:auto; }
+
+  /* STATS-6 — grid 3x2 con num grande + label + desc */
+  .csl-stats6 .csl-body { padding:80px 64px 96px; }
+  .csl-stats6 .st-eyebrow { font-family:var(--mono,monospace); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--yellow); font-weight:600; margin-bottom:14px; }
+  .csl-page.lt .csl-stats6 .st-eyebrow, .csl-page:not(.dk):not(.yl) .csl-stats6 .st-eyebrow { color:#B8A000; }
+  .csl-stats6 h2 { font-family:var(--serif); font-size:36px; font-weight:400; line-height:1.1; letter-spacing:-0.6px; margin:0 0 36px; max-width:580px; color:inherit; }
+  .csl-stats6 .st-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:32px 28px; }
+  .csl-stats6 .st-cell { padding-top:18px; border-top:2px solid var(--yellow); }
+  .csl-stats6 .st-cell .n { font-family:var(--serif); font-size:46px; font-weight:400; line-height:1; letter-spacing:-1px; color:var(--bg); margin-bottom:8px; }
+  .csl-page.dk .csl-stats6 .st-cell .n { color:var(--yellow); }
+  .csl-stats6 .st-cell .l { font-family:var(--mono,monospace); font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:#888; margin-bottom:10px; }
+  .csl-stats6 .st-cell .d { font-size:12px; line-height:1.5; color:#444; }
+  .csl-page.dk .csl-stats6 .st-cell .l { color:rgba(250,250,250,0.55); }
+  .csl-page.dk .csl-stats6 .st-cell .d { color:rgba(250,250,250,0.78); }
+
+  /* FRAMEWORK-EXTENDIDO — pasos con párrafo largo */
+  .csl-framework .csl-body { padding:72px 64px 96px; }
+  .csl-framework .fr-eyebrow { font-family:var(--mono,monospace); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--yellow); font-weight:600; margin-bottom:14px; }
+  .csl-framework h2 { font-family:var(--serif); font-size:38px; font-weight:400; line-height:1.1; letter-spacing:-0.7px; margin:0 0 32px; max-width:580px; color:inherit; }
+  .csl-framework .fr-step { display:grid; grid-template-columns:48px 1fr; gap:20px; padding:20px 0; border-top:1px solid rgba(0,0,0,0.1); }
+  .csl-framework .fr-step:last-child { border-bottom:1px solid rgba(0,0,0,0.1); }
+  .csl-page.dk .csl-framework .fr-step { border-top-color:rgba(250,250,250,0.12); }
+  .csl-page.dk .csl-framework .fr-step:last-child { border-bottom-color:rgba(250,250,250,0.12); }
+  .csl-framework .fr-step .n { font-family:var(--serif); font-size:30px; line-height:1; letter-spacing:-1px; color:var(--yellow); }
+  .csl-framework .fr-step h3 { font-family:var(--sans); font-size:18px; font-weight:600; letter-spacing:-0.2px; color:inherit; margin:0 0 4px; }
+  .csl-framework .fr-step .sub { font-family:var(--serif); font-style:italic; font-size:14px; color:#666; margin:0 0 10px; }
+  .csl-page.dk .csl-framework .fr-step .sub { color:rgba(250,250,250,0.7); }
+  .csl-framework .fr-step .desc { font-size:13px; line-height:1.65; color:#333; margin:0; max-width:520px; }
+  .csl-page.dk .csl-framework .fr-step .desc { color:rgba(250,250,250,0.78); }
+
+  /* CIERRE — divisor amarillo crescendo */
+  .csl-cierre { background:var(--yellow); color:var(--bg); padding:120px 76px; display:flex; flex-direction:column; justify-content:center; height:100%; position:relative; }
+  .csl-cierre .ci-num { font-family:var(--serif); font-size:200px; font-weight:400; line-height:0.85; letter-spacing:-7px; color:var(--bg); margin:0 0 24px; }
+  .csl-cierre .ci-line { width:80px; height:3px; background:var(--bg); margin-bottom:36px; }
+  .csl-cierre h2 { font-family:var(--serif); font-size:60px; font-weight:400; line-height:1.05; letter-spacing:-1.2px; color:var(--bg); margin:0 0 24px; max-width:600px; font-style:italic; }
+  .csl-cierre .ci-deck { font-family:var(--serif); font-size:20px; line-height:1.45; color:var(--bg); margin:0; max-width:560px; opacity:0.85; }
+  .csl-cierre .ci-cta { display:inline-flex; align-items:center; gap:12px; padding:16px 22px; background:var(--bg); color:var(--yellow); font-family:var(--mono,monospace); font-size:12px; letter-spacing:0.18em; text-transform:uppercase; font-weight:600; margin-top:48px; align-self:flex-start; }
+
+  /* FOOTER-ANONIMIZACION — pie legal-editorial en última página */
+  .csl-anonim .csl-body { padding:84px 64px 90px; display:flex; flex-direction:column; justify-content:flex-end; }
+  .csl-anonim .an-eyebrow { font-family:var(--mono,monospace); font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:#999; font-weight:600; margin-bottom:14px; }
+  .csl-anonim h3 { font-family:var(--sans); font-size:14px; font-weight:600; letter-spacing:-0.1px; color:#444; margin:0 0 14px; }
+  .csl-anonim .an-body { font-family:var(--sans); font-size:11.5px; line-height:1.7; color:#666; margin:0 0 16px; max-width:540px; }
+  .csl-anonim .an-meta { font-family:var(--mono,monospace); font-size:9.5px; letter-spacing:0.18em; text-transform:uppercase; color:#999; margin-top:24px; }
+
+  /* Overrides explícitos para que `fondo: oscuro/amarillo/claro` gane sobre los defaults
+     hueso de tldr/citas/cierre/anonim. CSS specificity: misma clase, definimos después. */
+  .csl-page.dk.csl-tldr, .csl-page.dk.csl-citas, .csl-page.dk.csl-anonim { background:var(--bg); color:#FAFAFA; }
+  .csl-page.yl.csl-tldr, .csl-page.yl.csl-citas, .csl-page.yl.csl-anonim { background:var(--yellow); color:var(--bg); }
+  .csl-page.lt.csl-tldr, .csl-page.lt.csl-citas, .csl-page.lt.csl-anonim { background:#FAFAFA; color:var(--bg); }
+  .csl-page.dk.csl-cierre { background:var(--bg); color:#FAFAFA; }
+  .csl-page.dk.csl-cierre .ci-num, .csl-page.dk.csl-cierre h2, .csl-page.dk.csl-cierre .ci-deck { color:#FAFAFA; }
+  .csl-page.dk.csl-cierre .ci-line { background:var(--yellow); }
+  .csl-page.dk.csl-cierre .ci-cta { background:var(--yellow); color:var(--bg); }
+  .csl-page.lt.csl-cierre { background:#FAFAFA; color:var(--bg); }
+  /* Overrides texto en tldr/citas oscuras */
+  .csl-page.dk.csl-tldr h2, .csl-page.dk.csl-tldr ol li p { color:#FAFAFA; }
+  .csl-page.dk.csl-tldr .tl-eyebrow { color:rgba(250,250,250,0.55); }
+  .csl-page.dk.csl-tldr .tl-deck { color:rgba(250,250,250,0.78); }
+  .csl-page.dk.csl-citas h2, .csl-page.dk.csl-citas .ct-cell .q { color:#FAFAFA; }
+  .csl-page.dk.csl-citas .ct-eyebrow, .csl-page.dk.csl-citas .ct-cell .a { color:rgba(250,250,250,0.6); }
+  .csl-page.dk.csl-anonim h3, .csl-page.dk.csl-anonim .an-body { color:#FAFAFA; }
+  .csl-page.dk.csl-anonim .an-eyebrow, .csl-page.dk.csl-anonim .an-meta { color:rgba(250,250,250,0.55); }
+  /* Yellow variants — texto en negro */
+  .csl-page.yl.csl-tldr h2, .csl-page.yl.csl-tldr ol li p { color:var(--bg); }
+  .csl-page.yl.csl-tldr ol li::before { color:var(--bg); }
+  .csl-page.yl.csl-citas h2, .csl-page.yl.csl-citas .ct-cell .q { color:var(--bg); }
 
   /* ════════════════════════════════════════════
      DOCUMENTO (MD-rendered A4) — long-form prose, proposals, case studies from raw markdown
@@ -823,11 +1020,11 @@
   /* ── PRESENTACION (slides 1920x1080) ── */
   .ps-slide { position:relative; width:100%; height:100%; padding:100px 120px; display:flex; flex-direction:column; }
   .ps-slide.dk { background:var(--bg); color:var(--h1); }
-  .ps-slide.lt { background:#FFFFFF; color:var(--bg); }
+  .ps-slide.lt { background:#FAFAFA; color:var(--bg); }
   .ps-slide.yl { background:var(--yellow); color:var(--bg); }
   .ps-wm { position:absolute; top:60px; left:120px; }
   .ps-wm svg { height:40px; }
-  .ps-footer { position:absolute; bottom:50px; left:120px; right:120px; display:flex; justify-content:space-between; align-items:center; font-size:20px; letter-spacing:0.1em; }
+  .ps-footer { position:absolute; bottom:50px; left:120px; right:120px; display:flex; justify-content:space-between; align-items:center; font-size:40px; letter-spacing:0.1em; }
   .ps-footer .url-dk { color:rgba(255,255,255,0.35); }
   .ps-footer .url-lt { color:rgba(0,0,0,0.35); }
   .ps-footer .ing-ap { color:var(--yellow); font-weight:500; }
@@ -837,7 +1034,7 @@
   /* portada */
   .ps-portada { justify-content:center; }
   .ps-portada h1 { font-family:var(--serif); font-size:130px; line-height:1.02; letter-spacing:-2px; color:var(--h1); max-width:1500px; }
-  .ps-portada .sub { font-size:32px; color:#E5E5E5; margin-top:44px; max-width:1280px; line-height:1.4; }
+  .ps-portada .sub { font-size:44px; color:#E5E5E5; margin-top:44px; max-width:1280px; line-height:1.4; }
   .ps-portada .bar { margin-top:60px; }
 
   /* divisor */
@@ -845,30 +1042,30 @@
   .ps-divisor h2 { font-family:var(--serif); font-size:96px; line-height:1.05; margin-top:40px; color:var(--bg); max-width:1400px; }
 
   /* contenido */
-  .ps-contenido .eyebrow { font-size:20px; letter-spacing:2px; color:var(--yellow); text-transform:uppercase; font-weight:500; }
+  .ps-contenido .eyebrow { font-size:40px; letter-spacing:2px; color:var(--yellow); text-transform:uppercase; font-weight:500; }
   .ps-contenido .bar { width:60px; height:4px; background:var(--yellow); margin:16px 0 28px; }
   .ps-contenido h2 { font-family:var(--serif); font-size:72px; line-height:1.1; color:var(--bg); max-width:1500px; margin-bottom:48px; }
   .ps-contenido ul { list-style:none; display:flex; flex-direction:column; gap:24px; }
-  .ps-contenido li { display:flex; align-items:flex-start; gap:24px; font-size:30px; line-height:1.4; color:var(--bg); }
+  .ps-contenido li { display:flex; align-items:flex-start; gap:24px; font-size:44px; line-height:1.4; color:var(--bg); }
   .ps-contenido li::before { content:''; width:14px; height:14px; background:var(--yellow); flex-shrink:0; margin-top:16px; }
 
   /* stat */
   .ps-stat { align-items:center; justify-content:center; text-align:center; }
   .ps-stat .num { font-family:var(--serif); font-size:380px; line-height:0.9; color:var(--yellow); letter-spacing:-8px; }
   .ps-stat .num sup { font-size:120px; opacity:0.6; }
-  .ps-stat .desc { font-size:36px; color:var(--h1); max-width:1200px; margin-top:40px; line-height:1.4; }
-  .ps-stat .meta { font-size:20px; color:var(--body-dk); margin-top:24px; letter-spacing:0.05em; }
+  .ps-stat .desc { font-size:44px; color:var(--h1); max-width:1200px; margin-top:40px; line-height:1.4; }
+  .ps-stat .meta { font-size:40px; color:var(--body-dk); margin-top:24px; letter-spacing:0.05em; }
 
   /* quote */
   .ps-quote { justify-content:center; }
   .ps-quote .mark { font-family:var(--serif); font-size:280px; color:var(--yellow); line-height:0.8; position:absolute; top:80px; left:100px; opacity:0.9; }
   .ps-quote blockquote { font-family:var(--serif); font-style:italic; font-size:70px; line-height:1.2; color:var(--bg); max-width:1500px; position:relative; z-index:2; }
-  .ps-quote .author { font-size:26px; color:var(--body-lt); margin-top:48px; letter-spacing:0.04em; }
+  .ps-quote .author { font-size:40px; color:var(--body-lt); margin-top:48px; letter-spacing:0.04em; }
 
   /* comparacion */
   .ps-comp { flex-direction:row; gap:0; padding:100px 80px; }
   .ps-comp .col { flex:1; padding:40px 60px; display:flex; flex-direction:column; gap:24px; }
-  .ps-comp .col .eb { font-size:18px; letter-spacing:2px; text-transform:uppercase; font-weight:500; }
+  .ps-comp .col .eb { font-size:40px; letter-spacing:2px; text-transform:uppercase; font-weight:500; }
   .ps-comp .col .eb.a { color:var(--body-lt); }
   .ps-comp .col .eb.b { color:var(--yellow); }
   .ps-comp .col .bar { width:60px; height:4px; }
@@ -877,48 +1074,48 @@
   .ps-comp .col.a ul li { color:var(--body-lt); }
   .ps-comp .col.b ul li { color:var(--bg); }
   .ps-comp .col ul { list-style:none; display:flex; flex-direction:column; gap:20px; margin-top:20px; }
-  .ps-comp .col ul li { font-size:26px; line-height:1.35; }
+  .ps-comp .col ul li { font-size:40px; line-height:1.35; }
   .ps-comp .sep { width:3px; background:var(--yellow); margin:40px 0; }
 
   /* cuadrante */
   .ps-cua .head { margin-bottom:30px; }
-  .ps-cua .head .eb { font-size:18px; color:var(--body-lt); letter-spacing:2px; text-transform:uppercase; }
+  .ps-cua .head .eb { font-size:40px; color:var(--body-lt); letter-spacing:2px; text-transform:uppercase; }
   .ps-cua .head h2 { font-family:var(--serif); font-size:44px; color:var(--bg); margin-top:10px; }
   .ps-cua .mat { flex:1; display:grid; grid-template-columns:80px 1fr 1fr; grid-template-rows:1fr 1fr 60px; gap:8px; }
-  .ps-cua .yax { grid-column:1; grid-row:1/3; display:flex; flex-direction:column; justify-content:space-between; align-items:center; font-size:16px; color:var(--body-lt); }
+  .ps-cua .yax { grid-column:1; grid-row:1/3; display:flex; flex-direction:column; justify-content:space-between; align-items:center; font-size:40px; color:var(--body-lt); }
   .ps-cua .yax .lbl { transform:rotate(-90deg); letter-spacing:2px; text-transform:uppercase; font-weight:500; }
-  .ps-cua .xax { grid-column:2/4; grid-row:3; display:flex; justify-content:space-between; align-items:center; padding:0 20px; font-size:16px; color:var(--body-lt); letter-spacing:2px; text-transform:uppercase; font-weight:500; }
+  .ps-cua .xax { grid-column:2/4; grid-row:3; display:flex; justify-content:space-between; align-items:center; padding:0 20px; font-size:40px; color:var(--body-lt); letter-spacing:2px; text-transform:uppercase; font-weight:500; }
   .ps-cua .cell { border:2px solid #eee; padding:36px; display:flex; flex-direction:column; justify-content:space-between; background:#FFFFFF; }
   .ps-cua .cell.hl { background:var(--yellow); border-color:var(--yellow); }
   .ps-cua .cell.dim { opacity:0.35; background:#FAFAFA; }
-  .ps-cua .cell .nm { font-family:var(--serif); font-size:34px; color:var(--bg); line-height:1.15; letter-spacing:-0.5px; }
-  .ps-cua .cell .ds { font-size:20px; color:var(--body-lt); margin-top:12px; line-height:1.4; }
+  .ps-cua .cell .nm { font-family:var(--serif); font-size:44px; color:var(--bg); line-height:1.15; letter-spacing:-0.5px; }
+  .ps-cua .cell .ds { font-size:40px; color:var(--body-lt); margin-top:12px; line-height:1.4; }
   .ps-cua .cell.hl .ds { color:rgba(10,10,10,0.7); }
-  .ps-cua .cell .tg { font-size:13px; color:var(--body-lt); letter-spacing:2px; text-transform:uppercase; margin-top:16px; font-weight:600; }
+  .ps-cua .cell .tg { font-size:40px; color:var(--body-lt); letter-spacing:2px; text-transform:uppercase; margin-top:16px; font-weight:600; }
   .ps-cua .cell.hl .tg { color:var(--bg); background:var(--bg); color:var(--yellow); padding:6px 10px; display:inline-block; align-self:flex-start; }
 
   /* timeline */
   .ps-tl h2 { font-family:var(--serif); font-size:68px; color:var(--bg); margin-bottom:60px; line-height:1.05; letter-spacing:-1px; }
   .ps-tl .fases { display:flex; gap:40px; flex:1; align-items:flex-start; }
   .ps-tl .fase { flex:1; display:flex; flex-direction:column; gap:14px; }
-  .ps-tl .fase .et { font-size:18px; font-weight:600; letter-spacing:2.2px; color:var(--bg); text-transform:uppercase; }
+  .ps-tl .fase .et { font-size:40px; font-weight:600; letter-spacing:2.2px; color:var(--bg); text-transform:uppercase; }
   .ps-tl .fase .et .ing { color:var(--bg); background:var(--yellow); padding:2px 8px; border-radius:2px; margin-left:2px; }
-  .ps-tl .fase .ti { font-family:var(--serif); font-size:36px; color:var(--bg); line-height:1.15; letter-spacing:-0.5px; }
-  .ps-tl .fase .du { font-size:18px; color:var(--body-lt); letter-spacing:0.02em; }
+  .ps-tl .fase .ti { font-family:var(--serif); font-size:44px; color:var(--bg); line-height:1.15; letter-spacing:-0.5px; }
+  .ps-tl .fase .du { font-size:40px; color:var(--body-lt); letter-spacing:0.02em; }
   .ps-tl .fase .b { height:6px; background:var(--yellow); margin-top:12px; width:60px; }
 
   /* imagen */
   .ps-img { justify-content:center; align-items:center; }
-  .ps-img .ph { width:72%; height:62%; background:#F0F0F0; display:flex; align-items:center; justify-content:center; font-size:24px; color:#AAA; letter-spacing:4px; font-weight:500; position:relative; border:2px dashed #DDD; }
+  .ps-img .ph { width:72%; height:62%; background:#F0F0F0; display:flex; align-items:center; justify-content:center; font-size:40px; color:#AAA; letter-spacing:4px; font-weight:500; position:relative; border:2px dashed #DDD; }
   .ps-img .ph::before { content:""; position:absolute; top:0; left:0; width:60px; height:4px; background:var(--yellow); }
-  .ps-img .cap { font-size:18px; color:var(--body-lt); margin-top:32px; letter-spacing:2.5px; text-transform:uppercase; font-weight:500; }
+  .ps-img .cap { font-size:40px; color:var(--body-lt); margin-top:32px; letter-spacing:2.5px; text-transform:uppercase; font-weight:500; }
 
   /* siguiente-paso */
   .ps-sig { justify-content:center; align-items:center; text-align:center; }
   .ps-sig h2 { font-family:var(--serif); font-size:140px; line-height:1.04; color:var(--bg); max-width:1500px; letter-spacing:-3px; }
   .ps-sig h2 .hl { background:var(--bg); color:var(--yellow); padding:0.08em 0.22em 0.14em; }
-  .ps-sig .cta { margin-top:72px; background:var(--bg); color:#fff; font-size:30px; font-weight:500; padding:28px 56px; letter-spacing:0.04em; display:inline-flex; align-items:center; gap:18px; }
-  .ps-sig .cta .arrow { color:var(--yellow); font-size:32px; }
+  .ps-sig .cta { margin-top:72px; background:var(--bg); color:#fff; font-size:44px; font-weight:500; padding:28px 56px; letter-spacing:0.04em; display:inline-flex; align-items:center; gap:18px; }
+  .ps-sig .cta .arrow { color:var(--yellow); font-size:44px; }
 
   /* ══════════════════════════════════════════════════════════════
      CHARLA — keynote slide types ported from Deck template.
@@ -931,8 +1128,9 @@
   /* Chrome: icon bottom-left + paginator bottom-right + event top-meta */
   .ps-wmk-bl { position:absolute; bottom:72px; left:120px; width:56px; height:56px; z-index:2; }
   .ps-wmk-bl svg { width:100%; height:100%; display:block; }
-  .ps-pag { position:absolute; bottom:84px; right:120px; font-size:24px; letter-spacing:0.08em; color:#B8B8B8; font-family:var(--sans); z-index:2; }
-  .ps-top-meta { position:absolute; top:72px; left:120px; right:120px; display:flex; justify-content:space-between; align-items:center; font-size:22px; letter-spacing:0.08em; color:#B8B8B8; font-family:var(--sans); z-index:3; }
+  /* Regla 4 Magnify: mínimo 20pt PPTX = 40px CSS (ratio 2px/pt en slide 1920/13.33"). */
+  .ps-pag { position:absolute; bottom:84px; right:120px; font-size:40px; letter-spacing:0.08em; color:#B8B8B8; font-family:var(--sans); z-index:2; }
+  .ps-top-meta { position:absolute; top:72px; left:120px; right:120px; display:flex; justify-content:space-between; align-items:center; font-size:40px; letter-spacing:0.08em; color:#B8B8B8; font-family:var(--sans); z-index:3; }
   .ps-top-meta .logo { max-height:44px; max-width:260px; width:auto; height:auto; display:block; }
   .ps-top-meta .handle { font-weight:500; }
   .ps-slide.lt .ps-pag, .ps-slide.lt .ps-top-meta { color:#666; }
@@ -946,30 +1144,33 @@
 
   /* Generic charla body area (matches Deck template geometry). 20px min enforced. */
   .ps-charla { padding:160px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
-  .ps-charla .eyebrow { font-family:var(--sans); font-size:28px; font-weight:400; letter-spacing:0.15em; color:#B8B8B8; text-transform:uppercase; }
+  .ps-charla .eyebrow { font-family:var(--sans); font-size:40px; font-weight:400; letter-spacing:0.15em; color:#B8B8B8; text-transform:uppercase; }
   .ps-slide.lt .ps-charla .eyebrow, .ps-slide.yl .ps-charla .eyebrow { color:#444; }
   .ps-charla h1.h1 { font-family:var(--serif); font-weight:400; font-size:96px; line-height:1.05; letter-spacing:-0.02em; color:#F0F0F0; margin:0; }
   .ps-slide.lt .ps-charla h1.h1, .ps-slide.yl .ps-charla h1.h1 { color:var(--bg); }
   .ps-charla h2.h2 { font-family:var(--serif); font-weight:400; font-size:64px; line-height:1.10; letter-spacing:-0.02em; color:#FAFAFA; margin:0; }
   .ps-slide.lt .ps-charla h2.h2, .ps-slide.yl .ps-charla h2.h2 { color:var(--bg); }
-  .ps-charla .body-l { font-family:var(--sans); font-size:36px; line-height:1.35; color:#FAFAFA; max-width:1200px; }
+  .ps-charla .body-l { font-family:var(--sans); font-size:44px; line-height:1.35; color:#FAFAFA; max-width:1200px; }
   .ps-slide.lt .ps-charla .body-l, .ps-slide.yl .ps-charla .body-l { color:var(--bg); }
-  .ps-charla .body-m { font-family:var(--sans); font-size:28px; line-height:1.4; color:#FAFAFA; }
+  .ps-charla .body-m { font-family:var(--sans); font-size:40px; line-height:1.4; color:#FAFAFA; }
   .ps-slide.lt .ps-charla .body-m, .ps-slide.yl .ps-charla .body-m { color:var(--bg); }
-  .ps-charla .meta-s { font-family:var(--sans); font-size:24px; line-height:1.5; color:#B8B8B8; }
+  .ps-charla .meta-s { font-family:var(--sans); font-size:40px; line-height:1.5; color:#B8B8B8; }
   .ps-slide.lt .ps-charla .meta-s { color:#666; }
   .ps-slide.yl .ps-charla .meta-s { color:var(--bg); }
-  .ps-charla .h3-label { font-family:var(--sans); font-size:26px; font-weight:400; letter-spacing:0.10em; color:#B8B8B8; text-transform:uppercase; }
+  .ps-charla .h3-label { font-family:var(--sans); font-size:40px; font-weight:400; letter-spacing:0.10em; color:#B8B8B8; text-transform:uppercase; }
   .ps-slide.lt .ps-charla .h3-label, .ps-slide.yl .ps-charla .h3-label { color:#444; }
   .ps-charla em { font-style:italic; }
 
   /* hero (cover with hairline) */
   .ps-hero { padding:0 160px 240px 160px; display:flex; flex-direction:column; justify-content:flex-end; height:100%; }
-  .ps-hero .eyebrow { font-size:32px; margin-bottom:56px; }
+  .ps-hero .eyebrow { font-size:44px; margin-bottom:56px; }
   .ps-hero .title { font-family:var(--serif); font-weight:400; font-size:140px; line-height:1.0; letter-spacing:-0.02em; color:#F0F0F0; max-width:1500px; }
   .ps-slide.lt .ps-hero .title, .ps-slide.yl .ps-hero .title { color:var(--bg); }
+  /* F3 — griego opcional debajo del título: tenue, serif, marca de agua conceptual. */
+  .ps-hero .griego { font-family:var(--serif); font-style:italic; font-size:56px; color:rgba(240,240,240,0.35); margin-top:24px; letter-spacing:0.02em; }
+  .ps-slide.lt .ps-hero .griego, .ps-slide.yl .ps-hero .griego { color:rgba(10,10,10,0.4); }
   .ps-hero .hairline { width:80px; height:2px; background:var(--yellow); margin:40px 0; }
-  .ps-hero .author { font-family:var(--sans); font-size:30px; color:#CCC; }
+  .ps-hero .author { font-family:var(--sans); font-size:44px; color:#CCC; }
   .ps-slide.lt .ps-hero .author { color:#666; }
   .ps-slide.yl .ps-hero .author { color:var(--bg); }
 
@@ -983,9 +1184,16 @@
   .ps-agenda-list li.active .n { color:var(--yellow); }
   .ps-slide.yl .ps-agenda-list li.active .n { color:#fff; }
 
-  /* manifiesto (hero-xxl italic) */
-  .ps-manif { display:flex; align-items:center; justify-content:center; height:100%; padding:0 120px; }
-  .ps-manif .hero-xxl { font-family:var(--serif); font-weight:400; font-style:italic; font-size:180px; line-height:0.95; letter-spacing:-0.02em; text-align:left; max-width:1600px; color:#F0F0F0; }
+  /* manifiesto (hero-xxl italic) — tamaños dinámicos espejan buildPptxManifiesto:
+     80pt≈160px / 64pt≈128px / 52pt≈104px / 42pt≈84px. align:flex-start para match con PPTX (x:0.7, align:left). */
+  .ps-manif { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; height:100%; padding:0 95px; }
+  /* F3 hilo griego: stamp encima del titular, tenue. */
+  .ps-manif .griego-stamp { font-family:var(--sans); font-size:40px; letter-spacing:0.2em; color:rgba(250,250,250,0.5); margin-bottom:40px; font-weight:400; }
+  .ps-slide.lt .ps-manif .griego-stamp, .ps-slide.yl .ps-manif .griego-stamp { color:rgba(10,10,10,0.55); }
+  .ps-manif .hero-xxl { font-family:var(--serif); font-weight:400; font-style:italic; font-size:160px; line-height:1.0; letter-spacing:-0.02em; text-align:left; color:#F0F0F0; }
+  .ps-manif .hero-xxl.s-md { font-size:128px; }
+  .ps-manif .hero-xxl.s-sm { font-size:104px; }
+  .ps-manif .hero-xxl.s-xs { font-size:84px; }
   .ps-slide.lt .ps-manif .hero-xxl, .ps-slide.yl .ps-manif .hero-xxl { color:var(--bg); }
 
   /* stat-hero (big number + side explanation) */
@@ -1001,10 +1209,10 @@
   .ps-stat-hero .suf { font-family:var(--sans); font-weight:500; font-size:44px; color:var(--yellow); letter-spacing:0.02em; margin-top:12px; }
   .ps-slide.yl .ps-stat-hero .suf { color:var(--bg); }
   .ps-stat-hero .explain { max-width:800px; }
-  .ps-stat-hero .explain .eyebrow { display:block; margin-bottom:32px; font-size:26px; }
+  .ps-stat-hero .explain .eyebrow { display:block; margin-bottom:32px; font-size:40px; }
   .ps-stat-hero .explain h2 { font-family:var(--serif); font-weight:400; font-size:72px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:40px; color:#FAFAFA; }
   .ps-slide.lt .ps-stat-hero .explain h2, .ps-slide.yl .ps-stat-hero .explain h2 { color:var(--bg); }
-  .ps-stat-hero .explain .src { font-family:var(--sans); font-size:24px; color:#B8B8B8; }
+  .ps-stat-hero .explain .src { font-family:var(--sans); font-size:40px; color:#B8B8B8; }
   .ps-slide.lt .ps-stat-hero .explain .src { color:#666; }
   .ps-slide.yl .ps-stat-hero .explain .src { color:var(--bg); }
 
@@ -1012,7 +1220,7 @@
   .ps-divisor-c { display:flex; align-items:center; justify-content:center; height:100%; }
   .ps-divisor-c .num { font-family:var(--serif); font-size:560px; line-height:0.8; letter-spacing:-0.04em; font-weight:400; color:var(--bg); }
   .ps-divisor-c .sep { width:2px; height:240px; background:var(--bg); opacity:0.25; margin:0 80px; }
-  .ps-divisor-c .right .meta-s { font-family:var(--sans); font-size:26px; letter-spacing:0.1em; color:var(--bg); opacity:0.7; text-transform:uppercase; margin-bottom:24px; }
+  .ps-divisor-c .right .meta-s { font-family:var(--sans); font-size:40px; letter-spacing:0.1em; color:var(--bg); opacity:0.7; text-transform:uppercase; margin-bottom:24px; }
   .ps-divisor-c .right .title { font-family:var(--serif); font-size:120px; line-height:1.0; letter-spacing:-0.02em; color:var(--bg); }
 
   /* compare (horizontal 2-col with hairline dividers) */
@@ -1022,12 +1230,12 @@
   .ps-compare .grid { display:grid; grid-template-columns:1fr 1px 1fr; gap:80px; align-items:start; }
   .ps-compare .divider { background:rgba(255,255,255,0.1); width:1px; min-height:400px; }
   .ps-slide.lt .ps-compare .divider, .ps-slide.yl .ps-compare .divider { background:rgba(0,0,0,0.15); }
-  .ps-compare .col .lbl { font-family:var(--sans); font-size:26px; letter-spacing:0.1em; color:#B8B8B8; display:block; margin-bottom:40px; text-transform:uppercase; }
+  .ps-compare .col .lbl { font-family:var(--sans); font-size:40px; letter-spacing:0.1em; color:#B8B8B8; display:block; margin-bottom:40px; text-transform:uppercase; }
   .ps-slide.lt .ps-compare .col .lbl, .ps-slide.yl .ps-compare .col .lbl { color:#444; }
   .ps-compare .col.magnify .lbl { color:var(--yellow); }
   .ps-slide.lt .ps-compare .col.magnify .lbl, .ps-slide.yl .ps-compare .col.magnify .lbl { color:#B8A000; }
   .ps-compare .col ul { list-style:none; padding:0; }
-  .ps-compare .col li { padding:24px 0; border-bottom:1px solid rgba(255,255,255,0.1); font-family:var(--sans); font-size:34px; color:#FAFAFA; }
+  .ps-compare .col li { padding:24px 0; border-bottom:1px solid rgba(255,255,255,0.1); font-family:var(--sans); font-size:44px; color:#FAFAFA; }
   .ps-slide.lt .ps-compare .col li, .ps-slide.yl .ps-compare .col li { color:var(--bg); border-bottom-color:rgba(0,0,0,0.12); }
   .ps-compare .col li:last-child { border-bottom:none; }
 
@@ -1038,11 +1246,11 @@
   .ps-fw .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:80px; }
   .ps-fw .grid.cols4 { grid-template-columns:repeat(4, 1fr); gap:48px; }
   .ps-fw .grid.cols4 .step .num { font-size:170px; }
-  .ps-fw .grid.cols4 .step .desc { font-size:26px; }
+  .ps-fw .grid.cols4 .step .desc { font-size:40px; }
   .ps-fw .step .num { color:var(--yellow); font-family:var(--serif); font-size:220px; line-height:0.9; letter-spacing:-0.04em; margin-bottom:32px; }
-  .ps-fw .step .label { font-family:var(--sans); font-size:28px; letter-spacing:0.1em; color:var(--yellow); margin-bottom:24px; text-transform:uppercase; }
+  .ps-fw .step .label { font-family:var(--sans); font-size:40px; letter-spacing:0.1em; color:var(--yellow); margin-bottom:24px; text-transform:uppercase; }
   .ps-slide.lt .ps-fw .step .label, .ps-slide.yl .ps-fw .step .label { color:#B8A000; }
-  .ps-fw .step .desc { font-family:var(--sans); font-size:32px; line-height:1.4; color:#FAFAFA; }
+  .ps-fw .step .desc { font-family:var(--sans); font-size:44px; line-height:1.4; color:#FAFAFA; }
   .ps-slide.lt .ps-fw .step .desc, .ps-slide.yl .ps-fw .step .desc { color:var(--bg); }
 
   /* timeline charla (4 nodes on horizontal rail) */
@@ -1056,27 +1264,40 @@
   .ps-tl-c .node .dot { width:28px; height:28px; background:var(--yellow); border:6px solid var(--bg); margin-bottom:40px; }
   .ps-slide.lt .ps-tl-c .node .dot, .ps-slide.yl .ps-tl-c .node .dot { border-color:#fff; }
   .ps-slide.yl .ps-tl-c .node .dot { background:var(--bg); border-color:var(--yellow); }
-  .ps-tl-c .node .label { font-family:var(--sans); font-size:24px; letter-spacing:0.1em; color:var(--yellow); margin-bottom:20px; text-transform:uppercase; }
+  .ps-tl-c .node .label { font-family:var(--sans); font-size:40px; letter-spacing:0.1em; color:var(--yellow); margin-bottom:20px; text-transform:uppercase; }
   .ps-slide.lt .ps-tl-c .node .label, .ps-slide.yl .ps-tl-c .node .label { color:#B8A000; }
   .ps-tl-c .node .title { font-family:var(--serif); font-size:52px; line-height:1.1; color:#FAFAFA; margin-bottom:20px; letter-spacing:-0.01em; }
   .ps-slide.lt .ps-tl-c .node .title, .ps-slide.yl .ps-tl-c .node .title { color:var(--bg); }
-  .ps-tl-c .node .desc { font-family:var(--sans); font-size:26px; line-height:1.45; color:#FAFAFA; }
+  .ps-tl-c .node .desc { font-family:var(--sans); font-size:40px; line-height:1.45; color:#FAFAFA; }
   .ps-slide.lt .ps-tl-c .node .desc, .ps-slide.yl .ps-tl-c .node .desc { color:var(--bg); }
 
   /* imagen full-bleed */
   .ps-imgfull { position:absolute; inset:0; overflow:hidden; }
-  .ps-imgfull .bg { position:absolute; inset:0; background-size:cover; background-position:center; }
+  /* .bg sólo para placeholder (gradiente + scanlines) cuando no hay imagen subida. */
+  .ps-imgfull .bg { position:absolute; inset:0; }
   .ps-imgfull .bg.ph { background:linear-gradient(180deg,#2a2a2a 0%,#161616 70%,#0a0a0a 100%); }
   .ps-imgfull .bg.ph::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(90deg, transparent 0 80px, rgba(255,255,255,0.02) 80px 82px); }
+  /* B15: imagen real renderizada como <img>, no background-image. Razón: html2canvas
+     (motor del export PDF) tiene bug conocido con background-size:contain en imágenes
+     data:URL — siempre las pinta como cover sin importar el CSS. object-fit en <img>
+     real sí lo respeta consistentemente. cover es default; .fit-contain conmuta a contain
+     con fondo neutro detrás (treemap 2:1, diagramas, capturas verticales). */
+  .ps-imgfull .bg-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; }
+  .ps-imgfull .bg-img.fit-contain { object-fit:contain; background-color:#0A0A0A; }
   .ps-imgfull .scrim { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.75), transparent 55%); }
   .ps-imgfull .overlay { position:absolute; bottom:240px; left:120px; right:120px; }
-  .ps-imgfull .overlay .eyebrow { color:#FAFAFA; opacity:0.85; margin-bottom:20px; display:block; font-size:28px; letter-spacing:0.15em; font-family:var(--sans); text-transform:uppercase; }
+  .ps-imgfull .overlay .eyebrow { color:#FAFAFA; opacity:0.85; margin-bottom:20px; display:block; font-size:40px; letter-spacing:0.15em; font-family:var(--sans); text-transform:uppercase; }
   .ps-imgfull .overlay .title { color:#FAFAFA; font-family:var(--serif); font-weight:400; font-size:96px; line-height:1.05; letter-spacing:-0.02em; }
   .ps-imgfull .overlay em { font-style:italic; }
 
   /* imagen split (2col: image + text) */
   .ps-imgsplit { position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr; }
-  .ps-imgsplit .pane-img { position:relative; overflow:hidden; background-size:cover; background-position:center; }
+  .ps-imgsplit .pane-img { position:relative; overflow:hidden; background-size:cover; background-position:center; background-repeat:no-repeat; }
+  /* imagen_ajuste: contain — retratos / fotos verticales / logos: se ven enteras con aire,
+     no rellenan ni recortan. Background neutral oscuro detrás para evitar bordes blancos. */
+  .ps-imgsplit .pane-img.fit-contain { background-size:contain; background-color:#0A0A0A; }
+  .ps-slide.lt .ps-imgsplit .pane-img.fit-contain { background-color:#FAFAFA; }
+  .ps-slide.yl .ps-imgsplit .pane-img.fit-contain { background-color:var(--yellow); }
   .ps-imgsplit .pane-img.ph { background:linear-gradient(135deg,#555,#1c1c1c); }
   .ps-imgsplit.rev .pane-img { order:2; }
   /* Banda amarilla vertical al borde donde el texto empieza — misma lógica que diptych
@@ -1085,13 +1306,25 @@
   .ps-imgsplit.rev .pane-txt { border-left:none; border-right:4px solid var(--yellow); }
   .ps-slide.lt .ps-imgsplit .pane-txt { background:#FFF; color:var(--bg); }
   .ps-slide.yl .ps-imgsplit .pane-txt { background:var(--yellow); color:var(--bg); }
-  .ps-imgsplit .pane-txt .eyebrow { font-family:var(--sans); font-size:28px; letter-spacing:0.15em; color:#B8B8B8; margin-bottom:32px; display:block; text-transform:uppercase; }
+  .ps-imgsplit .pane-txt .eyebrow { font-family:var(--sans); font-size:40px; letter-spacing:0.15em; color:#B8B8B8; margin-bottom:32px; display:block; text-transform:uppercase; }
   .ps-slide.lt .ps-imgsplit .pane-txt .eyebrow, .ps-slide.yl .ps-imgsplit .pane-txt .eyebrow { color:#444; }
   .ps-imgsplit .pane-txt h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:32px; font-weight:400; }
-  .ps-imgsplit .pane-txt .body-l { font-family:var(--sans); font-size:30px; max-width:560px; line-height:1.35; }
-  .ps-imgsplit .pane-txt .meta-s { font-family:var(--sans); font-size:24px; margin-top:32px; color:#B8B8B8; }
+  /* B13: cuerpos con URLs (Magnify · magnifytools.com, linkedin.com/in/...) en el panel
+     estrecho del split partían huérfanos ("Mirror ·" sin URL pegada) o cortaban con guion
+     léxico ("david-\ncarrasco-pamies"). Estrategia: el JS envuelve dominios y URLs en
+     <span class="nowrap"> (ver wrapNoBreakUrls); CSS aquí declara el nowrap y permite que
+     URLs largas se desborden del max-width antes que partirse en mitad. max-width subido
+     560→720 da margen para que "Mirror · mirror.magnifytools.com" quepa entero en una línea. */
+  .ps-imgsplit .pane-txt .body-l { font-family:var(--sans); font-size:44px; max-width:720px; line-height:1.35; overflow-wrap:anywhere; hyphens:none; }
+  .ps-imgsplit .pane-txt .body-l .nowrap { white-space:nowrap; }
+  .ps-imgsplit .pane-txt .body-l a { word-break:break-all; }
+  .ps-imgsplit .pane-txt .meta-s { font-family:var(--sans); font-size:40px; margin-top:32px; color:#B8B8B8; }
   .ps-slide.lt .ps-imgsplit .pane-txt .meta-s { color:#666; }
   .ps-slide.yl .ps-imgsplit .pane-txt .meta-s { color:var(--bg); opacity:0.7; }
+  /* Hilo griego (F3) en imagen-split: italic serif tenue, encima del meta — coherente con hero/manifiesto. */
+  .ps-imgsplit .pane-txt .griego { font-family:var(--serif); font-style:italic; font-size:40px; color:rgba(250,250,250,0.55); margin-top:32px; letter-spacing:0.02em; }
+  .ps-slide.lt .ps-imgsplit .pane-txt .griego { color:rgba(10,10,10,0.5); }
+  .ps-slide.yl .ps-imgsplit .pane-txt .griego { color:rgba(10,10,10,0.55); }
   .ps-imgsplit em { font-style:italic; }
 
   /* diptych (2 images with captions) */
@@ -1105,9 +1338,9 @@
   .ps-dip .pane .img.ph2 { background:linear-gradient(135deg,#555,#1c1c1c 100%); }
   .ps-dip .pane .cap { padding:32px 48px 40px; display:flex; flex-direction:column; justify-content:center; background:#0A0A0A; border-top:4px solid var(--yellow); }
   .ps-dip .pane:nth-child(2) .cap { border-top-color:var(--yellow); }
-  .ps-dip .pane .lbl { font-family:var(--sans); font-size:22px; letter-spacing:0.15em; color:var(--yellow); margin-bottom:12px; display:block; text-transform:uppercase; font-weight:500; }
+  .ps-dip .pane .lbl { font-family:var(--sans); font-size:40px; letter-spacing:0.15em; color:var(--yellow); margin-bottom:12px; display:block; text-transform:uppercase; font-weight:500; }
   .ps-dip .pane .title { font-family:var(--serif); font-size:44px; line-height:1.08; letter-spacing:-0.01em; color:#FAFAFA; font-weight:400; }
-  .ps-dip .pane .body { font-family:var(--sans); font-size:22px; line-height:1.4; color:#CCC; margin-top:10px; max-width:540px; }
+  .ps-dip .pane .body { font-family:var(--sans); font-size:40px; line-height:1.4; color:#CCC; margin-top:10px; max-width:540px; }
   .ps-dip em { font-style:italic; }
 
   /* triptych (3 image tiles + caption overlay) */
@@ -1120,7 +1353,7 @@
   .ps-trp .tile .cap { position:relative; z-index:1; }
   .ps-trp .tile .num { font-family:var(--serif); font-size:80px; line-height:0.9; color:var(--yellow); margin-bottom:16px; font-weight:400; }
   .ps-trp .tile .t { font-family:var(--serif); font-size:40px; line-height:1.1; color:#FAFAFA; letter-spacing:-0.01em; font-weight:400; }
-  .ps-trp .tile .s { font-family:var(--sans); font-size:24px; color:#FAFAFA; opacity:0.85; margin-top:16px; max-width:320px; }
+  .ps-trp .tile .s { font-family:var(--sans); font-size:40px; color:#FAFAFA; opacity:0.85; margin-top:16px; max-width:320px; }
   .ps-trp em { font-style:italic; }
 
   /* mosaic (1 big + 3-4 small) */
@@ -1134,8 +1367,8 @@
   .ps-mos .cell.ph5 { background:linear-gradient(135deg,#2a2a2a,#161616); }
   .ps-mos .cell::after { content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.55), transparent 60%); }
   .ps-mos .cap { position:absolute; bottom:32px; left:32px; right:32px; z-index:1; }
-  .ps-mos .cap .lbl { font-family:var(--sans); font-size:24px; letter-spacing:0.12em; color:var(--yellow); display:block; margin-bottom:10px; text-transform:uppercase; }
-  .ps-mos .cap .t { font-family:var(--serif); font-size:38px; line-height:1.1; color:#FAFAFA; letter-spacing:-0.01em; font-weight:400; }
+  .ps-mos .cap .lbl { font-family:var(--sans); font-size:40px; letter-spacing:0.12em; color:var(--yellow); display:block; margin-bottom:10px; text-transform:uppercase; }
+  .ps-mos .cap .t { font-family:var(--serif); font-size:48px; line-height:1.1; color:#FAFAFA; letter-spacing:-0.01em; font-weight:400; }
   .ps-mos .big .cap .t { font-size:64px; }
   .ps-mos em { font-style:italic; }
   .ps-mos-head { position:absolute; top:72px; left:120px; right:120px; z-index:3; display:flex; justify-content:space-between; align-items:baseline; }
@@ -1147,12 +1380,12 @@
   .ps-port .pane-img.ph { background:linear-gradient(160deg,#4a4a4a 0%,#2a2a2a 60%,#101010 100%); }
   .ps-port .pane-txt { padding:120px 120px 180px; display:flex; flex-direction:column; justify-content:flex-end; background:var(--bg); color:#FAFAFA; }
   .ps-slide.lt .ps-port .pane-txt { background:#FFF; color:var(--bg); }
-  .ps-port .pane-txt .eyebrow { font-family:var(--sans); font-size:28px; letter-spacing:0.15em; color:#B8B8B8; display:block; margin-bottom:24px; text-transform:uppercase; }
+  .ps-port .pane-txt .eyebrow { font-family:var(--sans); font-size:40px; letter-spacing:0.15em; color:#B8B8B8; display:block; margin-bottom:24px; text-transform:uppercase; }
   .ps-port .pane-txt .h-quote { font-family:var(--serif); font-size:60px; line-height:1.15; color:#FAFAFA; letter-spacing:-0.01em; margin-bottom:40px; font-weight:400; }
   .ps-slide.lt .ps-port .pane-txt .h-quote { color:var(--bg); }
-  .ps-port .pane-txt .name { font-family:var(--sans); font-size:30px; color:#FAFAFA; font-weight:500; }
+  .ps-port .pane-txt .name { font-family:var(--sans); font-size:44px; color:#FAFAFA; font-weight:500; }
   .ps-slide.lt .ps-port .pane-txt .name { color:var(--bg); }
-  .ps-port .pane-txt .role { font-family:var(--sans); font-size:24px; color:#B8B8B8; margin-top:6px; }
+  .ps-port .pane-txt .role { font-family:var(--sans); font-size:40px; color:#B8B8B8; margin-top:6px; }
   .ps-slide.lt .ps-port .pane-txt .role { color:#666; }
   .ps-port em { font-style:italic; }
 
@@ -1160,21 +1393,25 @@
   .ps-qbig { padding:160px 160px 200px; height:100%; display:flex; flex-direction:column; justify-content:center; position:relative; }
   /* Comilla decorativa: subida arriba-izquierda fuera del flujo. Antes padding-left:48 no era
      suficiente con mayúsculas altas (M/L) — ahora 96px da aire a la primera letra sin tocar. */
-  .ps-qbig .mark { position:absolute; top:120px; left:80px; font-family:var(--serif); font-size:260px; line-height:0.9; color:var(--bg); opacity:0.85; pointer-events:none; }
+  /* Base: color light (texto/mark sobre fondo oscuro dk). Overrides para lt/yl cambian a oscuro. */
+  .ps-qbig .mark { position:absolute; top:120px; left:80px; font-family:var(--serif); font-size:260px; line-height:0.9; color:#FAFAFA; opacity:0.85; pointer-events:none; }
   .ps-slide.lt .ps-qbig .mark, .ps-slide.yl .ps-qbig .mark { color:var(--bg); opacity:0.8; }
-  .ps-qbig .text { font-family:var(--serif); font-weight:400; font-size:88px; line-height:1.1; letter-spacing:-0.01em; color:var(--bg); max-width:1500px; margin-top:100px; padding-left:96px; position:relative; z-index:1; }
-  .ps-qbig .attr { display:flex; align-items:center; gap:24px; margin-top:64px; }
+  .ps-qbig .text { font-family:var(--serif); font-weight:400; font-size:88px; line-height:1.1; letter-spacing:-0.01em; color:#FAFAFA; max-width:1500px; margin-top:100px; padding-left:96px; position:relative; z-index:1; }
+  .ps-slide.lt .ps-qbig .text, .ps-slide.yl .ps-qbig .text { color:var(--bg); }
+  .ps-qbig .attr { display:flex; align-items:center; gap:24px; margin-top:64px; padding-left:96px; }
   .ps-qbig .attr .photo { width:120px; height:120px; background:#0A0A0A; background-size:cover; background-position:center; flex-shrink:0; border-radius:50%; }
-  .ps-qbig .attr .name { font-family:var(--sans); font-size:28px; color:var(--bg); font-weight:500; }
-  .ps-qbig .attr .role { font-family:var(--sans); font-size:24px; color:#666; margin-top:4px; }
+  .ps-qbig .attr .name { font-family:var(--sans); font-size:40px; color:#FAFAFA; font-weight:500; }
+  .ps-slide.lt .ps-qbig .attr .name, .ps-slide.yl .ps-qbig .attr .name { color:var(--bg); }
+  .ps-qbig .attr .role { font-family:var(--sans); font-size:40px; color:#B8B8B8; margin-top:4px; }
+  .ps-slide.lt .ps-qbig .attr .role, .ps-slide.yl .ps-qbig .attr .role { color:#666; }
   .ps-qbig em { font-style:italic; }
 
   /* tabla (comparison table) */
   .ps-tabla { padding:160px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
   .ps-tabla h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:64px; color:var(--bg); font-weight:400; }
   .ps-tabla table { width:100%; border-collapse:collapse; }
-  .ps-tabla th { font-family:var(--sans); font-size:24px; font-weight:400; letter-spacing:0.1em; text-align:left; color:#444; padding:28px 16px; border-bottom:1px solid rgba(0,0,0,0.2); text-transform:uppercase; }
-  .ps-tabla td { font-family:var(--sans); font-size:30px; padding:26px 16px; border-bottom:1px solid rgba(0,0,0,0.08); color:var(--bg); }
+  .ps-tabla th { font-family:var(--sans); font-size:40px; font-weight:400; letter-spacing:0.1em; text-align:left; color:#444; padding:28px 16px; border-bottom:1px solid rgba(0,0,0,0.2); text-transform:uppercase; }
+  .ps-tabla td { font-family:var(--sans); font-size:44px; padding:26px 16px; border-bottom:1px solid rgba(0,0,0,0.08); color:var(--bg); }
   .ps-tabla tr.hi td { background:var(--yellow); border-bottom:0; }
   .ps-tabla td.c { text-align:center; }
 
@@ -1188,9 +1425,9 @@
   .ps-team .card .photo.ph2 { background:linear-gradient(135deg,#2e2e2e,#141414); }
   .ps-team .card .photo.ph3 { background:linear-gradient(135deg,#4a4a4a,#222); }
   .ps-team .card .photo.ph4 { background:linear-gradient(135deg,#333,#181818); }
-  .ps-team .card .name { font-family:var(--sans); font-size:30px; color:#FAFAFA; margin-bottom:8px; }
+  .ps-team .card .name { font-family:var(--sans); font-size:44px; color:#FAFAFA; margin-bottom:8px; }
   .ps-slide.lt .ps-team .card .name, .ps-slide.yl .ps-team .card .name { color:var(--bg); }
-  .ps-team .card .role { font-family:var(--sans); font-size:24px; color:#B8B8B8; }
+  .ps-team .card .role { font-family:var(--sans); font-size:40px; color:#B8B8B8; }
   .ps-slide.lt .ps-team .card .role { color:#666; }
   .ps-slide.yl .ps-team .card .role { color:var(--bg); opacity:0.7; }
 
@@ -1205,22 +1442,22 @@
   .ps-slide.lt .ps-pricing .col + .col { border-left-color:rgba(0,0,0,0.12); }
   .ps-pricing .col.hi { background:var(--yellow); color:var(--bg); border-left:none; }
   .ps-pricing .col.hi + .col { border-left:none; }
-  .ps-pricing .col .lbl { font-family:var(--sans); font-size:24px; letter-spacing:0.12em; color:#B8B8B8; margin-bottom:24px; text-transform:uppercase; }
+  .ps-pricing .col .lbl { font-family:var(--sans); font-size:40px; letter-spacing:0.12em; color:#B8B8B8; margin-bottom:24px; text-transform:uppercase; }
   .ps-pricing .col.hi .lbl { color:var(--bg); }
   .ps-pricing .col .name { font-family:var(--serif); font-size:56px; line-height:1; margin-bottom:32px; letter-spacing:-0.02em; font-weight:400; }
   .ps-pricing .col .price { font-family:var(--serif); font-size:160px; line-height:0.9; color:var(--yellow); letter-spacing:-0.04em; font-weight:400; }
   .ps-pricing .col.hi .price { color:var(--bg); }
-  .ps-pricing .col .unit { font-family:var(--sans); font-size:24px; color:#B8B8B8; margin-bottom:32px; }
+  .ps-pricing .col .unit { font-family:var(--sans); font-size:40px; color:#B8B8B8; margin-bottom:32px; }
   .ps-pricing .col.hi .unit { color:var(--bg); opacity:0.7; }
   .ps-pricing .col ul { list-style:none; border-top:1px solid rgba(255,255,255,0.1); padding:24px 0 0; margin:0; }
   .ps-pricing .col.hi ul { border-top-color:rgba(0,0,0,0.2); }
-  .ps-pricing .col li { font-family:var(--sans); font-size:24px; padding:12px 0; }
+  .ps-pricing .col li { font-family:var(--sans); font-size:40px; padding:12px 0; }
 
   /* cta-final (yellow big cta) */
   .ps-ctafinal { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:0 160px; text-align:center; }
-  .ps-ctafinal .eyebrow { font-family:var(--sans); font-size:24px; letter-spacing:0.15em; color:var(--bg); margin-bottom:32px; display:block; text-transform:uppercase; }
+  .ps-ctafinal .eyebrow { font-family:var(--sans); font-size:40px; letter-spacing:0.15em; color:var(--bg); margin-bottom:32px; display:block; text-transform:uppercase; }
   .ps-ctafinal h1 { font-family:var(--serif); font-size:140px; line-height:1.0; color:var(--bg); margin-bottom:56px; font-weight:400; letter-spacing:-0.02em; }
-  .ps-ctafinal .contact { font-family:var(--sans); font-size:32px; color:var(--bg); }
+  .ps-ctafinal .contact { font-family:var(--sans); font-size:44px; color:var(--bg); }
   .ps-ctafinal em { font-style:italic; }
 
   /* stats-charla (grid of big numbers, 2x2 or 1xN)
@@ -1228,14 +1465,15 @@
      - .num nowrap para que "55/45" o "3.4×" no se partan en slash/punto (B8).
      - .hi con variantes .hi-neg (rojo, default) y .hi-pos (destacado brand) para darle semántica
        al highlight — un 5% puede ser alerta, un 92% puede ser logro (B11). */
-  .ps-statsc { padding:140px 160px 120px; height:100%; display:flex; flex-direction:column; justify-content:center; position:relative; }
-  .ps-statsc h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:72px; color:#FAFAFA; font-weight:400; }
+  .ps-statsc { padding:120px 160px 200px; height:100%; display:flex; flex-direction:column; justify-content:center; position:relative; }
+  .ps-statsc h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:48px; color:#FAFAFA; font-weight:400; }
   .ps-slide.lt .ps-statsc h2, .ps-slide.yl .ps-statsc h2 { color:var(--bg); }
-  .ps-statsc .grid { display:grid; gap:56px 80px; }
-  .ps-statsc .grid.cols2 { grid-template-columns:repeat(2, 1fr); }
+  .ps-statsc .grid { display:grid; gap:32px 80px; }
+  .ps-statsc .grid.cols2 { grid-template-columns:repeat(2, 1fr); gap:20px 80px; }
   .ps-statsc .grid.cols3 { grid-template-columns:repeat(3, 1fr); gap:48px; }
   .ps-statsc .grid.cols4 { grid-template-columns:repeat(4, 1fr); gap:40px; }
-  .ps-statsc .cell .num { font-family:var(--serif); font-weight:400; font-size:180px; line-height:0.9; letter-spacing:-0.04em; color:var(--yellow); margin-bottom:16px; white-space:nowrap; }
+  .ps-statsc .cell .num { font-family:var(--serif); font-weight:400; font-size:180px; line-height:0.9; letter-spacing:-0.04em; color:var(--yellow); margin-bottom:12px; white-space:nowrap; }
+  .ps-statsc .grid.cols2 .cell .num { font-size:150px; }
   .ps-statsc .grid.cols3 .cell .num { font-size:140px; }
   .ps-statsc .grid.cols4 .cell .num { font-size:110px; }
   /* Variantes semánticas de highlight (B11). hi sin tipo = hi-neg para compat. */
@@ -1245,14 +1483,14 @@
   .ps-slide.yl .ps-statsc .cell .num { color:var(--bg); }
   .ps-slide.yl .ps-statsc .cell.hi .num, .ps-slide.yl .ps-statsc .cell.hi-neg .num { color:#C81E1E; }
   .ps-slide.yl .ps-statsc .cell.hi-pos .num { color:var(--bg); font-weight:700; }
-  .ps-statsc .cell .lbl { font-family:var(--sans); font-size:26px; letter-spacing:0.08em; color:var(--yellow); text-transform:uppercase; margin-bottom:12px; display:block; }
+  .ps-statsc .cell .lbl { font-family:var(--sans); font-size:40px; letter-spacing:0.08em; color:var(--yellow); text-transform:uppercase; margin-bottom:12px; display:block; }
   .ps-slide.lt .ps-statsc .cell .lbl, .ps-slide.yl .ps-statsc .cell .lbl { color:#B8A000; }
-  .ps-statsc .cell .desc { font-family:var(--sans); font-size:26px; line-height:1.4; color:#FAFAFA; max-width:420px; }
+  .ps-statsc .cell .desc { font-family:var(--sans); font-size:40px; line-height:1.4; color:#FAFAFA; max-width:420px; }
   .ps-slide.lt .ps-statsc .cell .desc, .ps-slide.yl .ps-statsc .cell .desc { color:var(--bg); }
-  .ps-statsc .grid.cols4 .cell .desc { font-size:22px; }
+  .ps-statsc .grid.cols4 .cell .desc { font-size:40px; }
   /* .src anclada abajo del container, fuera del grid — evita colisión con celdas en 2x2 (B9).
      left:220px reserva espacio para el monograma A que vive en esquina inferior-izquierda. */
-  .ps-statsc .src { position:absolute; bottom:60px; left:220px; right:160px; font-family:var(--sans); font-size:22px; color:#B8B8B8; margin:0; }
+  .ps-statsc .src { position:absolute; bottom:30px; left:220px; right:160px; font-family:var(--sans); font-size:40px; color:#B8B8B8; margin:0; }
   .ps-slide.lt .ps-statsc .src { color:#666; }
   .ps-slide.yl .ps-statsc .src { color:var(--bg); opacity:0.7; }
 
@@ -1263,37 +1501,49 @@
   .ps-citas .grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:56px 72px; }
   .ps-citas .grid.cols3 { grid-template-columns:repeat(3, 1fr); gap:40px 48px; }
   .ps-citas .cell { display:flex; flex-direction:column; gap:16px; border-left:2px solid var(--yellow); padding-left:32px; }
-  .ps-citas .cell .q { font-family:var(--serif); font-style:italic; font-size:32px; line-height:1.25; letter-spacing:-0.01em; color:#FAFAFA; font-weight:400; }
+  .ps-citas .cell .q { font-family:var(--serif); font-style:italic; font-size:44px; line-height:1.25; letter-spacing:-0.01em; color:#FAFAFA; font-weight:400; }
   .ps-slide.lt .ps-citas .cell .q, .ps-slide.yl .ps-citas .cell .q { color:var(--bg); }
-  .ps-citas .grid.cols3 .cell .q { font-size:26px; }
-  .ps-citas .cell .who { font-family:var(--sans); font-size:22px; color:#B8B8B8; margin-top:8px; }
+  .ps-citas .grid.cols3 .cell .q { font-size:40px; }
+  .ps-citas .cell .who { font-family:var(--sans); font-size:40px; color:#B8B8B8; margin-top:8px; }
   .ps-slide.lt .ps-citas .cell .who { color:#666; }
   .ps-slide.yl .ps-citas .cell .who { color:var(--bg); opacity:0.7; }
 
   /* cta-final QR variant (keeps text layout but splits with QR tile on one side) */
   /* CTA con QR: el QR legible desde 5m ocupa ~25-30% del ancho. Dejamos espacio al titular para que domine. */
   .ps-ctafinal.with-qr { flex-direction:row; text-align:left; gap:100px; align-items:center; justify-content:center; }
-  .ps-ctafinal.with-qr .qr-box { flex-shrink:0; width:280px; height:280px; background:#FFF; padding:24px; display:flex; align-items:center; justify-content:center; }
+  .ps-ctafinal.with-qr .qr-box { flex-shrink:0; width:560px; height:560px; background:#FFF; padding:24px; display:flex; align-items:center; justify-content:center; }
+  .ps-ctafinal.with-qr.qr-sm .qr-box { width:360px; height:360px; }
+  .ps-ctafinal.with-qr.qr-lg .qr-box { width:820px; height:820px; }
   .ps-ctafinal.with-qr .qr-box img { width:100%; height:100%; object-fit:contain; }
-  .ps-ctafinal.with-qr .qr-box.empty { border:4px dashed rgba(10,10,10,0.3); background:transparent; color:var(--bg); font-family:var(--sans); font-size:22px; letter-spacing:2px; text-transform:uppercase; }
+  .ps-ctafinal.with-qr .qr-box.empty { border:4px dashed rgba(10,10,10,0.3); background:transparent; color:var(--bg); font-family:var(--sans); font-size:40px; letter-spacing:2px; text-transform:uppercase; }
   .ps-ctafinal.with-qr .txt { max-width:1100px; }
   .ps-ctafinal.with-qr h1 { font-size:120px; margin-bottom:32px; }
+  .ps-ctafinal.with-qr.qr-lg h1 { font-size:96px; }
   .ps-ctafinal.with-qr .eyebrow { margin-bottom:24px; }
-  .ps-ctafinal.with-qr .contact { font-size:30px; }
+  .ps-ctafinal.with-qr .contact { font-size:44px; }
 
   /* recursos-agrupados (list grouped by category) */
-  .ps-recursos { padding:140px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
-  .ps-recursos h2 { font-family:var(--serif); font-size:56px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:48px; color:#FAFAFA; font-weight:400; }
+  /* B12: con justify-content:center y 4 cols con muchos items, el bloque crecía hacia arriba
+     y comía la zona del titular ("Para profundizar." cortado por arriba). Fix: el grid usa
+     auto+1fr para reservar fila al titular siempre, align-content:start ancla arriba.
+     padding-top 110 garantiza aire constante con la barra de header del slide. */
+  .ps-recursos { padding:110px 160px 120px; height:100%; display:grid; grid-template-rows:auto 1fr; align-content:start; row-gap:48px; }
+  .ps-recursos h2 { font-family:var(--serif); font-size:56px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:0; color:#FAFAFA; font-weight:400; }
   .ps-slide.lt .ps-recursos h2, .ps-slide.yl .ps-recursos h2 { color:var(--bg); }
   .ps-recursos .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:48px; }
   .ps-recursos .grid.cols2 { grid-template-columns:repeat(2, 1fr); gap:56px 72px; }
-  .ps-recursos .cat .hd { font-family:var(--sans); font-size:22px; letter-spacing:0.12em; color:var(--yellow); text-transform:uppercase; margin-bottom:24px; padding-bottom:12px; border-bottom:1px solid rgba(255,214,0,0.3); }
+  .ps-recursos .grid.cols4 { grid-template-columns:repeat(4, 1fr); gap:32px; }
+  /* F1: link clicable — subrayado sutil del mismo color del texto (nada de azul). */
+  .ps-recursos .cat li a.lnk { color:inherit; text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px; text-decoration-color:rgba(255,214,0,0.5); }
+  .ps-slide.lt .ps-recursos .cat li a.lnk { text-decoration-color:rgba(184,160,0,0.7); }
+  .ps-slide.yl .ps-recursos .cat li a.lnk { text-decoration-color:rgba(10,10,10,0.5); }
+  .ps-recursos .cat .hd { font-family:var(--sans); font-size:40px; letter-spacing:0.12em; color:var(--yellow); text-transform:uppercase; margin-bottom:24px; padding-bottom:12px; border-bottom:1px solid rgba(255,214,0,0.3); }
   .ps-slide.lt .ps-recursos .cat .hd, .ps-slide.yl .ps-recursos .cat .hd { color:#B8A000; border-bottom-color:rgba(184,160,0,0.35); }
   .ps-recursos .cat ul { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:16px; }
-  .ps-recursos .cat li { font-family:var(--sans); font-size:22px; line-height:1.35; color:#FAFAFA; }
+  .ps-recursos .cat li { font-family:var(--sans); font-size:40px; line-height:1.35; color:#FAFAFA; }
   .ps-slide.lt .ps-recursos .cat li, .ps-slide.yl .ps-recursos .cat li { color:var(--bg); }
   .ps-recursos .cat li b { font-weight:600; display:block; margin-bottom:2px; }
-  .ps-recursos .cat li .src { color:#B8B8B8; font-size:20px; }
+  .ps-recursos .cat li .src { color:#B8B8B8; font-size:40px; }
   .ps-slide.lt .ps-recursos .cat li .src { color:#666; }
   .ps-slide.yl .ps-recursos .cat li .src { color:var(--bg); opacity:0.6; }
 
@@ -1301,9 +1551,9 @@
   .ps-cierre { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; position:relative; }
   .ps-cierre .wm { height:120px; margin-bottom:48px; }
   .ps-cierre .wm svg { height:100%; width:auto; }
-  .ps-cierre .thanks { font-family:var(--sans); font-size:26px; letter-spacing:0.3em; color:#B8B8B8; }
+  .ps-cierre .thanks { font-family:var(--sans); font-size:40px; letter-spacing:0.3em; color:#B8B8B8; }
   .ps-slide.lt .ps-cierre .thanks, .ps-slide.yl .ps-cierre .thanks { color:#666; }
-  .ps-cierre .contact { position:absolute; bottom:180px; left:120px; font-family:var(--sans); font-size:28px; line-height:1.7; color:#FAFAFA; }
+  .ps-cierre .contact { position:absolute; bottom:180px; left:120px; font-family:var(--sans); font-size:40px; line-height:1.7; color:#FAFAFA; }
   .ps-slide.lt .ps-cierre .contact, .ps-slide.yl .ps-cierre .contact { color:var(--bg); }
 
   /* standard (simple h1 + body) */
@@ -1346,6 +1596,10 @@
     <button class="sidebar-item" onclick="selectType('case-study')" data-type="case-study">
       <span class="ic">&#9634;</span>
       <span>Caso de Estudio</span>
+    </button>
+    <button class="sidebar-item" onclick="selectType('case-study-longform')" data-type="case-study-longform">
+      <span class="ic">&#9783;</span>
+      <span>Dossier (longform)</span>
     </button>
     <button class="sidebar-item" onclick="selectType('propuesta')" data-type="propuesta">
       <span class="ic">&#9783;</span>
@@ -1403,6 +1657,7 @@
     <div class="actions">
       <button class="btn btn-primary" onclick="generate()">Generar Preview</button>
       <button class="btn btn-secondary" id="btn-export" onclick="exportAll()" disabled>Exportar</button>
+      <button class="btn btn-secondary" id="btn-export-pdf" onclick="exportPresentacionPdf()" disabled style="display:none">Descargar PDF</button>
     </div>
   </div>
 
@@ -1561,6 +1816,150 @@ autor: Mar\u00eda L\u00f3pez, CMO TechCorp
 seccion: cierre
 titulo: Siguiente paso
 cuerpo: \u00bfTu marca necesita un diagn\u00f3stico similar? Agenda una llamada en magnify.ing/agendar`
+  },
+  'case-study-longform': {
+    title: 'Dossier (longform)',
+    desc: 'Case study editorial multi-página (16-20 pp.) con divisores, TL;DR y visuals',
+    exportLabel: 'Descargar PDF',
+    hint: `<strong>Formato:</strong> bloque global + secciones separadas por <code>---</code>. Cada sección usa <code>seccion: tipo</code>.<br><br>
+<code>tipo: case-study-longform</code> + <code>cliente</code>, <code>industria</code>, <code>fecha</code>, <code>documento</code>, <code>referencia</code>.<br><br>
+<strong>Tipos de sección:</strong><br>
+<code>portada</code>, <code>tldr</code> (punto1..punto8), <code>divisor-seccion</code> (numero+titular+fondo: oscuro|claro|amarillo), <code>seccion-cuerpo</code> (eyebrow+titular+cuerpo+pull+visual_id+visual+visual_caption), <code>visual</code> (visual_id+caption), <code>citas-clientes</code> (cita1..cita6+autor1..autor6), <code>stats-6</code> (num1..num6+label1..label6+desc1..desc6), <code>framework-extendido</code> (paso1_titulo+paso1_subtitulo+paso1_desc), <code>cierre</code> (numero+titular+deck+cta), <code>footer-anonimizacion</code> (cuerpo+meta).<br><br>
+<strong>Paleta:</strong> default hueso. <code>fondo: oscuro</code> (divisores conceptuales). <code>fondo: amarillo</code> solo para el cierre (regla del crescendo).`,
+    example: `tipo: case-study-longform
+cliente: H&W Brand
+industria: Salud y bienestar
+fecha: Abril 2026
+documento: Dossier 01 — Identity Debt
+referencia: H&W
+url: magnify.<span class="ing-ap">ing</span>
+---
+seccion: portada
+eyebrow: CASE STUDY · CONFIDENCIAL
+titular: Cuando el [catálogo] cambia después del comprador.
+subtitulo: Una marca de salud y bienestar que rehace su arquitectura escuchando a sus clientes.
+confidencial: INTERNAL · NO DISTRIBUIR
+---
+seccion: tldr
+eyebrow: TL;DR
+titular: Cinco cosas que recordar.
+deck: La historia entera en una página, por si solo lees esta.
+punto1: La marca tenía **8× más tráfico al blog que a la tienda**. Para Google era un blog de salud que casualmente vendía.
+punto2: La causa no era SEO. Era **identidad mal traducida**: catálogo organizado como almacén, no como problema del comprador.
+punto3: Preguntamos a clientes reales. Sus respuestas **no eran categorías de producto**, eran momentos de la vida.
+punto4: Reorganizamos contenido y arquitectura alrededor de esos momentos. **Seis meses después**: ×3 sesiones orgánicas, ×6 conversión.
+punto5: Crecer significó **podar el 37% del contenido vanity**. La web mejoró porque aceptamos perder lo que no aportaba.
+---
+seccion: divisor-seccion
+fondo: oscuro
+numero: 01
+eyebrow: PROBLEMA
+titular: El [síntoma] que muchos diagnosticamos como SEO.
+deck: Antes de empezar el trabajo, lo que veíamos eran los síntomas. La causa estaba en otro nivel.
+---
+seccion: seccion-cuerpo
+fondo: oscuro
+eyebrow: DIAGNÓSTICO
+titular: Una web que producía contenido. Y una tienda que casi no vendía.
+cuerpo: La marca llevaba años publicando contenido educativo de calidad. Recetas, guías, artículos sobre nutrición. El blog generaba 35.000 sesiones orgánicas al mes. La tienda, 4.500. Ratio 8 a 1. Para cualquier persona en la organización, el problema era obvio: "el blog no convierte".
+pull: Para Google, esto era un blog de salud que casualmente tenía una tienda.
+visual_id: VISUAL_01
+visual_caption: <strong>Distribución de tráfico orgánico, 6 meses pre-intervención.</strong> El blog acumula 87% de las sesiones; el catálogo solo 13%. Una asimetría que los dashboards normalizan.
+---
+seccion: divisor-seccion
+fondo: claro
+numero: 02
+eyebrow: ENFOQUE
+titular: Empezamos por una pregunta [ridículamente] simple.
+deck: Antes de tocar arquitectura, antes de tocar contenido, antes de tocar nada.
+---
+seccion: citas-clientes
+eyebrow: PREGUNTAMOS A 200 CLIENTES
+titular: Sus respuestas no eran categorías de producto.
+cita1: ¿Cómo duermo mejor de forma natural?
+autor1: Cliente · 38 años
+cita2: ¿Qué debería tomar para la inflamación?
+autor2: Cliente · 52 años
+cita3: Quiero una rutina sencilla, no cinco suplementos.
+autor3: Cliente · 44 años
+cita4: Tengo más de 40 y no sé por dónde empezar.
+autor4: Cliente · 47 años
+cita5: Algo natural, sin compromisos raros.
+autor5: Cliente · 35 años
+cita6: Que no sea otro suplemento más en mi mesa.
+autor6: Cliente · 41 años
+---
+seccion: divisor-seccion
+fondo: claro
+numero: 03
+eyebrow: TRANSFORMACIÓN
+titular: Cambiamos las preguntas que se podían hacer al [entrar].
+---
+seccion: framework-extendido
+eyebrow: MÉTODO
+titular: Tres movimientos en seis meses.
+paso1_titulo: Reorganizamos el contenido alrededor de problemas
+paso1_subtitulo: Del producto al momento de uso
+paso1_desc: Los artículos del blog dejaron de hablar de "beneficios del omega-3" y empezaron a hablar de "qué tomar para dormir mejor de forma natural". Cada pieza enlazaba productos de la tienda. La taxonomía de problemas reemplazó a la taxonomía de inventario.
+paso2_titulo: Repensamos la arquitectura
+paso2_subtitulo: Categorías que la gente busca, no que el almacén entiende
+paso2_desc: "Suplementos" se convirtió en "rutinas para sueño", "para mujeres 40+", "para inflamación". Los productos no cambiaron; cambió la forma de encontrarlos. Los clientes nuevos llegaron por preguntas, no por palabras técnicas.
+paso3_titulo: Podamos lo que no aportaba
+paso3_subtitulo: Crecer quitando, no acumulando
+paso3_desc: Eliminamos 120 posts que traían tráfico vanity (curiosos sin intención). El tráfico cayó un 37% en valor absoluto. La conversión del tráfico restante se multiplicó por 6.
+---
+seccion: divisor-seccion
+fondo: claro
+numero: 04
+eyebrow: RESULTADOS
+titular: Seis meses después, la marca era distinta.
+---
+seccion: stats-6
+eyebrow: KPI · 6 MESES POST-INTERVENCIÓN
+titular: Lo que cambia cuando la marca traduce mejor.
+num1: ×3
+label1: SESIONES ORGÁNICAS
+desc1: Multiplicadas en la tienda
+num2: ×6
+label2: CONVERSIÓN ORGÁNICA
+desc2: Del 0,3% al 1,8%
+num3: 55%
+label3: MIX BLOG / TIENDA
+desc3: Antes era 89/11
+num4: -37%
+label4: PÁGINAS PUBLICADAS
+desc4: 120 posts vanity eliminados
+num5: 12
+label5: SEMANAS HASTA INFLEXIÓN
+desc5: Crecimiento sostenido desde la 9
+num6: ×2,2
+label6: SESIONES TIENDA
+desc6: De 4.500 a 9.900 al mes
+---
+seccion: divisor-seccion
+fondo: oscuro
+numero: 05
+eyebrow: MÉTODO
+titular: Lo que [aprendimos] que aplica a otras marcas.
+---
+seccion: seccion-cuerpo
+fondo: oscuro
+eyebrow: TRANSFERIBILIDAD
+titular: Lo replicable y lo no.
+cuerpo: La técnica es replicable: preguntar primero, reorganizar después. Lo que cambia entre marcas es la profundidad del problema y la velocidad del aprendizaje. En H&W bastaron tres rondas de entrevistas. En sectores más técnicos puede requerir seis. Lo que no cambia es el orden: persona primero, métrica después.
+pull: Si la métrica que mides hoy te dice que el blog convierte mal, mira la pregunta que estás haciendo, no la respuesta.
+---
+seccion: cierre
+numero: 08
+titular: El espejo se volvió [HD].
+deck: La IA no inventó el problema. Lo hizo visible. Cuando una marca traduce bien quien es, los datos lo reflejan. Cuando no, también.
+cta: Agéndate un Identity Debt Check
+---
+seccion: footer-anonimizacion
+eyebrow: NOTA SOBRE ANONIMIZACIÓN
+titular: Sobre los datos y la identidad del cliente
+cuerpo: Este caso de estudio describe un proyecto real desarrollado por Magnify entre Q3 2025 y Q1 2026. El nombre del cliente, las cifras absolutas, las capturas de producto y los testimonios han sido anonimizados a petición del cliente. Las métricas de cambio relativo (×3, ×6, -37%) son fieles al impacto real medido. Las citas de clientes son paráfrasis fidedignas extraídas de transcripciones de entrevistas y survey responses. La metodología y el framework descritos son transferibles a otros sectores B2C/DTC.
+meta: Magnify Digital SL · CIF B-XXXXXXXX · Edición abril 2026 · Documento interno`
   },
   'propuesta': {
     title: 'Propuesta',
@@ -2515,6 +2914,10 @@ function selectType(type) {
   document.getElementById('panel-desc').textContent = meta.desc;
   document.getElementById('btn-export').textContent = meta.exportLabel;
   document.getElementById('btn-export').disabled = true;
+  // Botón PDF visible solo en presentación (export PPTX + PDF como output secundario).
+  const pdfBtn = document.getElementById('btn-export-pdf');
+  pdfBtn.style.display = (type === 'presentacion') ? '' : 'none';
+  pdfBtn.disabled = true;
 
   // Show/hide upload zone based on whether this type supports images.
   document.getElementById('uploads').classList.toggle('on', !!meta.supportsImages);
@@ -2598,13 +3001,21 @@ function parseBlock(text) {
     const m = line.match(/^(\w+(?:[-_]\w+)*):\s*(.*)$/);
     if (m) {
       currentKey = m[1].toLowerCase();
-      data[currentKey] = unquote(m[2]);
+      let val = unquote(m[2]);
+      // YAML block scalar indicators (| literal, > folded). El parser no es YAML real —
+      // tratamos ambos como "empieza aquí, líneas indentadas son continuación".
+      // Sin esto, `titular: |` deja el pipe como valor y renderiza "|" literal.
+      if (val === '|' || val === '>' || /^[|>][-+]?$/.test(val)) val = '';
+      data[currentKey] = val;
     } else if (currentKey) {
       // Continuation lines: trim leading whitespace so YAML-style 2-space indentation
       // doesn't leak into rendered output as visible indents. Preserve the text content.
       // También quitamos comillas que envuelvan la línea entera — casos típicos: handles
       // tipo @SearchLDN escritos como '@SearchLDN' para evitar que YAML los interprete como alias.
-      data[currentKey] += '\n' + unquote(line.replace(/^\s+/, ''));
+      // Primera continuación tras bloque literal vacío: no prepends '\n' (evita <br> inicial
+      // que desplaza todo el texto una línea hacia abajo).
+      const piece = unquote(line.replace(/^\s+/, ''));
+      data[currentKey] = data[currentKey] ? data[currentKey] + '\n' + piece : piece;
     }
   }
   // Re-unquote once more in case the whole multi-line value was quoted.
@@ -2626,6 +3037,27 @@ function applyHighlights(text) {
   return text.replace(/\[([^\]]+)\]([.,;:!?]*)/g, (_, inner, trailing) => {
     return `<span class="hl">${inner}${trailing}</span>`;
   });
+}
+
+// B13: envuelve dominios y URLs en <span class="nowrap"> para que el browser no los parta
+// en mitad ("david-\ncarrasco-pamies"). Diseñado para aplicarse DESPUÉS de applyHighlights:
+// el único tag que esa función produce es <span class="hl"> sin atributos URL, así que
+// la regex no riesga matchear dentro de href/src. La regex pide al menos UN punto entre
+// labels alfanuméricos (dominio.tld) + path opcional, así "fin · propósito" y "Magnify"
+// no se tocan. Markdown links [text](url) se protegen extrayéndolos a placeholders antes de
+// aplicar la regex y restaurándolos al final — un lookbehind simple no basta porque la regex
+// es greedy y captura parcialmente la URL dentro de paréntesis.
+function wrapNoBreakUrls(html) {
+  const mdLinks = [];
+  let s = String(html).replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m) => {
+    mdLinks.push(m);
+    return ` MDLINK${mdLinks.length - 1} `;
+  });
+  s = s.replace(
+    /((?:https?:\/\/)?(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}(?:\/[\w\-./?#=&%]*)?)/gi,
+    '<span class="nowrap">$1</span>'
+  );
+  return s.replace(/ MDLINK(\d+) /g, (_, i) => mdLinks[+i]);
 }
 
 // Highlight the .ING suffix in eyebrows (Active Particle pattern: DIAGNOS.ING, PRIORITIZ.ING, etc.)
@@ -3418,16 +3850,35 @@ function parseMultiDoc(raw) {
   return { global, sections };
 }
 
-function pageHeader(label) {
+// Per-page toggles `header: no` / `footer: no` (también `top_meta: no` / `foot: no`).
+// Color del wordmark se invierte si la página es oscura (fondo: oscuro).
+function pageHeader(label, d) {
+  if (d) {
+    const hv = (d.header || d.top_meta || '').toString().toLowerCase().trim();
+    if (['no', 'off', 'false', 'none', 'hidden', '0'].includes(hv)) return '';
+  }
+  const wmColor = (d && d.fondo === 'oscuro') ? '#FAFAFA' : '#0A0A0A';
   return `<div class="doc-header">
-    ${wordmark('#0A0A0A').replace('class="logo-svg wm"', 'class="logo-svg wm doc-wm"')}
+    ${wordmark(wmColor).replace('class="logo-svg wm"', 'class="logo-svg wm doc-wm"')}
     <span class="doc-eyebrow">${label}</span>
   </div><div class="doc-sep"></div>`;
 }
-function pageFooter(pageN, total) {
+function pageFooter(pageN, total, d) {
+  if (d) {
+    const fv = (d.footer || d.foot || '').toString().toLowerCase().trim();
+    if (['no', 'off', 'false', 'none', 'hidden', '0'].includes(fv)) return '';
+  }
   const num = String(pageN).padStart(2, '0');
   const tot = String(total).padStart(2, '0');
   return `<div class="doc-footer"><span>${num} / ${tot}</span><span>magnify.<span class="ing-ap">ing</span></span></div>`;
+}
+// Helper para resolver clase de fondo en doc-page (case-study/propuesta).
+function docSurface(d) {
+  if (!d) return '';
+  if (d.fondo === 'oscuro') return 'dk';
+  if (d.fondo === 'amarillo') return 'yl';
+  if (d.fondo === 'claro' || d.fondo === 'hueso') return ''; // default ya es blanco
+  return '';
 }
 
 function parseSlashStat(s) {
@@ -3454,8 +3905,8 @@ function renderCSPortada(g, s) {
 function renderCSReto(g, s, pN, tot) {
   const s1 = parseSlashStat(s.stat1); const s2 = parseSlashStat(s.stat2);
   const hasStats = s1.num || s2.num;
-  return `<div class="frame a4"><div class="doc-page">
-    ${pageHeader('Caso de estudio \u00b7 ' + (g.cliente || ''))}
+  return `<div class="frame a4"><div class="doc-page ${docSurface(s)}">
+    ${pageHeader('Caso de estudio \u00b7 ' + (g.cliente || ''), s)}
     <div class="doc-content">
       <h2 class="cs-page-title">${applyHighlights(s.titulo || 'El Reto')}</h2>
       <div class="cs-page-title-accent"></div>
@@ -3465,7 +3916,7 @@ function renderCSReto(g, s, pN, tot) {
         ${s2.num ? `<div class="cs-inline-stat"><div class="n">${s2.num}</div><div class="l">${s2.lbl}</div></div>` : ''}
       </div>` : ''}
     </div>
-    ${pageFooter(pN, tot)}
+    ${pageFooter(pN, tot, s)}
   </div></div>`;
 }
 function renderCSSolucion(g, s, pN, tot) {
@@ -3475,8 +3926,8 @@ function renderCSSolucion(g, s, pN, tot) {
       pasos.push({ t: s['paso' + i + '_titulo'] || '', d: s['paso' + i + '_desc'] || '' });
     }
   }
-  return `<div class="frame a4"><div class="doc-page">
-    ${pageHeader('Caso de estudio \u00b7 ' + (g.cliente || ''))}
+  return `<div class="frame a4"><div class="doc-page ${docSurface(s)}">
+    ${pageHeader('Caso de estudio \u00b7 ' + (g.cliente || ''), s)}
     <div class="doc-content">
       <h2 class="cs-page-title">${applyHighlights(s.titulo || 'La Soluci\u00f3n')}</h2>
       <div class="cs-page-title-accent"></div>
@@ -3484,7 +3935,7 @@ function renderCSSolucion(g, s, pN, tot) {
         ${pasos.map((p, i) => `<div class="cs-step"><span class="cs-step-n">0${i + 1}</span><div class="cs-step-body"><h4>${p.t}</h4><p>${applyHighlights(p.d)}</p></div></div>`).join('')}
       </div>
     </div>
-    ${pageFooter(pN, tot)}
+    ${pageFooter(pN, tot, s)}
   </div></div>`;
 }
 function renderCSResultados(g, s, pN, tot) {
@@ -3493,8 +3944,8 @@ function renderCSResultados(g, s, pN, tot) {
     const st = parseSlashStat(s['stat' + i]);
     if (st.num) stats.push(st);
   }
-  return `<div class="frame a4"><div class="doc-page">
-    ${pageHeader('Caso de estudio \u00b7 ' + (g.cliente || ''))}
+  return `<div class="frame a4"><div class="doc-page ${docSurface(s)}">
+    ${pageHeader('Caso de estudio \u00b7 ' + (g.cliente || ''), s)}
     <div class="doc-content">
       <h2 class="cs-page-title">${applyHighlights(s.titular || s.titulo || 'Resultados')}</h2>
       <div class="cs-page-title-accent"></div>
@@ -3503,7 +3954,7 @@ function renderCSResultados(g, s, pN, tot) {
       </div>
       <div class="cs-narrativa">${applyHighlights((s.narrativa || '').replace(/\n/g, '<br>'))}</div>
     </div>
-    ${pageFooter(pN, tot)}
+    ${pageFooter(pN, tot, s)}
   </div></div>`;
 }
 function renderCSQuote(g, s, pN, tot) {
@@ -3512,8 +3963,8 @@ function renderCSQuote(g, s, pN, tot) {
   const parts = autor.split(',');
   const name = (parts[0] || '').trim();
   const role = parts.slice(1).join(',').trim();
-  return `<div class="frame a4"><div class="doc-page">
-    ${pageHeader('Caso de estudio \u00b7 ' + (g.cliente || ''))}
+  return `<div class="frame a4"><div class="doc-page ${docSurface(s)}">
+    ${pageHeader('Caso de estudio \u00b7 ' + (g.cliente || ''), s)}
     <div class="doc-content" style="display:flex;align-items:center;justify-content:center;">
       <div class="cs-bigquote">
         <div class="qmark">\u201c</div>
@@ -3522,7 +3973,7 @@ function renderCSQuote(g, s, pN, tot) {
         <cite>${name}${role ? `<span class="role"> \u00b7 ${role}</span>` : ''}</cite>
       </div>
     </div>
-    ${pageFooter(pN, tot)}
+    ${pageFooter(pN, tot, s)}
   </div></div>`;
 }
 function renderCSCierre(g, s, pN, tot) {
@@ -3533,8 +3984,8 @@ function renderCSCierre(g, s, pN, tot) {
   // Remove the URL from the paragraph to avoid duplication
   const cuerpoClean = cuerpoRaw.replace(/\s*magnify\.ing\/[\w\-\/]*/i, '').replace(/\s+$/, '').replace(/\n/g, '<br>');
   const ctaText = s.cta_texto || 'Agenda tu diagnostico';
-  return `<div class="frame a4"><div class="doc-page">
-    ${pageHeader('Caso de estudio \u00b7 ' + (g.cliente || ''))}
+  return `<div class="frame a4"><div class="doc-page ${docSurface(s)}">
+    ${pageHeader('Caso de estudio \u00b7 ' + (g.cliente || ''), s)}
     <div class="doc-content" style="display:flex;align-items:center;justify-content:center;">
       <div class="cs-cierre">
         <h2>${applyHighlights(s.titulo || 'Siguiente paso')}</h2>
@@ -3546,7 +3997,7 @@ function renderCSCierre(g, s, pN, tot) {
         </div>
       </div>
     </div>
-    ${pageFooter(pN, tot)}
+    ${pageFooter(pN, tot, s)}
   </div></div>`;
 }
 
@@ -3557,6 +4008,267 @@ const CS_RENDERERS = {
   resultados: renderCSResultados,
   quote: renderCSQuote,
   cierre: renderCSCierre,
+};
+
+// ════════════════════════════════════════════
+// CASE STUDY LONGFORM (DOSSIER) — multi-page A4 editorial
+// 16-20 páginas, sistema cromático tri-paleta (oscuro/claro/amarillo).
+// Comparte generateMultiPageDoc; cada renderer devuelve un .frame.a4 con .csl-page.
+// ════════════════════════════════════════════
+
+// Helpers — header y footer institucionales en cada página de cuerpo (no en divisores full-bleed).
+// Per-page override: `header: no` suprime el header (el evento ya está en el contenido principal).
+// Per-page override: `footer: no` suprime el pie de página y nº.
+function cslHead(g, d) {
+  if (d) {
+    const hv = (d.header || d.top_meta || '').toString().toLowerCase().trim();
+    if (['no', 'off', 'false', 'none', 'hidden', '0'].includes(hv)) return '';
+  }
+  const doc = (g.documento || g.titulo || 'Dossier').toUpperCase();
+  const ref = (g.referencia || g.cliente || '').toUpperCase();
+  return `<div class="csl-head"><span class="csl-doc">${doc}</span><span>${ref}</span></div>`;
+}
+function cslFoot(g, pN, tot, d) {
+  if (d) {
+    const fv = (d.footer || d.foot || '').toString().toLowerCase().trim();
+    if (['no', 'off', 'false', 'none', 'hidden', '0'].includes(fv)) return '';
+  }
+  const url = g.url || 'magnify.<span class="ing-ap">ing</span>';
+  return `<div class="csl-foot"><span>${url}</span><span class="csl-num">${String(pN).padStart(2, '0')} / ${String(tot).padStart(2, '0')}</span></div>`;
+}
+// Resuelve la clase de fondo para una página: oscuro|claro|hueso|amarillo → '' para hueso default.
+function cslSurface(d) {
+  const f = (d.fondo || '').toLowerCase();
+  if (f === 'oscuro' || f === 'dark') return 'dk';
+  if (f === 'amarillo' || f === 'yellow') return 'yl';
+  return ''; // claro/hueso default
+}
+
+// PORTADA — default dark, acepta fondo: claro/amarillo
+function renderCSLPortada(g, d, pN, tot) {
+  const eyebrow = (d.eyebrow || g.referencia || 'CASE STUDY · CONFIDENCIAL').toUpperCase();
+  const meta = (d.meta || `Cliente: ${g.cliente || '—'}\nIndustria: ${g.industria || '—'}\nFecha: ${g.fecha || '—'}`).split('\n').filter(Boolean).map(l => `<div>${l}</div>`).join('');
+  // Default dark; sobreescribe a lt/yl si fondo lo pide. Wordmark se invierte automáticamente.
+  const surf = (d.fondo === 'claro' || d.fondo === 'hueso') ? 'lt' : (d.fondo === 'amarillo' ? 'yl' : '');
+  const wmColor = surf ? '#0A0A0A' : '#FAFAFA';
+  return `<div class="frame a4"><div class="csl-page ${surf} csl-portada">
+    <div class="pt-wm">${wordmark(wmColor)}</div>
+    <div class="pt-eyebrow">${eyebrow}</div>
+    <h1>${applyHighlights(d.titular || g.titulo || 'Dossier')}</h1>
+    ${d.subtitulo ? `<div class="pt-sub">${d.subtitulo}</div>` : ''}
+    <div class="pt-accent"></div>
+    <div class="pt-meta">${meta}</div>
+    <div class="pt-bottom">
+      <span>magnify.<span class="ing-ap">ing</span></span>
+      <span>${(d.confidencial || 'INTERNAL · NO DISTRIBUIR').toUpperCase()}</span>
+    </div>
+  </div></div>`;
+}
+
+// TL;DR — página 2, default hueso (acepta fondo: oscuro/amarillo/claro)
+function renderCSLTldr(g, d, pN, tot) {
+  const items = [];
+  for (let i = 1; i <= 8; i++) if (d['punto' + i] || d['p' + i]) items.push(d['punto' + i] || d['p' + i]);
+  const surf = cslSurface(d);
+  return `<div class="frame a4"><div class="csl-page ${surf} csl-tldr">
+    ${cslHead(g, d)}
+    <div class="csl-body">
+      <div class="tl-eyebrow">${(d.eyebrow || 'TL;DR').toUpperCase()}</div>
+      <h2>${applyHighlights(d.titular || 'Resumen ejecutivo')}</h2>
+      ${d.deck ? `<p class="tl-deck">${applyHighlights(d.deck)}</p>` : ''}
+      <ol>${items.map(it => `<li><p>${applyHighlights(it)}</p></li>`).join('')}</ol>
+    </div>
+    ${cslFoot(g, pN, tot, d)}
+  </div></div>`;
+}
+
+// DIVISOR-SECCION — chapter break full-bleed con número grande
+function renderCSLDivisor(g, d, pN, tot) {
+  const surf = cslSurface(d);
+  return `<div class="frame a4"><div class="csl-page ${surf} csl-divisor ${surf}">
+    <div class="num">${(d.numero || '01').toString().padStart(2, '0')}</div>
+    <div class="num-line"></div>
+    ${d.eyebrow ? `<div class="eyebrow">${d.eyebrow.toUpperCase()}</div>` : ''}
+    <h2>${applyHighlights(d.titular || d.titulo || '')}</h2>
+    ${d.deck ? `<div class="deck">${applyHighlights(d.deck)}</div>` : ''}
+    ${cslFoot(g, pN, tot, d)}
+  </div></div>`;
+}
+
+// SECCION-CUERPO — texto editorial con visuals embebidos opcionales
+function renderCSLSeccion(g, d, pN, tot) {
+  const surf = cslSurface(d);
+  // Acepta cuerpo plano o con visuals intercalados ([VISUAL_01] como marker que renderiza placeholder).
+  const cuerpoHtml = (d.cuerpo || '').replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+  const pull = d.pull ? `<div class="sec-pull">${applyHighlights(d.pull)}</div>` : '';
+  // Visual opcional con id, slot, caption.
+  let visualHtml = '';
+  if (d.visual_id || d.visual_caption) {
+    const id = d.visual_id || 'VISUAL_XX';
+    const imgSrc = uploadedImages[(d.visual || '').trim()];
+    const slotInner = imgSrc ? `<img src="${imgSrc}" alt="${id}">` : `[ ${id} ]`;
+    visualHtml = `<div class="csl-visual">
+      <div class="v-id">${id}</div>
+      <div class="v-slot ${imgSrc ? 'has-img' : ''}">${slotInner}</div>
+      ${d.visual_caption ? `<div class="v-cap">${applyHighlights(d.visual_caption)}</div>` : ''}
+    </div>`;
+  }
+  return `<div class="frame a4"><div class="csl-page ${surf} csl-section">
+    ${cslHead(g, d)}
+    <div class="csl-body">
+      ${d.eyebrow ? `<div class="sec-eyebrow">${d.eyebrow.toUpperCase()}</div>` : ''}
+      ${d.titular ? `<h2>${applyHighlights(d.titular)}</h2>` : ''}
+      ${cuerpoHtml ? `<div class="sec-body"><p>${applyHighlights(cuerpoHtml)}</p></div>` : ''}
+      ${pull}
+      ${visualHtml}
+    </div>
+    ${cslFoot(g, pN, tot, d)}
+  </div></div>`;
+}
+
+// VISUAL — página entera para un visual destacado con caption editorial
+function renderCSLVisual(g, d, pN, tot) {
+  const surf = cslSurface(d);
+  const id = d.visual_id || d.id || 'VISUAL_XX';
+  const imgSrc = uploadedImages[(d.visual || d.imagen || '').trim()];
+  return `<div class="frame a4"><div class="csl-page ${surf} csl-section">
+    ${cslHead(g, d)}
+    <div class="csl-body">
+      ${d.eyebrow ? `<div class="sec-eyebrow">${d.eyebrow.toUpperCase()}</div>` : ''}
+      ${d.titular ? `<h2>${applyHighlights(d.titular)}</h2>` : ''}
+      <div class="csl-visual">
+        <div class="v-id">${id}</div>
+        <div class="v-slot ${imgSrc ? 'has-img' : ''}">${imgSrc ? `<img src="${imgSrc}" alt="${id}">` : `[ ${id} ]`}</div>
+        ${d.caption || d.visual_caption ? `<div class="v-cap">${applyHighlights(d.caption || d.visual_caption)}</div>` : ''}
+      </div>
+    </div>
+    ${cslFoot(g, pN, tot, d)}
+  </div></div>`;
+}
+
+// CITAS-CLIENTES — grid 2x3, default hueso (acepta fondo: oscuro/amarillo/claro)
+function renderCSLCitas(g, d, pN, tot) {
+  const cells = [];
+  for (let i = 1; i <= 6; i++) {
+    if (d['cita' + i]) cells.push({ q: d['cita' + i], a: d['autor' + i] || d['a' + i] || '' });
+  }
+  const surf = cslSurface(d);
+  return `<div class="frame a4"><div class="csl-page ${surf} csl-citas">
+    ${cslHead(g, d)}
+    <div class="csl-body">
+      ${d.eyebrow ? `<div class="ct-eyebrow">${d.eyebrow.toUpperCase()}</div>` : ''}
+      ${d.titular ? `<h2>${applyHighlights(d.titular)}</h2>` : ''}
+      <div class="ct-grid">
+        ${cells.map(c => `<div class="ct-cell"><p class="q">${c.q}</p>${c.a ? `<div class="a">— ${c.a}</div>` : ''}</div>`).join('')}
+      </div>
+    </div>
+    ${cslFoot(g, pN, tot, d)}
+  </div></div>`;
+}
+
+// STATS-6 — grid 3x2 con num/label/desc
+function renderCSLStats6(g, d, pN, tot) {
+  const surf = cslSurface(d);
+  const cells = [];
+  for (let i = 1; i <= 6; i++) {
+    if (d['num' + i] || d['n' + i]) {
+      cells.push({
+        n: d['num' + i] || d['n' + i],
+        l: d['label' + i] || d['l' + i] || '',
+        d: d['desc' + i] || d['d' + i] || ''
+      });
+    }
+  }
+  return `<div class="frame a4"><div class="csl-page ${surf} csl-stats6">
+    ${cslHead(g, d)}
+    <div class="csl-body">
+      ${d.eyebrow ? `<div class="st-eyebrow">${d.eyebrow.toUpperCase()}</div>` : ''}
+      ${d.titular ? `<h2>${applyHighlights(d.titular)}</h2>` : ''}
+      <div class="st-grid">
+        ${cells.map(c => `<div class="st-cell"><div class="n">${c.n}</div><div class="l">${c.l.toUpperCase()}</div><div class="d">${applyHighlights(c.d)}</div></div>`).join('')}
+      </div>
+    </div>
+    ${cslFoot(g, pN, tot, d)}
+  </div></div>`;
+}
+
+// FRAMEWORK-EXTENDIDO — pasos con título, subtítulo italic y párrafo
+function renderCSLFramework(g, d, pN, tot) {
+  const surf = cslSurface(d);
+  const steps = [];
+  for (let i = 1; i <= 6; i++) {
+    if (d[`paso${i}_titulo`] || d[`paso${i}_h`]) {
+      steps.push({
+        n: d[`paso${i}_label`] || String(i).padStart(2, '0'),
+        h: d[`paso${i}_titulo`] || d[`paso${i}_h`] || '',
+        sub: d[`paso${i}_subtitulo`] || d[`paso${i}_sub`] || '',
+        desc: d[`paso${i}_desc`] || d[`paso${i}_d`] || ''
+      });
+    }
+  }
+  return `<div class="frame a4"><div class="csl-page ${surf} csl-framework">
+    ${cslHead(g, d)}
+    <div class="csl-body">
+      ${d.eyebrow ? `<div class="fr-eyebrow">${d.eyebrow.toUpperCase()}</div>` : ''}
+      ${d.titular ? `<h2>${applyHighlights(d.titular)}</h2>` : ''}
+      ${steps.map(s => `<div class="fr-step">
+        <div class="n">${s.n}</div>
+        <div>
+          <h3>${s.h}</h3>
+          ${s.sub ? `<div class="sub">${s.sub}</div>` : ''}
+          ${s.desc ? `<p class="desc">${applyHighlights(s.desc)}</p>` : ''}
+        </div>
+      </div>`).join('')}
+    </div>
+    ${cslFoot(g, pN, tot, d)}
+  </div></div>`;
+}
+
+// CIERRE — default amarillo crescendo, acepta fondo: oscuro/claro
+function renderCSLCierre(g, d, pN, tot) {
+  const surf = (d.fondo === 'oscuro') ? 'dk' : (d.fondo === 'claro' || d.fondo === 'hueso') ? 'lt' : 'yl';
+  return `<div class="frame a4"><div class="csl-page ${surf} csl-cierre">
+    <div class="ci-num">${(d.numero || '08').toString().padStart(2, '0')}</div>
+    <div class="ci-line"></div>
+    <h2>${applyHighlights(d.titular || 'El espejo')}</h2>
+    ${d.deck ? `<p class="ci-deck">${applyHighlights(d.deck)}</p>` : ''}
+    ${d.cta ? `<div class="ci-cta"><span>${d.cta}</span><span>→</span></div>` : ''}
+    ${cslFoot(g, pN, tot, d)}
+  </div></div>`;
+}
+
+// FOOTER-ANONIMIZACION — pie legal-editorial en última página (acepta fondo)
+function renderCSLAnonim(g, d, pN, tot) {
+  const surf = cslSurface(d);
+  return `<div class="frame a4"><div class="csl-page ${surf} csl-anonim">
+    ${cslHead(g, d)}
+    <div class="csl-body">
+      <div class="an-eyebrow">${(d.eyebrow || 'NOTA SOBRE ANONIMIZACIÓN').toUpperCase()}</div>
+      ${d.titular ? `<h3>${d.titular}</h3>` : ''}
+      <div class="an-body">${applyHighlights((d.cuerpo || '').replace(/\n/g, '<br>'))}</div>
+      ${d.meta ? `<div class="an-meta">${d.meta}</div>` : ''}
+    </div>
+    ${cslFoot(g, pN, tot, d)}
+  </div></div>`;
+}
+
+const CSL_RENDERERS = {
+  portada: renderCSLPortada,
+  tldr: renderCSLTldr,
+  divisor: renderCSLDivisor,
+  'divisor-seccion': renderCSLDivisor,
+  seccion: renderCSLSeccion,
+  'seccion-cuerpo': renderCSLSeccion,
+  visual: renderCSLVisual,
+  citas: renderCSLCitas,
+  'citas-clientes': renderCSLCitas,
+  stats: renderCSLStats6,
+  'stats-6': renderCSLStats6,
+  framework: renderCSLFramework,
+  'framework-extendido': renderCSLFramework,
+  cierre: renderCSLCierre,
+  anonimizacion: renderCSLAnonim,
+  'footer-anonimizacion': renderCSLAnonim,
 };
 
 // ── PROPUESTA section renderers
@@ -3576,14 +4288,14 @@ function renderPRPortada(g, s) {
 }
 function renderPRContexto(g, s, pN, tot) {
   const paras = (s.cuerpo || '').split(/\n+/).filter(Boolean);
-  return `<div class="frame a4"><div class="doc-page">
-    ${pageHeader('Propuesta \u00b7 ' + (g.cliente || ''))}
+  return `<div class="frame a4"><div class="doc-page ${docSurface(s)}">
+    ${pageHeader('Propuesta \u00b7 ' + (g.cliente || ''), s)}
     <div class="doc-content">
       <h2 class="pr-page-title">${applyHighlights(s.titulo || 'Contexto')}</h2>
       <div class="pr-page-title-accent"></div>
       <div class="pr-body">${paras.map(p => `<p>${applyHighlights(p)}</p>`).join('')}</div>
     </div>
-    ${pageFooter(pN, tot)}
+    ${pageFooter(pN, tot, s)}
   </div></div>`;
 }
 function renderPRAproximacion(g, s, pN, tot) {
@@ -3602,8 +4314,8 @@ function renderPRAproximacion(g, s, pN, tot) {
     const m = et.match(/^(.+?)(\.ING)$/i);
     return m ? `${m[1]}<span class="ing">${m[2]}</span>` : et;
   };
-  return `<div class="frame a4"><div class="doc-page">
-    ${pageHeader('Propuesta \u00b7 ' + (g.cliente || ''))}
+  return `<div class="frame a4"><div class="doc-page ${docSurface(s)}">
+    ${pageHeader('Propuesta \u00b7 ' + (g.cliente || ''), s)}
     <div class="doc-content">
       <h2 class="pr-page-title">${applyHighlights(s.titulo || 'Aproximaci\u00f3n')}</h2>
       <div class="pr-page-title-accent"></div>
@@ -3618,7 +4330,7 @@ function renderPRAproximacion(g, s, pN, tot) {
         </div>`).join('')}
       </div>
     </div>
-    ${pageFooter(pN, tot)}
+    ${pageFooter(pN, tot, s)}
   </div></div>`;
 }
 function renderPRTimeline(g, s, pN, tot, aproxSection) {
@@ -3640,8 +4352,8 @@ function renderPRTimeline(g, s, pN, tot, aproxSection) {
     }
   }
   const maxWeeks = Math.max(1, ...rows.map(r => r.weeks));
-  return `<div class="frame a4"><div class="doc-page">
-    ${pageHeader('Propuesta \u00b7 ' + (g.cliente || ''))}
+  return `<div class="frame a4"><div class="doc-page ${docSurface(s)}">
+    ${pageHeader('Propuesta \u00b7 ' + (g.cliente || ''), s)}
     <div class="doc-content">
       <h2 class="pr-page-title">${applyHighlights(s.titulo || 'Timeline')}</h2>
       <div class="pr-page-title-accent"></div>
@@ -3652,7 +4364,7 @@ function renderPRTimeline(g, s, pN, tot, aproxSection) {
         </div>`).join('')}
       </div>
     </div>
-    ${pageFooter(pN, tot)}
+    ${pageFooter(pN, tot, s)}
   </div></div>`;
 }
 function renderPRInversion(g, s, pN, tot) {
@@ -3662,8 +4374,8 @@ function renderPRInversion(g, s, pN, tot) {
       rows.push({ c: s['concepto' + i] || '', p: s['precio' + i] || '' });
     }
   }
-  return `<div class="frame a4"><div class="doc-page">
-    ${pageHeader('Propuesta \u00b7 ' + (g.cliente || ''))}
+  return `<div class="frame a4"><div class="doc-page ${docSurface(s)}">
+    ${pageHeader('Propuesta \u00b7 ' + (g.cliente || ''), s)}
     <div class="doc-content">
       <h2 class="pr-page-title">${applyHighlights(s.titulo || 'Inversi\u00f3n')}</h2>
       <div class="pr-page-title-accent"></div>
@@ -3672,13 +4384,13 @@ function renderPRInversion(g, s, pN, tot) {
       </div>
       ${s.total ? `<div class="pr-inv-total"><span class="lbl">Total</span><span class="val">${s.total}</span></div>` : ''}
     </div>
-    ${pageFooter(pN, tot)}
+    ${pageFooter(pN, tot, s)}
   </div></div>`;
 }
 function renderPRSiguientePaso(g, s, pN, tot) {
   const ctaText = s.cta_texto || 'Agenda tu kickoff';
-  return `<div class="frame a4"><div class="doc-page">
-    ${pageHeader('Propuesta \u00b7 ' + (g.cliente || ''))}
+  return `<div class="frame a4"><div class="doc-page ${docSurface(s)}">
+    ${pageHeader('Propuesta \u00b7 ' + (g.cliente || ''), s)}
     <div class="doc-content">
       <div style="max-width:560px;margin:0 auto;padding-top:20px;">
         <h2 class="pr-page-title">${applyHighlights(s.titulo || 'Siguiente paso')}</h2>
@@ -3687,7 +4399,7 @@ function renderPRSiguientePaso(g, s, pN, tot) {
         ${s.cta ? `<div class="pr-cta"><div class="txt">${ctaText}</div><div class="url">${s.cta}<span class="arrow">\u2192</span></div></div>` : ''}
       </div>
     </div>
-    ${pageFooter(pN, tot)}
+    ${pageFooter(pN, tot, s)}
   </div></div>`;
 }
 
@@ -3725,9 +4437,11 @@ function generateMultiPageDoc(raw, preview, renderC, renderers, options) {
   });
 
   const w = 794, h = 1123;
-  const maxW = preview.clientWidth - 80;
-  const maxH = preview.clientHeight - 120;
-  const scale = Math.min((maxW / 2 - 32) / w, maxH / h, 0.45);
+  // Clamp para evitar scale negativo cuando preview-area aún no tiene layout
+  // (mismo bug que afectaba a generatePresentacion). Min 0.1 = 79×112 px legible.
+  const maxW = Math.max(preview.clientWidth - 80, 400);
+  const maxH = Math.max(preview.clientHeight - 120, 600);
+  const scale = Math.max(Math.min((maxW / 2 - 32) / w, maxH / h, 0.45), 0.1);
 
   pages.forEach((p, i) => {
     const card = document.createElement('div');
@@ -3907,8 +4621,16 @@ function psBrandIcon(surface) {
   return icon('#FAFAFA');
 }
 
-function psTopMeta(g) {
+function psTopMeta(g, d) {
   if (!g) return '';
+  // Per-slide override: `header: no/off/false/none/hidden` suprime el top-meta del evento.
+  // Útil para hero/cierre cuando el evento ya está visualmente presente en el contenido.
+  // También a nivel global: `header: hero-cierre` solo lo muestra en primera y última slide
+  // (gestionado por el caller pasando d.__slideIdx y d.__slideTotal si está disponible).
+  if (d) {
+    const hv = (d.header || d.top_meta || d.evento || '').toString().toLowerCase().trim();
+    if (['no', 'off', 'false', 'none', 'hidden', '0'].includes(hv)) return '';
+  }
   const logoRef = (g.evento_logo || '').trim();
   const handle = (g.evento_handle || '').trim();
   const nombre = (g.evento_nombre || '').trim();
@@ -3949,11 +4671,14 @@ function renderPsHero(d, g, n, tot) {
   const author = d.autor || g.autor || '';
   const fecha = d.fecha || g.fecha || '';
   const meta = [author, fecha].filter(Boolean).join(' · ');
+  // F3 — hilo griego: subtitular opcional debajo del título (marca de agua conceptual).
+  const griego = d.griego || d.subtitular_griego || d.subtitular || '';
   return `<div class="frame ps"><div class="ps-slide ${surface}">
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-hero">
       ${eyebrow ? `<div class="eyebrow">${eyebrow}</div>` : ''}
       <div class="title">${title}</div>
+      ${griego ? `<div class="griego">${griego}</div>` : ''}
       <div class="hairline"></div>
       ${meta ? `<div class="author">${meta}</div>` : ''}
     </div>
@@ -3969,7 +4694,7 @@ function renderPsAgenda(d, g, n, tot) {
   for (let i = 1; i <= 6; i++) if (d['item' + i]) items.push(d['item' + i]);
   const activeIdx = parseInt(d.activo || '1', 10);
   return `<div class="frame ps"><div class="ps-slide ${surface}">
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-charla">
       <div class="eyebrow">${d.eyebrow || 'AGENDA'}</div>
       <h1 class="h1" style="margin-top:32px">${applyHighlights(d.titular || 'Agenda')}</h1>
@@ -3985,10 +4710,17 @@ function renderPsAgenda(d, g, n, tot) {
 // Charla — Manifiesto (big italic sentence, yellow default)
 function renderPsManifiesto(d, g, n, tot) {
   const surface = d.fondo === 'oscuro' ? 'dk' : d.fondo === 'claro' ? 'lt' : 'yl';
+  // Mismo escalado que buildPptxManifiesto: len<30→80pt, <60→64pt, <100→52pt, else→42pt.
+  const raw = (d.titular || d.frase || '').replace(/\s+/g, ' ').trim();
+  const len = raw.length;
+  const sizeCls = len < 30 ? '' : len < 60 ? 's-md' : len < 100 ? 's-sm' : 's-xs';
+  // F3 — hilo griego: stamp encima del titular (p.ej. "Γνῶθι σεαυτόν" en slide 26).
+  const griego = d.griego || d.subtitular_griego || '';
   return `<div class="frame ps"><div class="ps-slide ${surface}">
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-manif">
-      <div class="hero-xxl">${applyHighlights(d.titular || d.frase || '').replace(/\n/g, '<br>')}</div>
+      ${griego ? `<div class="griego-stamp">${griego}</div>` : ''}
+      <div class="hero-xxl ${sizeCls}">${applyHighlights(d.titular || d.frase || '').replace(/\n/g, '<br>')}</div>
     </div>
     <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
     ${psPaginator(n, tot)}
@@ -3999,7 +4731,7 @@ function renderPsManifiesto(d, g, n, tot) {
 function renderPsDivisorC(d, g, n, tot) {
   const surface = d.fondo === 'oscuro' ? 'dk' : d.fondo === 'claro' ? 'lt' : 'yl';
   return `<div class="frame ps"><div class="ps-slide ${surface}">
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-divisor-c">
       <div class="num">${d.numero || '01'}</div>
       <div class="sep"></div>
@@ -4017,7 +4749,7 @@ function renderPsDivisorC(d, g, n, tot) {
 function renderPsStandard(d, g, n, tot) {
   const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
   return `<div class="frame ps"><div class="ps-slide ${surface}">
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-charla ps-std">
       ${d.eyebrow ? `<div class="eyebrow" style="margin-bottom:48px">${d.eyebrow}</div>` : ''}
       <div class="h1-m">${applyHighlights(d.titular || '').replace(/\n/g, '<br>')}</div>
@@ -4043,7 +4775,7 @@ function renderPsStatHero(d, g, n, tot) {
     ? `<div class="${sizeCls}">${num}</div><div class="suf">${suf}</div>`
     : `<div class="${sizeCls}">${num}${suf}</div>`;
   return `<div class="frame ps"><div class="ps-slide ${surface}">
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-stat-hero">
       <div class="stat-block">${inline}</div>
       <div class="explain">
@@ -4066,7 +4798,7 @@ function renderPsCompare(d, g, n, tot) {
     if (d['b' + i]) b.push(d['b' + i]);
   }
   return `<div class="frame ps"><div class="ps-slide ${surface}">
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-compare">
       <h2>${applyHighlights(d.titular || '')}</h2>
       <div class="grid">
@@ -4101,7 +4833,7 @@ function renderPsFramework(d, g, n, tot) {
   }
   const gridCls = steps.length >= 4 ? 'grid cols4' : 'grid';
   return `<div class="frame ps"><div class="ps-slide ${surface}">
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-fw">
       <h2>${applyHighlights(d.titular || '')}</h2>
       <div class="${gridCls}">
@@ -4127,7 +4859,7 @@ function renderPsTimelineC(d, g, n, tot) {
     }
   }
   return `<div class="frame ps"><div class="ps-slide ${surface}">
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-tl-c">
       <h2>${applyHighlights(d.titular || '')}</h2>
       <div class="track"><div class="grid">
@@ -4141,17 +4873,26 @@ function renderPsTimelineC(d, g, n, tot) {
 
 // Charla — Image full-bleed with overlay
 function renderPsImagenFull(d, g, n, tot) {
-  const bg = psBgFromImage(d.imagen, 'ph');
+  // B15: si hay imagen subida la emitimos como <img> con object-fit (no background-image)
+  // porque html2canvas — motor del export PDF — tiene bug con background-size:contain
+  // en data:URLs y siempre lo pinta como cover. object-fit en <img> real sí lo respeta.
+  // Sin imagen → placeholder con el .bg.ph clásico (gradiente + scanlines).
+  const src = uploadedImages[d.imagen];
+  const ajuste = (d.imagen_ajuste || d.ajuste || 'cover').toLowerCase();
+  const ajusteCls = ajuste === 'contain' ? ' fit-contain' : '';
+  const bgEl = src
+    ? `<img class="bg-img${ajusteCls}" src="${src}" alt="">`
+    : `<div class="bg ph"></div>`;
   return `<div class="frame ps"><div class="ps-slide dk on-image">
     <div class="ps-imgfull">
-      <div class="bg ${bg.className}" style="${bg.style}"></div>
+      ${bgEl}
       <div class="scrim"></div>
       <div class="overlay">
         ${d.eyebrow ? `<span class="eyebrow">${d.eyebrow}</span>` : ''}
         <div class="title">${applyHighlights(d.titular || '').replace(/\n/g, '<br>')}</div>
       </div>
     </div>
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-wmk-bl">${psBrandIcon('img')}</div>
     ${psPaginator(n, tot, true)}
   </div></div>`;
@@ -4162,17 +4903,24 @@ function renderPsImagenSplit(d, g, n, tot) {
   const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
   const bg = psBgFromImage(d.imagen, 'ph');
   const rev = d.posicion === 'derecha' ? ' rev' : '';
+  // imagen_ajuste: contain → la imagen se ve entera con aire (typical para retratos verticales).
+  // Default cover llena el panel pero recorta. zoom: 0-100 (default 100) reduce visualmente.
+  const ajuste = (d.imagen_ajuste || d.ajuste || 'cover').toLowerCase();
+  const ajusteCls = ajuste === 'contain' ? ' fit-contain' : '';
+  const zoom = parseFloat(d.imagen_zoom || d.zoom);
+  const zoomStyle = (!isNaN(zoom) && zoom > 0 && zoom < 100) ? ` background-size:${zoom}% auto;` : '';
   return `<div class="frame ps"><div class="ps-slide ${surface}">
     <div class="ps-imgsplit${rev}">
-      <div class="pane-img ${bg.className}" style="${bg.style}"></div>
+      <div class="pane-img${ajusteCls} ${bg.className}" style="${bg.style}${zoomStyle}"></div>
       <div class="pane-txt">
         ${d.eyebrow ? `<span class="eyebrow">${d.eyebrow}</span>` : ''}
         <h2>${applyHighlights(d.titular || '').replace(/\n/g, '<br>')}</h2>
-        ${d.cuerpo ? `<div class="body-l">${applyHighlights(d.cuerpo).replace(/\n/g, '<br>')}</div>` : ''}
+        ${d.cuerpo ? `<div class="body-l">${wrapNoBreakUrls(applyHighlights(d.cuerpo)).replace(/\n/g, '<br>')}</div>` : ''}
+        ${(d.griego || d.subtitular_griego) ? `<div class="griego">${d.griego || d.subtitular_griego}</div>` : ''}
         ${d.meta ? `<div class="meta-s">${d.meta}</div>` : ''}
       </div>
     </div>
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
@@ -4203,7 +4951,7 @@ function renderPsDiptych(d, g, n, tot) {
         </div>
       </div>
     </div>
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -4225,7 +4973,7 @@ function renderPsTriptych(d, g, n, tot) {
     <div class="ps-trp">
       ${tiles.map(t => `<div class="tile ${t.className}" style="${t.style}"><div class="cap"><div class="num">${t.num}</div><div class="t">${applyHighlights(t.t)}</div>${t.s ? `<div class="s">${t.s}</div>` : ''}</div></div>`).join('')}
     </div>
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-wmk-bl">${psBrandIcon('img')}</div>
     ${psPaginator(n, tot, true)}
   </div></div>`;
@@ -4249,7 +4997,7 @@ function renderPsMosaic(d, g, n, tot) {
     <div class="ps-mos">
       ${cells.map(c => `<div class="cell ${c.big ? 'big' : ''} ${c.className}" style="${c.style}"><div class="cap">${c.lbl ? `<span class="lbl">${c.lbl}</span>` : ''}<div class="t">${applyHighlights(c.t).replace(/\n/g, '<br>')}</div></div></div>`).join('')}
     </div>
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-wmk-bl">${psBrandIcon('img')}</div>
   </div></div>`;
 }
@@ -4267,7 +5015,7 @@ function renderPsPortrait(d, g, n, tot) {
         ${d.rol ? `<div class="role">${d.rol}</div>` : ''}
       </div>
     </div>
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-wmk-bl">${psBrandIcon('dk')}</div>
     ${psPaginator(n, tot, true)}
   </div></div>`;
@@ -4278,7 +5026,7 @@ function renderPsQuoteBig(d, g, n, tot) {
   const surface = d.fondo === 'oscuro' ? 'dk' : d.fondo === 'amarillo' ? 'yl' : 'lt';
   const bg = psBgFromImage(d.foto, '');
   return `<div class="frame ps"><div class="ps-slide ${surface}">
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-qbig">
       <div class="mark">&ldquo;</div>
       <div class="text">${applyHighlights(d.cita || '').replace(/\n/g, '<br>')}</div>
@@ -4306,7 +5054,7 @@ function renderPsTabla(d, g, n, tot) {
     }
   }
   return `<div class="frame ps"><div class="ps-slide ${surface}">
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-tabla">
       <h2>${applyHighlights(d.titular || '')}</h2>
       <table>
@@ -4337,7 +5085,7 @@ function renderPsEquipo(d, g, n, tot) {
     }
   }
   return `<div class="frame ps"><div class="ps-slide ${surface}">
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-team">
       <h2>${applyHighlights(d.titular || 'El equipo')}</h2>
       <div class="grid">
@@ -4368,7 +5116,7 @@ function renderPsPricing(d, g, n, tot) {
     }
   }
   return `<div class="frame ps"><div class="ps-slide ${surface}">
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-pricing">
       <h2>${applyHighlights(d.titular || '')}</h2>
       <div class="grid">
@@ -4385,18 +5133,20 @@ function renderPsCtaFinal(d, g, n, tot) {
   const surface = d.fondo === 'oscuro' ? 'dk' : d.fondo === 'claro' ? 'lt' : 'yl';
   const qrSrc = uploadedImages[(d.qr || '').trim()];
   const withQr = !!(d.qr && d.qr.trim());
+  // F2: tamaño QR configurable. pequeño 18% / medio 30% (default) / grande 45%.
+  const qrSize = (d.qr_size || 'medio').toLowerCase().trim();
+  const qrCls = qrSize === 'grande' ? ' qr-lg' : qrSize === 'pequeño' || qrSize === 'pequeno' ? ' qr-sm' : '';
   const qrBox = withQr
     ? (qrSrc
-      ? `<div class="qr-box"><img src="${qrSrc}" alt="QR"></div>`
-      : `<div class="qr-box empty">QR</div>`)
+      ? `<div class="qr-box${qrCls}"><img src="${qrSrc}" alt="QR"></div>`
+      : `<div class="qr-box empty${qrCls}">QR</div>`)
     : '';
-  const txtWrap = withQr ? 'div class="txt"' : 'div';
   const inner = `${d.eyebrow ? `<span class="eyebrow">${d.eyebrow}</span>` : ''}
       <h1>${applyHighlights(d.titular || '').replace(/\n/g, '<br>')}</h1>
       ${d.contacto ? `<div class="contact">${d.contacto.replace(/\n/g, '<br>')}</div>` : ''}`;
   return `<div class="frame ps"><div class="ps-slide ${surface}">
-    ${psTopMeta(g)}
-    <div class="ps-ctafinal${withQr ? ' with-qr' : ''}">
+    ${psTopMeta(g, d)}
+    <div class="ps-ctafinal${withQr ? ' with-qr' : ''}${qrCls}">
       ${qrBox}
       ${withQr ? `<div class="txt">${inner}</div>` : inner}
     </div>
@@ -4433,7 +5183,7 @@ function renderPsStatsCharla(d, g, n, tot) {
   if (layout === '1x3' || cells.length === 3) gridCls = 'cols3';
   else if (layout === '1x4' || cells.length === 4 && layout === 'fila') gridCls = 'cols4';
   return `<div class="frame ps"><div class="ps-slide ${surface}">
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-statsc">
       ${d.titular ? `<h2>${applyHighlights(d.titular)}</h2>` : ''}
       <div class="grid ${gridCls}">
@@ -4464,7 +5214,7 @@ function renderPsCitasGrid(d, g, n, tot) {
   }
   const gridCls = cells.length > 4 ? 'cols3' : '';
   return `<div class="frame ps"><div class="ps-slide ${surface}">
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-citas">
       ${d.titular ? `<h2>${applyHighlights(d.titular)}</h2>` : ''}
       <div class="grid ${gridCls}">
@@ -4488,20 +5238,26 @@ function renderPsRecursos(d, g, n, tot) {
     if (!head) continue;
     const items = [];
     for (let i = 1; i <= 6; i++) {
-      if (d[`cat${c}_item${i}`]) items.push(d[`cat${c}_item${i}`]);
+      if (d[`cat${c}_item${i}`]) {
+        items.push({ text: d[`cat${c}_item${i}`], link: d[`cat${c}_item${i}_link`] || null });
+      }
     }
     cats.push({ head, items });
   }
-  const gridCls = cats.length === 2 ? 'cols2' : '';
+  const gridCls = cats.length === 2 ? 'cols2' : cats.length === 4 ? 'cols4' : '';
   // Each item can be "Nombre — fuente" or "Nombre | fuente"; we split and style.
-  const renderItem = (s) => {
+  // Si tiene link, envuelve el nombre en <a href=...> para que sea clicable en el PDF exportado.
+  const renderItem = (it) => {
     const sep = /\s+[—–|-]\s+/;
-    const parts = s.split(sep);
-    if (parts.length >= 2) return `<b>${parts[0]}</b><span class="src">${parts.slice(1).join(' — ')}</span>`;
-    return s;
+    const parts = it.text.split(sep);
+    const nameHTML = it.link
+      ? `<a href="${it.link}" class="lnk" target="_blank" rel="noopener"><b>${parts[0]}</b></a>`
+      : `<b>${parts[0]}</b>`;
+    if (parts.length >= 2) return `${nameHTML}<span class="src">${parts.slice(1).join(' — ')}</span>`;
+    return nameHTML;
   };
   return `<div class="frame ps"><div class="ps-slide ${surface}">
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-recursos">
       ${d.titular ? `<h2>${applyHighlights(d.titular)}</h2>` : ''}
       <div class="grid ${gridCls}">
@@ -4521,7 +5277,7 @@ function renderPsCierre(d, g, n, tot) {
   const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
   const wmColor = surface === 'dk' ? '#FAFAFA' : '#0A0A0A';
   return `<div class="frame ps"><div class="ps-slide ${surface}">
-    ${psTopMeta(g)}
+    ${psTopMeta(g, d)}
     <div class="ps-cierre">
       <div class="wm">${wordmark(wmColor)}</div>
       <div class="thanks">${d.titular || 'GRACIAS'}</div>
@@ -4602,8 +5358,9 @@ function richWithHighlights(text, baseOpts, bgMode) {
       // dominante del slide.
       hlOpts = { ...baseOpts, color: COLOR_DARK, italic: true, underline: { style: 'sng', color: '0A0A0A' } };
     } else {
-      // light: texto oscuro italic + bold para compensar ausencia de fondo amarillo.
-      hlOpts = { ...baseOpts, color: COLOR_DARK, italic: true, bold: true };
+      // light (claro/hueso): mismo patrón editorial que yellow — texto negro italic con
+      // underline grueso. Sincroniza con CSS `.ps-slide.lt .hl`.
+      hlOpts = { ...baseOpts, color: COLOR_DARK, italic: true, underline: { style: 'sng', color: '0A0A0A' } };
     }
     // Extract trailing punctuation from the highlight so the bold/yellow run doesn't include it — punctuation stays in the normal baseOpts run.
     const inner = m[1];
@@ -4640,7 +5397,7 @@ function addFooterDk(slide) {
   slide.addText([
     { text: 'magnify.', options: { color: 'DDDDDD' } },
     { text: 'ing', options: { color: COLOR_YELLOW, bold: true } }
-  ], { x: 10.5, y: 6.95, w: 2.5, h: 0.35, fontFace: FONT_SANS, fontSize: 14, align: 'right', charSpacing: 2 });
+  ], { x: 10.5, y: 6.95, w: 2.5, h: 0.35, fontFace: FONT_SANS, fontSize: 20, align: 'right', charSpacing: 2 });
 }
 
 function addFooterLt(slide) {
@@ -4648,7 +5405,7 @@ function addFooterLt(slide) {
   slide.addText([
     { text: 'magnify.', options: { color: '444444' } },
     { text: 'ing', options: { color: COLOR_YELLOW, bold: true } }
-  ], { x: 10.5, y: 6.95, w: 2.5, h: 0.35, fontFace: FONT_SANS, fontSize: 14, align: 'right', charSpacing: 2 });
+  ], { x: 10.5, y: 6.95, w: 2.5, h: 0.35, fontFace: FONT_SANS, fontSize: 20, align: 'right', charSpacing: 2 });
 }
 
 function buildPptxPortada(pptx, d, g) {
@@ -4666,7 +5423,7 @@ function buildPptxPortada(pptx, d, g) {
   s.addText([
     { text: 'magnify.', options: { color: 'DDDDDD' } },
     { text: 'ing', options: { color: COLOR_YELLOW, bold: true } }
-  ], { x: 10.5, y: 6.95, w: 2.5, h: 0.35, fontFace: FONT_SANS, fontSize: 14, align: 'right', charSpacing: 2 });
+  ], { x: 10.5, y: 6.95, w: 2.5, h: 0.35, fontFace: FONT_SANS, fontSize: 20, align: 'right', charSpacing: 2 });
 }
 
 function buildPptxDivisor(pptx, d) {
@@ -4681,7 +5438,7 @@ function buildPptxDivisor(pptx, d) {
 function buildPptxContenido(pptx, d) {
   const s = pptx.addSlide();
   s.background = { color: COLOR_WHITE };
-  s.addText(d.eyebrow || 'CONTENIDO', { x: 0.7, y: 0.6, w: 10, h: 0.4, fontFace: FONT_SANS, fontSize: 15, color: 'B8A000', bold: true, charSpacing: 3 });
+  s.addText(d.eyebrow || 'CONTENIDO', { x: 0.7, y: 0.6, w: 10, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: 'B8A000', bold: true, charSpacing: 3 });
   s.addShape(pptx.ShapeType.rect, { x: 0.7, y: 1.1, w: 0.6, h: 0.04, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
   s.addText(richWithHighlights(d.titular || '', { fontFace: FONT_SERIF, fontSize: 44, color: COLOR_DARK }),
     { x: 0.7, y: 1.35, w: 11.9, h: 1.6 });
@@ -4704,7 +5461,7 @@ function buildPptxStat(pptx, d) {
     s.addText(d.descripcion, { x: 1.5, y: 4.7, w: 10.3, h: 0.9, fontFace: FONT_SANS, fontSize: 26, color: COLOR_LIGHT_TEXT, align: 'center' });
   }
   if (d.meta) {
-    s.addText(d.meta, { x: 1.5, y: 5.85, w: 10.3, h: 0.45, fontFace: FONT_SANS, fontSize: 15, color: 'CCCCCC', align: 'center', charSpacing: 2 });
+    s.addText(d.meta, { x: 1.5, y: 5.85, w: 10.3, h: 0.45, fontFace: FONT_SANS, fontSize: 20, color: 'CCCCCC', align: 'center', charSpacing: 2 });
   }
   addFooterDk(s);
 }
@@ -4718,7 +5475,7 @@ function buildPptxQuote(pptx, d) {
   const autor = (d.autor || '').replace(/^\s*[—–-]+\s*/, '').trim();
   if (autor) {
     s.addShape(pptx.ShapeType.rect, { x: 1.2, y: 5.7, w: 0.4, h: 0.04, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
-    s.addText(autor, { x: 1.2, y: 5.85, w: 11, h: 0.5, fontFace: FONT_SANS, fontSize: 18, color: '444444', bold: true });
+    s.addText(autor, { x: 1.2, y: 5.85, w: 11, h: 0.5, fontFace: FONT_SANS, fontSize: 22, color: '444444', bold: true });
   }
   addFooterLt(s);
 }
@@ -4728,16 +5485,16 @@ function buildPptxComparacion(pptx, d) {
   s.background = { color: COLOR_WHITE };
   const colW = 5.7, yStart = 0.7;
   // A
-  s.addText(d.label_a || 'ANTES', { x: 0.7, y: yStart, w: colW, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: '666666', bold: true, charSpacing: 3 });
+  s.addText(d.label_a || 'ANTES', { x: 0.7, y: yStart, w: colW, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: '666666', bold: true, charSpacing: 3 });
   s.addShape(pptx.ShapeType.rect, { x: 0.7, y: yStart + 0.5, w: 0.5, h: 0.04, fill: { color: 'CCCCCC' }, line: { color: 'CCCCCC' } });
   // B
-  s.addText(d.label_b || 'DESPUES', { x: 7.1, y: yStart, w: colW, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: 'B8A000', bold: true, charSpacing: 3 });
+  s.addText(d.label_b || 'DESPUES', { x: 7.1, y: yStart, w: colW, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: 'B8A000', bold: true, charSpacing: 3 });
   s.addShape(pptx.ShapeType.rect, { x: 7.1, y: yStart + 0.5, w: 0.5, h: 0.04, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
   // separator
   s.addShape(pptx.ShapeType.rect, { x: 6.65, y: 1.1, w: 0.04, h: 5, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
   for (let i = 1; i <= 5; i++) {
-    if (d['a' + i]) s.addText(d['a' + i], { x: 0.7, y: 1.5 + (i - 1) * 0.75, w: colW, h: 0.65, fontFace: FONT_SANS, fontSize: 19, color: '666666' });
-    if (d['b' + i]) s.addText(d['b' + i], { x: 7.1, y: 1.5 + (i - 1) * 0.75, w: colW, h: 0.65, fontFace: FONT_SANS, fontSize: 19, color: COLOR_DARK });
+    if (d['a' + i]) s.addText(d['a' + i], { x: 0.7, y: 1.5 + (i - 1) * 0.75, w: colW, h: 0.65, fontFace: FONT_SANS, fontSize: 22, color: '666666' });
+    if (d['b' + i]) s.addText(d['b' + i], { x: 7.1, y: 1.5 + (i - 1) * 0.75, w: colW, h: 0.65, fontFace: FONT_SANS, fontSize: 22, color: COLOR_DARK });
   }
   addFooterLt(s);
 }
@@ -4745,7 +5502,7 @@ function buildPptxComparacion(pptx, d) {
 function buildPptxCuadrante(pptx, d) {
   const s = pptx.addSlide();
   s.background = { color: COLOR_WHITE };
-  s.addText(d.eyebrow || 'CUADRANTE', { x: 0.7, y: 0.45, w: 10, h: 0.4, fontFace: FONT_SANS, fontSize: 14, color: '666666', bold: true, charSpacing: 3 });
+  s.addText(d.eyebrow || 'CUADRANTE', { x: 0.7, y: 0.45, w: 10, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: '666666', bold: true, charSpacing: 3 });
   s.addText(d.subtitulo || '', { x: 0.7, y: 0.9, w: 10, h: 0.65, fontFace: FONT_SERIF, fontSize: 32, color: COLOR_DARK });
 
   const gridX = 1.5, gridY = 2, cellW = 5.4, cellH = 2.0;
@@ -4763,14 +5520,14 @@ function buildPptxCuadrante(pptx, d) {
     const textColor = dim ? 'BBBBBB' : COLOR_DARK;
     s.addShape(pptx.ShapeType.rect, { x: p.x, y: p.y, w: cellW, h: cellH, fill: { color: fill }, line: { color: border, width: 2 } });
     s.addText(d[`q${p.n}_nombre`] || '', { x: p.x + 0.25, y: p.y + 0.2, w: cellW - 0.5, h: 0.6, fontFace: FONT_SERIF, fontSize: 24, color: textColor });
-    s.addText(d[`q${p.n}_desc`] || '', { x: p.x + 0.25, y: p.y + 0.85, w: cellW - 0.5, h: 0.8, fontFace: FONT_SANS, fontSize: 15, color: dim ? 'CCCCCC' : '444444' });
+    s.addText(d[`q${p.n}_desc`] || '', { x: p.x + 0.25, y: p.y + 0.85, w: cellW - 0.5, h: 0.8, fontFace: FONT_SANS, fontSize: 20, color: dim ? 'CCCCCC' : '444444' });
     if (d[`q${p.n}_tag`]) {
-      s.addText(d[`q${p.n}_tag`], { x: p.x + 0.25, y: p.y + cellH - 0.45, w: cellW - 0.5, h: 0.3, fontFace: FONT_SANS, fontSize: 12, color: dim ? 'CCCCCC' : '666666', bold: true, charSpacing: 2 });
+      s.addText(d[`q${p.n}_tag`], { x: p.x + 0.25, y: p.y + cellH - 0.45, w: cellW - 0.5, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: dim ? 'CCCCCC' : '666666', bold: true, charSpacing: 2 });
     }
   });
   // Axis labels
-  s.addText(d.eje_y || '', { x: 0.25, y: gridY + cellH - 0.25, w: 1.2, h: 0.4, fontFace: FONT_SANS, fontSize: 12, color: '666666', bold: true, charSpacing: 2, align: 'center' });
-  s.addText(d.eje_x || '', { x: gridX, y: gridY + cellH * 2 + 0.25, w: cellW * 2 + 0.1, h: 0.4, fontFace: FONT_SANS, fontSize: 12, color: '666666', bold: true, charSpacing: 2, align: 'center' });
+  s.addText(d.eje_y || '', { x: 0.25, y: gridY + cellH - 0.25, w: 1.2, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: '666666', bold: true, charSpacing: 2, align: 'center' });
+  s.addText(d.eje_x || '', { x: gridX, y: gridY + cellH * 2 + 0.25, w: cellW * 2 + 0.1, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: '666666', bold: true, charSpacing: 2, align: 'center' });
   addFooterLt(s);
 }
 
@@ -4789,12 +5546,12 @@ function buildPptxTimeline(pptx, d) {
     const fx = 0.7 + i * (fW + 0.3);
     const m = f.et.match(/^(.+?)(\.ING)$/i);
     const etRich = m ? [
-      { text: m[1], options: { fontFace: FONT_SANS, fontSize: 16, color: COLOR_DARK, bold: true, charSpacing: 2 } },
-      { text: m[2], options: { fontFace: FONT_SANS, fontSize: 16, color: 'B8A000', bold: true, charSpacing: 2 } }
-    ] : [{ text: f.et, options: { fontFace: FONT_SANS, fontSize: 16, color: COLOR_DARK, bold: true, charSpacing: 2 } }];
+      { text: m[1], options: { fontFace: FONT_SANS, fontSize: 20, color: COLOR_DARK, bold: true, charSpacing: 2 } },
+      { text: m[2], options: { fontFace: FONT_SANS, fontSize: 20, color: 'B8A000', bold: true, charSpacing: 2 } }
+    ] : [{ text: f.et, options: { fontFace: FONT_SANS, fontSize: 20, color: COLOR_DARK, bold: true, charSpacing: 2 } }];
     s.addText(etRich, { x: fx, y: 2.3, w: fW, h: 0.45 });
     s.addText(f.ti, { x: fx, y: 2.85, w: fW, h: 1.3, fontFace: FONT_SERIF, fontSize: 28, color: COLOR_DARK });
-    s.addText(f.du, { x: fx, y: 4.3, w: fW, h: 0.45, fontFace: FONT_SANS, fontSize: 16, color: '444444' });
+    s.addText(f.du, { x: fx, y: 4.3, w: fW, h: 0.45, fontFace: FONT_SANS, fontSize: 20, color: '444444' });
     s.addShape(pptx.ShapeType.rect, { x: fx, y: 4.95, w: fW, h: 0.08, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
   });
   addFooterLt(s);
@@ -4805,7 +5562,7 @@ function buildPptxImagen(pptx, d) {
   s.background = { color: COLOR_WHITE };
   s.addShape(pptx.ShapeType.rect, { x: 2, y: 1.2, w: 9.33, h: 4.5, fill: { color: 'E8E8E8' }, line: { color: 'E8E8E8' } });
   s.addText('[ IMAGEN ]', { x: 2, y: 1.2, w: 9.33, h: 4.5, fontFace: FONT_SANS, fontSize: 28, color: '999999', align: 'center', valign: 'middle', charSpacing: 3 });
-  s.addText(d.caption || '', { x: 2, y: 5.9, w: 9.33, h: 0.5, fontFace: FONT_SANS, fontSize: 16, color: '444444', align: 'center', charSpacing: 2 });
+  s.addText(d.caption || '', { x: 2, y: 5.9, w: 9.33, h: 0.5, fontFace: FONT_SANS, fontSize: 20, color: '444444', align: 'center', charSpacing: 2 });
   addFooterLt(s);
 }
 
@@ -4834,8 +5591,13 @@ function buildPptxSiguientePaso(pptx, d) {
 // layered scrim gradients reliably, so captions sit on an opaque shape.
 // ════════════════════════════════════════════
 
-function addTopMetaPptx(slide, g, onColor) {
+function addTopMetaPptx(slide, g, onColor, d) {
   if (!g) return;
+  // Per-slide override: `header: no` (o aliases) suprime el top-meta del evento.
+  if (d) {
+    const hv = (d.header || d.top_meta || d.evento || '').toString().toLowerCase().trim();
+    if (['no', 'off', 'false', 'none', 'hidden', '0'].includes(hv)) return;
+  }
   const handle = (g.evento_handle || '').trim();
   const nombre = (g.evento_nombre || '').trim();
   const logoRef = (g.evento_logo || '').trim();
@@ -4844,10 +5606,10 @@ function addTopMetaPptx(slide, g, onColor) {
   if (logoSrc) {
     slide.addImage({ data: logoSrc, x: 0.7, y: 0.42, w: 1.8, h: 0.4, sizing: { type: 'contain', w: 1.8, h: 0.4 } });
   } else if (nombre) {
-    slide.addText(nombre, { x: 0.7, y: 0.45, w: 6, h: 0.35, fontFace: FONT_SANS, fontSize: 14, color, charSpacing: 1.2 });
+    slide.addText(nombre, { x: 0.7, y: 0.45, w: 6, h: 0.35, fontFace: FONT_SANS, fontSize: 20, color, charSpacing: 1.2 });
   }
   if (handle) {
-    slide.addText(handle, { x: 7, y: 0.45, w: 5.63, h: 0.35, fontFace: FONT_SANS, fontSize: 14, color, align: 'right', bold: true });
+    slide.addText(handle, { x: 7, y: 0.45, w: 5.63, h: 0.35, fontFace: FONT_SANS, fontSize: 20, color, align: 'right', bold: true });
   }
 }
 
@@ -4868,29 +5630,34 @@ function addPaginator(slide, n, tot, color) {
   if (!PS_PAGINATION_ENABLED) return;
   if (!n || !tot) return;
   slide.addText(`${String(n).padStart(2, '0')} / ${String(tot).padStart(2, '0')}`, {
-    x: 10.8, y: 6.75, w: 2, h: 0.35, fontFace: FONT_SANS, fontSize: 14, color: color || COLOR_GREY, align: 'right', charSpacing: 1.2
+    x: 10.8, y: 6.75, w: 2, h: 0.35, fontFace: FONT_SANS, fontSize: 20, color: color || COLOR_GREY, align: 'right', charSpacing: 1.2
   });
 }
 
 function surfaceBg(d, defaultDk) {
   if (d.fondo === 'amarillo') return { bg: COLOR_YELLOW, fg: COLOR_DARK, meta: '444444' };
-  if (d.fondo === 'claro') return { bg: 'FFFFFF', fg: COLOR_DARK, meta: '666666' };
+  // FAFAFA en lugar de FFFFFF: blanco puro quema en proyector.
+  // Acepta 'claro' o 'hueso' como alias del off-white.
+  if (d.fondo === 'claro' || d.fondo === 'hueso') return { bg: 'FAFAFA', fg: COLOR_DARK, meta: '666666' };
   if (d.fondo === 'oscuro' || defaultDk) return { bg: COLOR_DARK, fg: COLOR_LIGHT_TEXT, meta: COLOR_GREY };
-  return { bg: 'FFFFFF', fg: COLOR_DARK, meta: '666666' };
+  return { bg: 'FAFAFA', fg: COLOR_DARK, meta: '666666' };
 }
 
 function buildPptxHero(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   const surf = surfaceBg(d, true);
   s.background = { color: surf.bg };
-  addTopMetaPptx(s, g, surf.meta);
+  addTopMetaPptx(s, g, surf.meta, d);
   const eyebrow = d.eyebrow || d.kicker || (g.evento_nombre ? g.evento_nombre.toUpperCase() : '');
-  if (eyebrow) s.addText(eyebrow, { x: 0.7, y: 3.8, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: surf.meta, charSpacing: 2 });
+  if (eyebrow) s.addText(eyebrow, { x: 0.7, y: 3.8, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: surf.meta, charSpacing: 2 });
   s.addText(richWithHighlights(d.titular || g.titulo || 'Titulo', { fontFace: FONT_SERIF, fontSize: 72, color: surf.fg }, d.fondo === 'amarillo' ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark')),
-    { x: 0.7, y: 4.2, w: 12, h: 1.6, valign: 'top' });
-  s.addShape(pptx.ShapeType.rect, { x: 0.7, y: 5.9, w: 0.6, h: 0.02, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
+    { x: 0.7, y: 4.2, w: 12, h: 1.3, valign: 'top' });
+  // F3 — hilo griego opcional debajo del título: tenue, italic serif, marca de agua.
+  const griegoHero = d.griego || d.subtitular_griego || d.subtitular || '';
+  if (griegoHero) s.addText(griegoHero, { x: 0.7, y: 5.5, w: 12, h: 0.5, fontFace: FONT_SERIF, fontSize: 28, color: surf.meta, italic: true });
+  s.addShape(pptx.ShapeType.rect, { x: 0.7, y: 6.0, w: 0.6, h: 0.02, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
   const meta = [d.autor || g.autor, d.fecha || g.fecha].filter(Boolean).join(' · ');
-  if (meta) s.addText(meta, { x: 0.7, y: 6.1, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 18, color: surf.fg });
+  if (meta) s.addText(meta, { x: 0.7, y: 6.2, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 22, color: surf.fg });
   surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
   addPaginator(s, n, tot, surf.meta);
 }
@@ -4899,8 +5666,8 @@ function buildPptxAgenda(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   const surf = surfaceBg(d, true);
   s.background = { color: surf.bg };
-  addTopMetaPptx(s, g, surf.meta);
-  s.addText(d.eyebrow || 'AGENDA', { x: 0.7, y: 1.2, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: surf.meta, charSpacing: 2 });
+  addTopMetaPptx(s, g, surf.meta, d);
+  s.addText(d.eyebrow || 'AGENDA', { x: 0.7, y: 1.2, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: surf.meta, charSpacing: 2 });
   s.addText(richWithHighlights(d.titular || 'Agenda', { fontFace: FONT_SERIF, fontSize: 56, color: surf.fg }, d.fondo === 'amarillo' ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark')),
     { x: 0.7, y: 1.7, w: 12, h: 0.9 });
   const items = [];
@@ -4919,18 +5686,21 @@ function buildPptxAgenda(pptx, d, g, n, tot) {
 function buildPptxManifiesto(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   const useYellow = d.fondo !== 'oscuro' && d.fondo !== 'claro';
-  const bg = useYellow ? COLOR_YELLOW : (d.fondo === 'claro' ? 'FFFFFF' : COLOR_DARK);
+  const bg = useYellow ? COLOR_YELLOW : (d.fondo === 'claro' ? 'FAFAFA' : COLOR_DARK);
   const fg = useYellow || d.fondo === 'claro' ? COLOR_DARK : COLOR_LIGHT_TEXT;
   s.background = { color: bg };
-  addTopMetaPptx(s, g, useYellow ? '444444' : COLOR_GREY);
+  addTopMetaPptx(s, g, useYellow ? '444444' : COLOR_GREY, d);
   const mode = useYellow ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark');
   const raw = (d.titular || d.frase || '').replace(/\s+/g, ' ').trim();
   // Scale font by content length. With the fallback font (no DM Serif Display installed),
   // each glyph is ~1.3× wider than intended, so we size conservatively to avoid overflow.
   const len = raw.length;
   const size = len < 30 ? 80 : len < 60 ? 64 : len < 100 ? 52 : 42;
+  // F3 hilo griego: stamp opcional encima del titular (caso slide 26 "Conócete").
+  const griegoManif = d.griego || d.subtitular_griego || '';
+  if (griegoManif) s.addText(griegoManif, { x: 0.7, y: 1.0, w: 11.9, h: 0.5, fontFace: FONT_SANS, fontSize: 20, color: useYellow ? '444444' : (d.fondo === 'claro' ? '666666' : COLOR_GREY), charSpacing: 2 });
   s.addText(richWithHighlights((d.titular || d.frase || ''), { fontFace: FONT_SERIF, fontSize: size, color: fg, italic: true }, mode),
-    { x: 0.7, y: 1.2, w: 11.9, h: 5.3, valign: 'middle', align: 'left' });
+    { x: 0.7, y: griegoManif ? 1.7 : 1.2, w: 11.9, h: griegoManif ? 4.8 : 5.3, valign: 'middle', align: 'left' });
   fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
   addPaginator(s, n, tot, useYellow ? '444444' : COLOR_GREY);
 }
@@ -4938,13 +5708,13 @@ function buildPptxManifiesto(pptx, d, g, n, tot) {
 function buildPptxDivisorC(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   const useYellow = d.fondo !== 'oscuro' && d.fondo !== 'claro';
-  const bg = useYellow ? COLOR_YELLOW : (d.fondo === 'claro' ? 'FFFFFF' : COLOR_DARK);
+  const bg = useYellow ? COLOR_YELLOW : (d.fondo === 'claro' ? 'FAFAFA' : COLOR_DARK);
   const fg = useYellow || d.fondo === 'claro' ? COLOR_DARK : COLOR_LIGHT_TEXT;
   s.background = { color: bg };
-  addTopMetaPptx(s, g, useYellow ? '444444' : COLOR_GREY);
+  addTopMetaPptx(s, g, useYellow ? '444444' : COLOR_GREY, d);
   s.addText(d.numero || '01', { x: 0.5, y: 1.6, w: 6, h: 4.5, fontFace: FONT_SERIF, fontSize: 280, color: fg, align: 'center', valign: 'middle' });
   s.addShape(pptx.ShapeType.rect, { x: 6.5, y: 2.5, w: 0.02, h: 2.5, fill: { color: fg }, line: { color: fg } });
-  s.addText((d.eyebrow || 'ACTO').toUpperCase(), { x: 7, y: 3, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: fg, charSpacing: 2 });
+  s.addText((d.eyebrow || 'ACTO').toUpperCase(), { x: 7, y: 3, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: fg, charSpacing: 2 });
   s.addText(richWithHighlights(d.titulo || d.titular || '', { fontFace: FONT_SERIF, fontSize: 60, color: fg }, useYellow ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark')),
     { x: 7, y: 3.6, w: 5.5, h: 2 });
   fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
@@ -4955,9 +5725,9 @@ function buildPptxStandard(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   const surf = surfaceBg(d, true);
   s.background = { color: surf.bg };
-  addTopMetaPptx(s, g, surf.meta);
+  addTopMetaPptx(s, g, surf.meta, d);
   const mode = d.fondo === 'amarillo' ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark');
-  if (d.eyebrow) s.addText(d.eyebrow, { x: 0.7, y: 1.5, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: surf.meta, charSpacing: 2 });
+  if (d.eyebrow) s.addText(d.eyebrow, { x: 0.7, y: 1.5, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: surf.meta, charSpacing: 2 });
   s.addText(richWithHighlights((d.titular || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 52, color: surf.fg }, mode),
     { x: 0.7, y: 2.1, w: 12, h: 2.2, valign: 'top' });
   if (d.cuerpo) s.addText(richWithHighlights(d.cuerpo.replace(/\n/g, '\n'), { fontFace: FONT_SANS, fontSize: 22, color: surf.fg }, mode),
@@ -4970,7 +5740,7 @@ function buildPptxStatHero(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   const surf = surfaceBg(d, true);
   s.background = { color: surf.bg };
-  addTopMetaPptx(s, g, surf.meta);
+  addTopMetaPptx(s, g, surf.meta, d);
   const mode = d.fondo === 'amarillo' ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark');
   const num = (d.numero || '0').toString();
   const suf = (d.sufijo || '').toString();
@@ -4986,12 +5756,12 @@ function buildPptxStatHero(pptx, d, g, n, tot) {
     const statSize = statText.length <= 3 ? 180 : statText.length <= 5 ? 140 : 110;
     s.addText(statText, { x: 0.4, y: 1.8, w: 5.8, h: 3.8, fontFace: FONT_SERIF, fontSize: statSize, color: numColor, align: 'center', valign: 'middle' });
   }
-  if (d.eyebrow) s.addText(d.eyebrow, { x: 6.4, y: 2, w: 6, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: surf.meta, charSpacing: 2 });
+  if (d.eyebrow) s.addText(d.eyebrow, { x: 6.4, y: 2, w: 6, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: surf.meta, charSpacing: 2 });
   const descLen = (d.descripcion || '').length;
   const descSize = descLen < 80 ? 28 : descLen < 140 ? 22 : 18;
   s.addText(richWithHighlights(d.descripcion || '', { fontFace: FONT_SERIF, fontSize: descSize, color: surf.fg }, mode),
     { x: 6.4, y: 2.55, w: 6.3, h: 3 });
-  if (d.fuente) s.addText(d.fuente, { x: 6.4, y: 5.7, w: 6, h: 0.4, fontFace: FONT_SANS, fontSize: 14, color: surf.meta });
+  if (d.fuente) s.addText(d.fuente, { x: 6.4, y: 5.7, w: 6, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: surf.meta });
   surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
   addPaginator(s, n, tot, surf.meta);
 }
@@ -5000,7 +5770,7 @@ function buildPptxCompare(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   const surf = surfaceBg(d, true);
   s.background = { color: surf.bg };
-  addTopMetaPptx(s, g, surf.meta);
+  addTopMetaPptx(s, g, surf.meta, d);
   // Compute title size based on length so multi-line titles don't collide with content.
   const titleLen = (d.titular || '').length;
   const titleSize = titleLen < 50 ? 34 : titleLen < 90 ? 28 : 24;
@@ -5011,8 +5781,8 @@ function buildPptxCompare(pptx, d, g, n, tot) {
   const topList = 3.2;
   const rowH = 1.15; // generous: accommodates 2-line bullets without overlap
   const itemSize = 18;
-  s.addText((d.label_a || 'MODELO TRADICIONAL').toUpperCase(), { x: 0.9, y: 2.55, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 15, color: surf.meta, charSpacing: 2 });
-  s.addText((d.label_b || 'MAGNIFY').toUpperCase(), { x: 7, y: 2.55, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 15, color: COLOR_YELLOW, charSpacing: 2 });
+  s.addText((d.label_a || 'MODELO TRADICIONAL').toUpperCase(), { x: 0.9, y: 2.55, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: surf.meta, charSpacing: 2 });
+  s.addText((d.label_b || 'MAGNIFY').toUpperCase(), { x: 7, y: 2.55, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: COLOR_YELLOW, charSpacing: 2 });
   s.addShape(pptx.ShapeType.rect, { x: 6.65, y: 3, w: 0.02, h: Math.max(a.length, b.length) * rowH + 0.2, fill: { color: surf.meta, transparency: 70 }, line: { color: surf.meta } });
   a.forEach((t, i) => s.addText(t, { x: 0.9, y: topList + i * rowH, w: 5.5, h: rowH - 0.1, fontFace: FONT_SANS, fontSize: itemSize, color: surf.fg, valign: 'top' }));
   b.forEach((t, i) => s.addText(t, { x: 7, y: topList + i * rowH, w: 5.5, h: rowH - 0.1, fontFace: FONT_SANS, fontSize: itemSize, color: surf.fg, valign: 'top' }));
@@ -5024,7 +5794,7 @@ function buildPptxFramework(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   const surf = surfaceBg(d, true);
   s.background = { color: surf.bg };
-  addTopMetaPptx(s, g, surf.meta);
+  addTopMetaPptx(s, g, surf.meta, d);
   s.addText(richWithHighlights(d.titular || '', { fontFace: FONT_SERIF, fontSize: 40, color: surf.fg }, d.fondo === 'amarillo' ? 'yellow' : 'dark'),
     { x: 0.7, y: 1.3, w: 12, h: 0.9 });
   const steps = [];
@@ -5040,7 +5810,7 @@ function buildPptxFramework(pptx, d, g, n, tot) {
   steps.forEach((st, idx) => {
     const x = 0.7 + idx * (colW + (four ? 0.1 : 0));
     s.addText(String(st.i).padStart(2, '0'), { x, y: 3, w: colW, h: 1.8, fontFace: FONT_SERIF, fontSize: numSize, color: COLOR_YELLOW });
-    s.addText(st.lbl, { x, y: 4.5, w: colW, h: 0.4, fontFace: FONT_SANS, fontSize: 14, color: COLOR_YELLOW, charSpacing: 2, bold: true });
+    s.addText(st.lbl, { x, y: 4.5, w: colW, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: COLOR_YELLOW, charSpacing: 2, bold: true });
     s.addText(st.desc, { x, y: 4.95, w: colW, h: 1.5, fontFace: FONT_SANS, fontSize: descSize, color: surf.fg });
   });
   surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
@@ -5051,7 +5821,7 @@ function buildPptxTimelineC(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   const surf = surfaceBg(d, true);
   s.background = { color: surf.bg };
-  addTopMetaPptx(s, g, surf.meta);
+  addTopMetaPptx(s, g, surf.meta, d);
   s.addText(richWithHighlights(d.titular || '', { fontFace: FONT_SERIF, fontSize: 40, color: surf.fg }, 'dark'),
     { x: 0.7, y: 1.3, w: 12, h: 0.9 });
   s.addShape(pptx.ShapeType.rect, { x: 0.9, y: 3.2, w: 11.5, h: 0.02, fill: { color: surf.meta }, line: { color: surf.meta } });
@@ -5062,9 +5832,9 @@ function buildPptxTimelineC(pptx, d, g, n, tot) {
     if (!title && !lbl) continue;
     const x = 0.9 + (i - 1) * 3;
     s.addShape(pptx.ShapeType.rect, { x, y: 3.1, w: 0.25, h: 0.25, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
-    s.addText(lbl.toUpperCase(), { x, y: 3.6, w: 2.8, h: 0.35, fontFace: FONT_SANS, fontSize: 14, color: COLOR_YELLOW, charSpacing: 2 });
+    s.addText(lbl.toUpperCase(), { x, y: 3.6, w: 2.8, h: 0.35, fontFace: FONT_SANS, fontSize: 20, color: COLOR_YELLOW, charSpacing: 2 });
     s.addText(title, { x, y: 3.95, w: 2.8, h: 0.6, fontFace: FONT_SERIF, fontSize: 26, color: surf.fg });
-    s.addText(desc, { x, y: 4.6, w: 2.8, h: 1.4, fontFace: FONT_SANS, fontSize: 16, color: surf.fg });
+    s.addText(desc, { x, y: 4.6, w: 2.8, h: 1.4, fontFace: FONT_SANS, fontSize: 20, color: surf.fg });
   }
   surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
   addPaginator(s, n, tot, surf.meta);
@@ -5082,7 +5852,7 @@ function buildPptxImgGeneric(pptx, d, g, n, tot, imgKey, textBuilder) {
   // Dark scrim bar at bottom for text readability
   s.addShape(pptx.ShapeType.rect, { x: 0, y: 4.5, w: PPTX_W, h: 3, fill: { color: '000000', transparency: 35 }, line: { color: '000000' } });
   textBuilder(s);
-  addTopMetaPptx(s, g, 'CCCCCC');
+  addTopMetaPptx(s, g, 'CCCCCC', d);
   // Skip brand icon on full-bleed image slides — it would sit on top of caption text.
   addPaginator(s, n, tot, 'CCCCCC');
 }
@@ -5098,16 +5868,16 @@ function buildPptxImagenFull(pptx, d, g, n, tot) {
     s.background = { color: COLOR_DARK };
     const src = uploadedImages[d.imagen];
     // Banda de texto arriba (0 a 1.4), imagen contain abajo (1.4 a 7.5).
-    if (d.eyebrow) s.addText(d.eyebrow, { x: 0.7, y: 0.45, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: 'CCCCCC', charSpacing: 2 });
+    if (d.eyebrow) s.addText(d.eyebrow, { x: 0.7, y: 0.45, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: 'CCCCCC', charSpacing: 2 });
     s.addText(richWithHighlights((d.titular || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 42, color: 'FFFFFF' }, 'dark'),
       { x: 0.7, y: 0.85, w: 12, h: 0.9 });
     if (src) s.addImage({ data: src, x: 0.4, y: 1.9, w: PPTX_W - 0.8, h: 5.2, sizing: { type: 'contain', w: PPTX_W - 0.8, h: 5.2 } });
-    addTopMetaPptx(s, g, 'CCCCCC');
+    addTopMetaPptx(s, g, 'CCCCCC', d);
     addPaginator(s, n, tot, 'CCCCCC');
     return;
   }
   buildPptxImgGeneric(pptx, d, g, n, tot, 'imagen', (s) => {
-    if (d.eyebrow) s.addText(d.eyebrow, { x: 0.7, y: 5, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: 'FFFFFF', charSpacing: 2 });
+    if (d.eyebrow) s.addText(d.eyebrow, { x: 0.7, y: 5, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: 'FFFFFF', charSpacing: 2 });
     s.addText(richWithHighlights((d.titular || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 52, color: 'FFFFFF' }, 'dark'),
       { x: 0.7, y: 5.5, w: 12, h: 1.6 });
   });
@@ -5119,17 +5889,40 @@ function buildPptxImagenSplit(pptx, d, g, n, tot) {
   s.background = { color: surf.bg };
   const src = uploadedImages[d.imagen];
   const rev = d.posicion === 'derecha';
-  const imgX = rev ? 6.665 : 0, txtX = rev ? 0.7 : 7;
-  if (src) s.addImage({ data: src, x: imgX, y: 0, w: 6.665, h: PPTX_H, sizing: { type: 'cover', w: 6.665, h: PPTX_H } });
-  else s.addShape(pptx.ShapeType.rect, { x: imgX, y: 0, w: 6.665, h: PPTX_H, fill: { color: '2a2a2a' }, line: { color: '2a2a2a' } });
+  const panelW = 6.665;
+  const imgX = rev ? panelW : 0, txtX = rev ? 0.7 : 7;
+  // imagen_ajuste: contain → la imagen se ve entera con aire (retratos verticales).
+  // Default cover llena el panel pero recorta. Coincide con el preview HTML.
+  const ajuste = (d.imagen_ajuste || d.ajuste || 'cover').toLowerCase();
+  const sizingType = ajuste === 'contain' ? 'contain' : 'cover';
+  // imagen_zoom (10-100): reduce el tamaño visual de la imagen dentro del panel.
+  // Default 100 = ocupa todo el panel. Útil para retratos que dominan visualmente.
+  const zoomRaw = parseFloat(d.imagen_zoom || d.zoom);
+  const zoom = (!isNaN(zoomRaw) && zoomRaw >= 10 && zoomRaw <= 100) ? zoomRaw / 100 : 1;
+  // Pinta fondo neutral detrás SIEMPRE que haya contain o zoom < 100 (para evitar franjas).
+  const needsPad = sizingType === 'contain' || zoom < 1;
+  if (needsPad) {
+    const padBg = surf.bg === COLOR_YELLOW ? COLOR_YELLOW : (surf.bg === 'FAFAFA' ? 'FAFAFA' : COLOR_DARK);
+    s.addShape(pptx.ShapeType.rect, { x: imgX, y: 0, w: panelW, h: PPTX_H, fill: { color: padBg }, line: { color: padBg } });
+  }
+  // Calcula posición y tamaño de la imagen aplicando zoom (centrada en el panel).
+  const imgW = panelW * zoom;
+  const imgH = PPTX_H * zoom;
+  const ix = imgX + (panelW - imgW) / 2;
+  const iy = (PPTX_H - imgH) / 2;
+  if (src) s.addImage({ data: src, x: ix, y: iy, w: imgW, h: imgH, sizing: { type: sizingType, w: imgW, h: imgH } });
+  else s.addShape(pptx.ShapeType.rect, { x: imgX, y: 0, w: panelW, h: PPTX_H, fill: { color: '2a2a2a' }, line: { color: '2a2a2a' } });
   // Banda amarilla vertical separando imagen de texto (igual estética que diptych).
   const bandX = rev ? 6.625 : 6.625;
   s.addShape(pptx.ShapeType.rect, { x: bandX, y: 0, w: 0.04, h: PPTX_H, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
-  if (d.eyebrow) s.addText(d.eyebrow, { x: txtX, y: 2.2, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: surf.meta, charSpacing: 2 });
+  if (d.eyebrow) s.addText(d.eyebrow, { x: txtX, y: 2.2, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: surf.meta, charSpacing: 2 });
   s.addText(richWithHighlights((d.titular || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 36, color: surf.fg }, 'dark'),
     { x: txtX, y: 2.7, w: 5.5, h: 1.6 });
-  if (d.cuerpo) s.addText(d.cuerpo.replace(/\n/g, '\n'), { x: txtX, y: 4.4, w: 5.5, h: 1.6, fontFace: FONT_SANS, fontSize: 18, color: surf.fg });
-  addTopMetaPptx(s, g, surf.meta);
+  if (d.cuerpo) s.addText(d.cuerpo.replace(/\n/g, '\n'), { x: txtX, y: 4.4, w: 5.5, h: 1.6, fontFace: FONT_SANS, fontSize: 22, color: surf.fg });
+  // F3 hilo griego: italic serif tenue debajo del cuerpo. Coherente con hero/manifiesto.
+  const griegoSplit = d.griego || d.subtitular_griego || '';
+  if (griegoSplit) s.addText(griegoSplit, { x: txtX, y: 5.9, w: 5.5, h: 0.5, fontFace: FONT_SERIF, fontSize: 20, color: surf.meta, italic: true });
+  addTopMetaPptx(s, g, surf.meta, d);
   surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
   addPaginator(s, n, tot, surf.meta);
 }
@@ -5154,11 +5947,11 @@ function buildPptxDiptych(pptx, d, g, n, tot) {
     // Caption sólida.
     s.addShape(pptx.ShapeType.rect, { x, y: capY, w: halfW, h: capH, fill: { color: COLOR_DARK }, line: { color: COLOR_DARK } });
     s.addShape(pptx.ShapeType.rect, { x, y: capY, w: halfW, h: 0.04, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
-    s.addText(lbl.toUpperCase(), { x: x + 0.5, y: capY + 0.2, w: halfW - 1, h: 0.35, fontFace: FONT_SANS, fontSize: 13, color: COLOR_YELLOW, charSpacing: 2, bold: true });
+    s.addText(lbl.toUpperCase(), { x: x + 0.5, y: capY + 0.2, w: halfW - 1, h: 0.35, fontFace: FONT_SANS, fontSize: 20, color: COLOR_YELLOW, charSpacing: 2, bold: true });
     s.addText(richWithHighlights(t || '', { fontFace: FONT_SERIF, fontSize: 28, color: 'FFFFFF' }, 'dark'), { x: x + 0.5, y: capY + 0.6, w: halfW - 1, h: 1, valign: 'top' });
-    if (body) s.addText(body, { x: x + 0.5, y: capY + 1.55, w: halfW - 1, h: 0.5, fontFace: FONT_SANS, fontSize: 13, color: 'CCCCCC' });
+    if (body) s.addText(body, { x: x + 0.5, y: capY + 1.55, w: halfW - 1, h: 0.5, fontFace: FONT_SANS, fontSize: 20, color: 'CCCCCC' });
   });
-  addTopMetaPptx(s, g, 'CCCCCC');
+  addTopMetaPptx(s, g, 'CCCCCC', d);
   addPaginator(s, n, tot, 'CCCCCC');
 }
 
@@ -5173,9 +5966,9 @@ function buildPptxTriptych(pptx, d, g, n, tot) {
     s.addShape(pptx.ShapeType.rect, { x, y: 4.5, w: PPTX_W / 3, h: 3, fill: { color: '000000', transparency: 30 }, line: { color: '000000' } });
     s.addText(d[`num${i}`] || String(i).padStart(2, '0'), { x: x + 0.3, y: 4.9, w: 3.7, h: 0.8, fontFace: FONT_SERIF, fontSize: 40, color: COLOR_YELLOW });
     s.addText(richWithHighlights(d[`titulo${i}`] || '', { fontFace: FONT_SERIF, fontSize: 22, color: 'FFFFFF' }, 'dark'), { x: x + 0.3, y: 5.7, w: 3.7, h: 0.7 });
-    if (d[`descripcion${i}`]) s.addText(d[`descripcion${i}`], { x: x + 0.3, y: 6.4, w: 3.7, h: 0.4, fontFace: FONT_SANS, fontSize: 14, color: 'DDDDDD' });
+    if (d[`descripcion${i}`]) s.addText(d[`descripcion${i}`], { x: x + 0.3, y: 6.4, w: 3.7, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: 'DDDDDD' });
   }
-  addTopMetaPptx(s, g, 'CCCCCC');
+  addTopMetaPptx(s, g, 'CCCCCC', d);
   addPaginator(s, n, tot, 'CCCCCC');
 }
 
@@ -5196,10 +5989,10 @@ function buildPptxMosaic(pptx, d, g, n, tot) {
     const src = uploadedImages[d[`imagen${c.i}`]];
     if (src) s.addImage({ data: src, x: c.x, y: c.y, w: c.w, h: c.h, sizing: { type: 'cover', w: c.w, h: c.h } });
     else s.addShape(pptx.ShapeType.rect, { x: c.x, y: c.y, w: c.w, h: c.h, fill: { color: '2a2a2a' }, line: { color: '1a1a1a' } });
-    if (d[`label${c.i}`]) s.addText(d[`label${c.i}`].toUpperCase(), { x: c.x + 0.2, y: c.y + c.h - 1, w: c.w - 0.4, h: 0.3, fontFace: FONT_SANS, fontSize: 12, color: COLOR_YELLOW, charSpacing: 2 });
+    if (d[`label${c.i}`]) s.addText(d[`label${c.i}`].toUpperCase(), { x: c.x + 0.2, y: c.y + c.h - 1, w: c.w - 0.4, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: COLOR_YELLOW, charSpacing: 2 });
     if (d[`titulo${c.i}`]) s.addText(richWithHighlights(d[`titulo${c.i}`], { fontFace: FONT_SERIF, fontSize: c.big ? 28 : 18, color: 'FFFFFF' }, 'dark'), { x: c.x + 0.2, y: c.y + c.h - 0.7, w: c.w - 0.4, h: 0.6 });
   });
-  addTopMetaPptx(s, g, 'CCCCCC');
+  addTopMetaPptx(s, g, 'CCCCCC', d);
   addBrandIcon(s);
 }
 
@@ -5209,12 +6002,12 @@ function buildPptxPortrait(pptx, d, g, n, tot) {
   const src = uploadedImages[d.imagen];
   if (src) s.addImage({ data: src, x: 0, y: 0, w: PPTX_W / 2, h: PPTX_H, sizing: { type: 'cover', w: PPTX_W / 2, h: PPTX_H } });
   else s.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: PPTX_W / 2, h: PPTX_H, fill: { color: '2a2a2a' }, line: { color: '2a2a2a' } });
-  if (d.eyebrow) s.addText(d.eyebrow, { x: 7, y: 4, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: COLOR_GREY, charSpacing: 2 });
+  if (d.eyebrow) s.addText(d.eyebrow, { x: 7, y: 4, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: COLOR_GREY, charSpacing: 2 });
   s.addText(richWithHighlights((d.cita || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 28, color: 'FFFFFF' }, 'dark'),
     { x: 7, y: 4.5, w: 5.5, h: 1.8 });
-  if (d.nombre) s.addText(d.nombre, { x: 7, y: 6.3, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 18, color: 'FFFFFF', bold: true });
-  if (d.rol) s.addText(d.rol, { x: 7, y: 6.65, w: 5.5, h: 0.3, fontFace: FONT_SANS, fontSize: 14, color: COLOR_GREY });
-  addTopMetaPptx(s, g, COLOR_GREY);
+  if (d.nombre) s.addText(d.nombre, { x: 7, y: 6.3, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 22, color: 'FFFFFF', bold: true });
+  if (d.rol) s.addText(d.rol, { x: 7, y: 6.65, w: 5.5, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: COLOR_GREY });
+  addTopMetaPptx(s, g, COLOR_GREY, d);
   addBrandIcon(s);
   addPaginator(s, n, tot, COLOR_GREY);
 }
@@ -5223,26 +6016,26 @@ function buildPptxQuoteBig(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   const dk = d.fondo === 'oscuro';
   const yl = d.fondo === 'amarillo';
-  const bg = dk ? COLOR_DARK : (yl ? COLOR_YELLOW : 'FFFFFF');
+  const bg = dk ? COLOR_DARK : (yl ? COLOR_YELLOW : 'FAFAFA');
   const fg = dk ? COLOR_LIGHT_TEXT : COLOR_DARK;
   s.background = { color: bg };
-  addTopMetaPptx(s, g, dk ? COLOR_GREY : '666666');
+  addTopMetaPptx(s, g, dk ? COLOR_GREY : '666666', d);
   // Comilla arriba-izquierda fuera del flujo del texto. Antes ambos en x:0.7 → la comilla
   // pisaba la primera letra del cuerpo con mayúsculas altas (M, L). Ahora comilla en
   // x:0.7 arriba, texto en x:1.6 con indent para no solaparse.
   s.addText('"', { x: 0.7, y: 1.0, w: 1.5, h: 1.6, fontFace: FONT_SERIF, fontSize: 150, color: fg, valign: 'top' });
   s.addText(richWithHighlights((d.cita || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 48, color: fg }, dk ? 'dark' : (yl ? 'yellow' : 'light')),
     { x: 1.6, y: 2.4, w: 10.6, h: 3 });
-  if (d.nombre) s.addText(d.nombre, { x: 1.6, y: 5.8, w: 8, h: 0.4, fontFace: FONT_SANS, fontSize: 18, color: fg, bold: true });
-  if (d.rol) s.addText(d.rol, { x: 1.6, y: 6.2, w: 8, h: 0.3, fontFace: FONT_SANS, fontSize: 14, color: dk ? COLOR_GREY : '666666' });
+  if (d.nombre) s.addText(d.nombre, { x: 1.6, y: 5.8, w: 8, h: 0.4, fontFace: FONT_SANS, fontSize: 22, color: fg, bold: true });
+  if (d.rol) s.addText(d.rol, { x: 1.6, y: 6.2, w: 8, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: dk ? COLOR_GREY : '666666' });
   fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
   addPaginator(s, n, tot, dk ? COLOR_GREY : '666666');
 }
 
 function buildPptxTabla(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
-  s.background = { color: 'FFFFFF' };
-  addTopMetaPptx(s, g, '666666');
+  s.background = { color: 'FAFAFA' };
+  addTopMetaPptx(s, g, '666666', d);
   s.addText(richWithHighlights(d.titular || '', { fontFace: FONT_SERIF, fontSize: 36, color: COLOR_DARK }, 'light'),
     { x: 0.7, y: 1.3, w: 12, h: 0.7 });
   const cols = [];
@@ -5250,7 +6043,7 @@ function buildPptxTabla(pptx, d, g, n, tot) {
   if (cols.length) {
     const colW = 11.6 / cols.length;
     // header row
-    cols.forEach((c, i) => s.addText(c.toUpperCase(), { x: 0.7 + colW * i, y: 2.5, w: colW, h: 0.4, fontFace: FONT_SANS, fontSize: 12, color: '444444', charSpacing: 2 }));
+    cols.forEach((c, i) => s.addText(c.toUpperCase(), { x: 0.7 + colW * i, y: 2.5, w: colW, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: '444444', charSpacing: 2 }));
     s.addShape(pptx.ShapeType.rect, { x: 0.7, y: 2.95, w: 11.6, h: 0.02, fill: { color: 'CCCCCC' }, line: { color: 'CCCCCC' } });
     for (let i = 1; i <= 10; i++) {
       if (!d[`row${i}`]) continue;
@@ -5258,7 +6051,7 @@ function buildPptxTabla(pptx, d, g, n, tot) {
       const y = 3 + (i - 1) * 0.42;
       const hi = (d[`row${i}_hi`] || '').toLowerCase() === 'si';
       if (hi) s.addShape(pptx.ShapeType.rect, { x: 0.7, y: y - 0.02, w: 11.6, h: 0.42, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
-      parts.forEach((p, j) => s.addText(p, { x: 0.7 + colW * j + 0.1, y, w: colW - 0.2, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: COLOR_DARK, align: j === 0 ? 'left' : 'center' }));
+      parts.forEach((p, j) => s.addText(p, { x: 0.7 + colW * j + 0.1, y, w: colW - 0.2, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: COLOR_DARK, align: j === 0 ? 'left' : 'center' }));
     }
   }
   addBrandIconLt(s);
@@ -5269,7 +6062,7 @@ function buildPptxEquipo(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   const surf = surfaceBg(d, true);
   s.background = { color: surf.bg };
-  addTopMetaPptx(s, g, surf.meta);
+  addTopMetaPptx(s, g, surf.meta, d);
   s.addText(richWithHighlights(d.titular || 'El equipo', { fontFace: FONT_SERIF, fontSize: 36, color: surf.fg }, 'dark'),
     { x: 0.7, y: 1.3, w: 12, h: 0.8 });
   const members = [];
@@ -5282,8 +6075,8 @@ function buildPptxEquipo(pptx, d, g, n, tot) {
     const src = uploadedImages[m.foto];
     if (src) s.addImage({ data: src, x, y, w: cardW - 0.3, h: cardW - 0.3, sizing: { type: 'cover', w: cardW - 0.3, h: cardW - 0.3 } });
     else s.addShape(pptx.ShapeType.rect, { x, y, w: cardW - 0.3, h: cardW - 0.3, fill: { color: '333333' }, line: { color: '333333' } });
-    s.addText(m.name, { x, y: y + cardW - 0.25, w: cardW - 0.3, h: 0.35, fontFace: FONT_SANS, fontSize: 18, color: surf.fg, bold: true });
-    s.addText(m.role, { x, y: y + cardW + 0.1, w: cardW - 0.3, h: 0.3, fontFace: FONT_SANS, fontSize: 14, color: surf.meta });
+    s.addText(m.name, { x, y: y + cardW - 0.25, w: cardW - 0.3, h: 0.35, fontFace: FONT_SANS, fontSize: 22, color: surf.fg, bold: true });
+    s.addText(m.role, { x, y: y + cardW + 0.1, w: cardW - 0.3, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: surf.meta });
   });
   surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
   addPaginator(s, n, tot, surf.meta);
@@ -5292,10 +6085,10 @@ function buildPptxEquipo(pptx, d, g, n, tot) {
 function buildPptxPricing(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   const dk = d.fondo !== 'claro';
-  const bg = dk ? COLOR_DARK : 'FFFFFF';
+  const bg = dk ? COLOR_DARK : 'FAFAFA';
   const fg = dk ? COLOR_LIGHT_TEXT : COLOR_DARK;
   s.background = { color: bg };
-  addTopMetaPptx(s, g, dk ? COLOR_GREY : '666666');
+  addTopMetaPptx(s, g, dk ? COLOR_GREY : '666666', d);
   s.addText(richWithHighlights(d.titular || '', { fontFace: FONT_SERIF, fontSize: 36, color: fg }, 'dark'),
     { x: 0.7, y: 1.3, w: 12, h: 0.7 });
   const cols = [];
@@ -5312,11 +6105,11 @@ function buildPptxPricing(pptx, d, g, n, tot) {
     if (c.hi) s.addShape(pptx.ShapeType.rect, { x, y: 2.5, w: colW - 0.1, h: 4.3, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
     const colFg = c.hi ? COLOR_DARK : fg;
     const colMeta = c.hi ? '444444' : (dk ? COLOR_GREY : '666666');
-    s.addText(c.lbl.toUpperCase(), { x: x + 0.3, y: 2.7, w: colW - 0.7, h: 0.35, fontFace: FONT_SANS, fontSize: 12, color: colMeta, charSpacing: 2 });
+    s.addText(c.lbl.toUpperCase(), { x: x + 0.3, y: 2.7, w: colW - 0.7, h: 0.35, fontFace: FONT_SANS, fontSize: 20, color: colMeta, charSpacing: 2 });
     s.addText(c.name, { x: x + 0.3, y: 3.1, w: colW - 0.7, h: 0.6, fontFace: FONT_SERIF, fontSize: 30, color: colFg });
     s.addText(c.price, { x: x + 0.3, y: 3.8, w: colW - 0.7, h: 1.2, fontFace: FONT_SERIF, fontSize: 80, color: c.hi ? COLOR_DARK : COLOR_YELLOW });
-    s.addText(c.unit, { x: x + 0.3, y: 5.05, w: colW - 0.7, h: 0.3, fontFace: FONT_SANS, fontSize: 13, color: colMeta });
-    c.feats.forEach((f, k) => s.addText(f, { x: x + 0.3, y: 5.4 + k * 0.28, w: colW - 0.7, h: 0.3, fontFace: FONT_SANS, fontSize: 13, color: colFg }));
+    s.addText(c.unit, { x: x + 0.3, y: 5.05, w: colW - 0.7, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: colMeta });
+    c.feats.forEach((f, k) => s.addText(f, { x: x + 0.3, y: 5.4 + k * 0.28, w: colW - 0.7, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: colFg }));
   });
   fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
   addPaginator(s, n, tot, dk ? COLOR_GREY : '666666');
@@ -5325,23 +6118,29 @@ function buildPptxPricing(pptx, d, g, n, tot) {
 function buildPptxCtaFinal(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   const useYellow = d.fondo !== 'oscuro' && d.fondo !== 'claro';
-  const bg = useYellow ? COLOR_YELLOW : (d.fondo === 'claro' ? 'FFFFFF' : COLOR_DARK);
+  const bg = useYellow ? COLOR_YELLOW : (d.fondo === 'claro' ? 'FAFAFA' : COLOR_DARK);
   const fg = useYellow || d.fondo === 'claro' ? COLOR_DARK : COLOR_LIGHT_TEXT;
   s.background = { color: bg };
-  addTopMetaPptx(s, g, useYellow ? '444444' : COLOR_GREY);
+  addTopMetaPptx(s, g, useYellow ? '444444' : COLOR_GREY, d);
   const qrSrc = uploadedImages[(d.qr || '').trim()];
   const withQr = !!(d.qr && d.qr.trim());
   const mode = useYellow ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark');
   if (withQr) {
-    // QR on the left, text on the right
-    if (qrSrc) s.addImage({ data: qrSrc, x: 1, y: 2.4, w: 3, h: 3, sizing: { type: 'contain', w: 3, h: 3 } });
-    else s.addShape(pptx.ShapeType.rect, { x: 1, y: 2.4, w: 3, h: 3, fill: { color: 'FFFFFF' }, line: { color: fg, width: 2, dashType: 'dash' } });
-    if (d.eyebrow) s.addText(d.eyebrow, { x: 4.5, y: 2.2, w: 8, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: fg, charSpacing: 2 });
-    s.addText(richWithHighlights((d.titular || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 60, color: fg }, mode),
-      { x: 4.5, y: 2.7, w: 8, h: 2.2, valign: 'top' });
-    if (d.contacto) s.addText(d.contacto.replace(/\n/g, '\n'), { x: 4.5, y: 5.2, w: 8, h: 1.2, fontFace: FONT_SANS, fontSize: 20, color: fg });
+    // QR tamaño configurable (F2): pequeño 2.4" / medio 3" / grande 5.3". Default: medio.
+    const qrSize = (d.qr_size || 'medio').toLowerCase().trim();
+    const qrDim = qrSize === 'grande' ? 5.3 : qrSize === 'pequeño' || qrSize === 'pequeno' ? 2.4 : 3;
+    const qrX = 1, qrY = (7.5 - qrDim) / 2;
+    const txtX = qrX + qrDim + 0.5;
+    const txtW = 13.33 - txtX - 0.7;
+    if (qrSrc) s.addImage({ data: qrSrc, x: qrX, y: qrY, w: qrDim, h: qrDim, sizing: { type: 'contain', w: qrDim, h: qrDim } });
+    else s.addShape(pptx.ShapeType.rect, { x: qrX, y: qrY, w: qrDim, h: qrDim, fill: { color: 'FFFFFF' }, line: { color: fg, width: 2, dashType: 'dash' } });
+    const titleFS = qrSize === 'grande' ? 48 : 60;
+    if (d.eyebrow) s.addText(d.eyebrow, { x: txtX, y: qrY, w: txtW, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: fg, charSpacing: 2 });
+    s.addText(richWithHighlights((d.titular || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: titleFS, color: fg }, mode),
+      { x: txtX, y: qrY + 0.5, w: txtW, h: 2.2, valign: 'top' });
+    if (d.contacto) s.addText(d.contacto.replace(/\n/g, '\n'), { x: txtX, y: qrY + qrDim - 0.7, w: txtW, h: 1.2, fontFace: FONT_SANS, fontSize: 20, color: fg });
   } else {
-    if (d.eyebrow) s.addText(d.eyebrow, { x: 0.7, y: 2, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 16, color: fg, charSpacing: 2, align: 'center' });
+    if (d.eyebrow) s.addText(d.eyebrow, { x: 0.7, y: 2, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: fg, charSpacing: 2, align: 'center' });
     s.addText(richWithHighlights((d.titular || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 84, color: fg }, mode),
       { x: 0.7, y: 2.7, w: 12, h: 2.8, align: 'center', valign: 'middle' });
     if (d.contacto) s.addText(d.contacto.replace(/\n/g, '\n'), { x: 0.7, y: 5.8, w: 12, h: 0.8, fontFace: FONT_SANS, fontSize: 20, color: fg, align: 'center' });
@@ -5354,7 +6153,7 @@ function buildPptxStatsCharla(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   const surf = surfaceBg(d, true);
   s.background = { color: surf.bg };
-  addTopMetaPptx(s, g, surf.meta);
+  addTopMetaPptx(s, g, surf.meta, d);
   if (d.titular) s.addText(richWithHighlights(d.titular, { fontFace: FONT_SERIF, fontSize: 40, color: surf.fg }, 'dark'),
     { x: 0.7, y: 1.1, w: 12, h: 0.9 });
   // hi semántico: si/negativo = rojo, positivo = amarillo realzado (B11).
@@ -5392,11 +6191,11 @@ function buildPptxStatsCharla(pptx, d, g, n, tot) {
     const y = gridTop + row * (cellH + rowGap);
     const numColor = c.hi || (surf.fg === COLOR_DARK ? '888800' : COLOR_YELLOW);
     s.addText(c.num, { x, y, w: cellW - 0.3, h: cellH * 0.55, fontFace: FONT_SERIF, fontSize: numSize, color: numColor });
-    if (c.lbl) s.addText(c.lbl.toUpperCase(), { x, y: y + cellH * 0.6, w: cellW - 0.3, h: 0.3, fontFace: FONT_SANS, fontSize: 13, color: COLOR_YELLOW, charSpacing: 2, bold: true });
-    if (c.desc) s.addText(c.desc, { x, y: y + cellH * 0.78, w: cellW - 0.3, h: cellH * 0.22, fontFace: FONT_SANS, fontSize: cols === 4 ? 13 : 15, color: surf.fg });
+    if (c.lbl) s.addText(c.lbl.toUpperCase(), { x, y: y + cellH * 0.6, w: cellW - 0.3, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: COLOR_YELLOW, charSpacing: 2, bold: true });
+    if (c.desc) s.addText(c.desc, { x, y: y + cellH * 0.78, w: cellW - 0.3, h: cellH * 0.22, fontFace: FONT_SANS, fontSize: 20, color: surf.fg });
   });
   // Fuente desplazada a la derecha del monograma (x:1.3) para no solaparse con él.
-  if (d.fuente) s.addText(d.fuente, { x: 1.3, y: 6.95, w: 9, h: 0.3, fontFace: FONT_SANS, fontSize: 13, color: surf.meta });
+  if (d.fuente) s.addText(d.fuente, { x: 1.3, y: 6.95, w: 9, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: surf.meta });
   surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
   addPaginator(s, n, tot, surf.meta);
 }
@@ -5405,7 +6204,7 @@ function buildPptxCitasGrid(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   const surf = surfaceBg(d, true);
   s.background = { color: surf.bg };
-  addTopMetaPptx(s, g, surf.meta);
+  addTopMetaPptx(s, g, surf.meta, d);
   if (d.titular) s.addText(richWithHighlights(d.titular, { fontFace: FONT_SERIF, fontSize: 32, color: surf.fg }, 'dark'),
     { x: 0.7, y: 1.3, w: 12, h: 0.7 });
   const cells = [];
@@ -5421,7 +6220,7 @@ function buildPptxCitasGrid(pptx, d, g, n, tot) {
     const y = 2.3 + row * (cellH + 0.25);
     s.addShape(pptx.ShapeType.rect, { x, y, w: 0.03, h: cellH, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
     s.addText(c.q.replace(/\n/g, '\n'), { x: x + 0.2, y, w: cellW - 0.4, h: cellH * 0.75, fontFace: FONT_SERIF, fontSize: qSize, color: surf.fg, italic: true });
-    if (c.who) s.addText('— ' + c.who, { x: x + 0.2, y: y + cellH * 0.78, w: cellW - 0.4, h: 0.3, fontFace: FONT_SANS, fontSize: 13, color: surf.meta });
+    if (c.who) s.addText('— ' + c.who, { x: x + 0.2, y: y + cellH * 0.78, w: cellW - 0.4, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: surf.meta });
   });
   surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
   addPaginator(s, n, tot, surf.meta);
@@ -5431,7 +6230,7 @@ function buildPptxRecursos(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   const surf = surfaceBg(d, true);
   s.background = { color: surf.bg };
-  addTopMetaPptx(s, g, surf.meta);
+  addTopMetaPptx(s, g, surf.meta, d);
   if (d.titular) s.addText(richWithHighlights(d.titular, { fontFace: FONT_SERIF, fontSize: 36, color: surf.fg }, 'dark'),
     { x: 0.7, y: 1.3, w: 12, h: 0.7 });
   const cats = [];
@@ -5439,23 +6238,34 @@ function buildPptxRecursos(pptx, d, g, n, tot) {
     const head = d[`cat${c}_titulo`];
     if (!head) continue;
     const items = [];
-    for (let i = 1; i <= 6; i++) if (d[`cat${c}_item${i}`]) items.push(d[`cat${c}_item${i}`]);
+    for (let i = 1; i <= 6; i++) {
+      if (d[`cat${c}_item${i}`]) {
+        items.push({ text: d[`cat${c}_item${i}`], link: d[`cat${c}_item${i}_link`] || null });
+      }
+    }
     cats.push({ head, items });
   }
   const cols = Math.max(cats.length, 1);
   const colW = 11.6 / cols;
   cats.forEach((c, i) => {
     const x = 0.7 + i * colW;
-    s.addText(c.head.toUpperCase(), { x, y: 2.4, w: colW - 0.3, h: 0.4, fontFace: FONT_SANS, fontSize: 15, color: COLOR_YELLOW, charSpacing: 2, bold: true });
+    s.addText(c.head.toUpperCase(), { x, y: 2.4, w: colW - 0.3, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: COLOR_YELLOW, charSpacing: 2, bold: true });
     s.addShape(pptx.ShapeType.rect, { x, y: 2.9, w: colW - 0.3, h: 0.02, fill: { color: COLOR_YELLOW, transparency: 60 }, line: { color: COLOR_YELLOW } });
     const rich = [];
     c.items.forEach((it, k) => {
-      const parts = it.split(/\s+[—–|-]\s+/);
+      const parts = it.text.split(/\s+[—–|-]\s+/);
+      // pptxgenjs: hyperlink en options.hyperlink activa el enlace en PDF/online.
+      // Mantenemos el subrayado implícito via `underline` para indicar visualmente el link sin romper estética.
+      // pptxgenjs aplica color azul + subrayado por defecto al hyperlink. Para mantener
+      // estética editorial Magnify (texto color del fondo + subrayado amarillo tenue, NO azul-link),
+      // pasamos el color DENTRO de hyperlink.color. Si no, ignora el color exterior.
+      const ulColor = surf.fg === COLOR_DARK ? '0A0A0A' : 'FAFAFA';
+      const mkLink = (color) => it.link ? { hyperlink: { url: it.link, color }, underline: { style: 'sng', color: ulColor } } : {};
       if (parts.length >= 2) {
-        rich.push({ text: parts[0], options: { bold: true, fontSize: 16, color: surf.fg, fontFace: FONT_SANS, breakLine: false } });
-        rich.push({ text: '\n' + parts.slice(1).join(' — '), options: { fontSize: 14, color: surf.meta, fontFace: FONT_SANS, breakLine: true } });
+        rich.push({ text: parts[0], options: { bold: true, fontSize: 20, color: surf.fg, fontFace: FONT_SANS, breakLine: false, ...mkLink(surf.fg) } });
+        rich.push({ text: '\n' + parts.slice(1).join(' — '), options: { fontSize: 20, color: surf.meta, fontFace: FONT_SANS, breakLine: true, ...mkLink(surf.meta) } });
       } else {
-        rich.push({ text: it, options: { fontSize: 16, color: surf.fg, fontFace: FONT_SANS, breakLine: true } });
+        rich.push({ text: it.text, options: { fontSize: 20, color: surf.fg, fontFace: FONT_SANS, breakLine: true, ...mkLink(surf.fg) } });
       }
       if (k < c.items.length - 1) rich.push({ text: '\n', options: { fontSize: 8 } });
     });
@@ -5468,13 +6278,13 @@ function buildPptxRecursos(pptx, d, g, n, tot) {
 function buildPptxCierre(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   const dk = d.fondo !== 'claro' && d.fondo !== 'amarillo';
-  const bg = dk ? COLOR_DARK : (d.fondo === 'amarillo' ? COLOR_YELLOW : 'FFFFFF');
+  const bg = dk ? COLOR_DARK : (d.fondo === 'amarillo' ? COLOR_YELLOW : 'FAFAFA');
   const fg = dk ? COLOR_LIGHT_TEXT : COLOR_DARK;
   s.background = { color: bg };
-  addTopMetaPptx(s, g, dk ? COLOR_GREY : '666666');
+  addTopMetaPptx(s, g, dk ? COLOR_GREY : '666666', d);
   s.addImage({ data: wordmarkDataUri(dk ? '#FAFAFA' : '#0A0A0A'), x: 4, y: 2.5, w: 5.33, h: 0.44 });
   s.addText(d.titular || 'GRACIAS', { x: 0.5, y: 3.3, w: 12.33, h: 0.5, fontFace: FONT_SANS, fontSize: 20, color: dk ? COLOR_GREY : '666666', charSpacing: 8, align: 'center' });
-  if (d.contacto) s.addText(d.contacto.replace(/\n/g, '\n'), { x: 0.7, y: 5.5, w: 6, h: 1.5, fontFace: FONT_SANS, fontSize: 18, color: fg });
+  if (d.contacto) s.addText(d.contacto.replace(/\n/g, '\n'), { x: 0.7, y: 5.5, w: 6, h: 1.5, fontFace: FONT_SANS, fontSize: 22, color: fg });
 }
 
 const PS_BUILDERS = {
@@ -5541,9 +6351,9 @@ function generatePresentacion(raw, preview, renderC) {
   showStats(statsPresentacion(valid));
 
   const w = 1920, h = 1080;
-  const maxW = preview.clientWidth - 80;
-  const colW = (maxW - 32) / 2;
-  const scale = Math.min(colW / w, 0.4);
+  const maxW = Math.max(preview.clientWidth - 80, 400);
+  const colW = Math.max((maxW - 32) / 2, 200);
+  const scale = Math.max(Math.min(colW / w, 0.4), 0.1);
 
   slides.forEach((sl, i) => {
     const actualDiv = document.createElement('div');
@@ -5600,6 +6410,42 @@ async function exportPptx() {
   const slug = (global.titulo || 'presentacion').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   await pptx.writeFile({ fileName: `magnify-presentacion-${slug}.pptx` });
   toast('\u2713 PPTX descargado');
+}
+
+// PDF de presentaci\u00f3n: rasteriza cada slide 1920x1080 con html2canvas y arma un PDF landscape.
+// Funciona como backup universal (Keynote/PowerPoint pueden no renderizar igual en cualquier m\u00e1quina;
+// el PDF es el fallback que s\u00ed garantiza render fiel).
+async function exportPresentacionPdf() {
+  if (!renderedFrames || renderedFrames.length === 0) {
+    toast('Genera el preview primero');
+    return;
+  }
+  if (!window.jspdf || !window.html2canvas) {
+    toast('jsPDF/html2canvas no cargados');
+    return;
+  }
+  toast('Generando PDF (esto puede tardar varios segundos)\u2026');
+  try {
+    const { jsPDF } = window.jspdf;
+    const SLIDE_W = 1920, SLIDE_H = 1080;
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [SLIDE_W, SLIDE_H], compress: true });
+    for (let i = 0; i < renderedFrames.length; i++) {
+      // scale:1 ya es 1:1 con la slide real (1920x1080). Suficiente para PDF de pantalla y proyeccion.
+      // JPEG @0.92 mantiene calidad fotografica con tamano razonable.
+      const canvas = await html2canvas(renderedFrames[i], { scale: 1, useCORS: true, backgroundColor: '#0A0A0A', logging: false });
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+      if (i > 0) pdf.addPage([SLIDE_W, SLIDE_H], 'landscape');
+      pdf.addImage(dataUrl, 'JPEG', 0, 0, SLIDE_W, SLIDE_H, undefined, 'FAST');
+    }
+    const raw = document.getElementById('content').value.trim();
+    const { global } = parseMultiDoc(raw);
+    const slug = (global.titulo || 'presentacion').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    pdf.save(`magnify-presentacion-${slug}.pdf`);
+    toast('\u2713 PDF descargado');
+  } catch (e) {
+    console.error(e);
+    toast('Error al generar PDF: ' + (e && e.message ? e.message : String(e)));
+  }
 }
 
 // ════════════════════════════════════════════
@@ -5791,6 +6637,7 @@ function generate() {
       case 'linkedin-carousel': generateCarousel(raw, preview, renderC); break;
       case 'banner': generateBanner(raw, preview, renderC); break;
       case 'case-study': generateMultiPageDoc(raw, preview, renderC, CS_RENDERERS, { label: 'Caso de estudio' }); break;
+      case 'case-study-longform': generateMultiPageDoc(raw, preview, renderC, CSL_RENDERERS, { label: 'Dossier' }); break;
       case 'propuesta': generateMultiPageDoc(raw, preview, renderC, PR_RENDERERS, { label: 'Propuesta' }); break;
       case 'report-cover': generateA4(raw, preview, renderC, renderReportCover); break;
       case 'email-sig': generateSig(raw, preview, renderC); break;
@@ -5805,6 +6652,10 @@ function generate() {
   }
 
   document.getElementById('btn-export').disabled = renderedFrames.length === 0;
+  // Habilita botón PDF cuando hay slides renderizadas en presentación.
+  if (currentType === 'presentacion') {
+    document.getElementById('btn-export-pdf').disabled = renderedFrames.length === 0;
+  }
 }
 
 function generatePost(raw, preview, renderC) {
@@ -6016,7 +6867,7 @@ async function exportAll() {
 
   toast('Generando...');
 
-  if ((currentType === 'case-study' || currentType === 'propuesta' || currentType === 'documento') && renderedFrames.length > 0) {
+  if ((currentType === 'case-study' || currentType === 'case-study-longform' || currentType === 'propuesta' || currentType === 'documento') && renderedFrames.length > 0) {
     // Multi-page PDF. scale:1.5 + JPEG @ q0.92 + compress cuts file size ~20× vs scale:2 + PNG while staying
     // crisp at A4 print resolution (894×1264 per page is >150dpi on A4). A 5-page doc now ends up ~2-3MB
     // instead of 60-70MB.
@@ -6038,7 +6889,9 @@ async function exportAll() {
     } else {
       const g = parseMultiDoc(raw).global;
       slug = (g.cliente || 'doc').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      prefix = currentType === 'case-study' ? 'magnify-caso' : 'magnify-propuesta';
+      prefix = currentType === 'case-study' ? 'magnify-caso'
+        : currentType === 'case-study-longform' ? 'magnify-dossier'
+        : 'magnify-propuesta';
     }
     pdf.save(`${prefix}-${slug}.pdf`);
     toast('\u2713 PDF descargado');
