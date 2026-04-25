@@ -1,0 +1,512 @@
+# YAML v13 — cambios respecto a v12 (sesión auditoría visual del PDF v12 generado):
+#
+# 1. SALTOS FORZADOS ELIMINADOS de citas y titulares:
+#    • Slide 7 (Dincer): cita en una sola línea
+#    • Slide 8 (Sin brújula emocional): titular en una línea
+#    • Slide 10 (Pero hay otra forma): titular en una línea
+#    • Slide 19 (Tomato problem): titular en una línea
+#    • Slide 23 (Los problemas cambiaron arquitectura): titular en una línea
+#    Razón: los saltos forzados con indentación de YAML rompían las frases en
+#    sub-líneas que luego el ancho del template volvía a romper, generando
+#    composiciones de 3-4 líneas con saltos antinaturales. Una línea limpia
+#    deja al template decidir el wrap natural.
+#
+# 2. SLIDE 13 — anti-autocita:
+#    • Cambiado tipo de quote-big a manifiesto (no muestra atribución)
+#    • Eliminados nombre y rol "David Carrasco · Magnify"
+#    • La frase queda como axioma anónimo, evita el feo de autocita en escenario
+#
+# 3. HIGHLIGHTS [palabra] ELIMINADOS en TODAS las slides de fondo CLARO:
+#    • Slide 17 "El caso" — sin highlight [caso]
+#    • Slide 19 tomato — sin highlight [fruta]
+#    • Slide 20 citas-grid — sin highlight [clientes]
+#    • Slide 22 stat-hero -37% — sin highlight [Tráfico vanity]
+#    • Slide 23 manifiesto arquitectura — sin highlight [catálogo]
+#    Razón: en fondo claro el subrayado del highlight se renderiza fuera del
+#    margen de la palabra, queda visualmente roto. En fondo oscuro funciona
+#    bien (highlight amarillo italic), por eso se mantiene en slides oscuras.
+#
+# 4. FOTO IMG12 REGENERADA:
+#    • Añadido 30% de padding lateral + 25% padding vertical de fondo negro
+#    • La foto editada se mantiene igual (B&N busto medio con viñeta)
+#    • Resultado: cuando el template renderiza al 100% del panel, la cara
+#      ocupa ~60% del espacio efectivo (el resto es padding negro que se
+#      funde con el fondo del slide), simulando el imagen_zoom: 65 que no
+#      funcionaba como parámetro
+#
+# 5. SLIDE 35 RECURSOS — reducida cat2 a 3 items (de 4):
+#    • Eliminado JC Chouinard (Search Central Live Toronto)
+#    • Razón: en v12 el contenido se salía por el borde inferior, JC se cortaba
+#    • La cita de Sullivan en slide 6 ya cubre el evento Toronto
+#
+# RESTO IGUAL QUE v12.
+
+# ---- Histórico v12 ----
+# header: no global + imagen_zoom retirado del cierre + imagen_ajuste contain en slide 14
+
+# ---- Histórico v11 ----
+# Cierre rediseñado: τέλος + nombre completo + cuerpo simplificado + griego footer
+# Recursos a 4 columnas
+
+# ---- Histórico v10 ----
+# Sin header global (info evento incorporada tipográficamente)
+# Recursos al final del todo
+
+# ---- Histórico v9 ----
+# header: no en slides imagen-heavy + imagen_ajuste: contain
+
+# ---- Histórico v8 ----
+# Foto David integrada (img12)
+
+# ---- Histórico v7 ----
+# Slide griego puro (Γνῶθι σεαυτόν / conócete a ti mismo)
+
+# ---- Histórico v6 ----
+# Hilo griego activo: griego field en hero + Conócete
+
+# ---- Histórico v5 ----
+# 3 slides nuevas en H&W + bloque H&W en fondo claro + recursos con URLs
+
+tipo: presentacion
+titulo: Gnōthi seautón
+autor: David Carrasco
+fecha: 5 de mayo de 2026
+evento_nombre: SEARCH BARCELONA · 2026
+evento_handle: '@SearchLDN'
+paginacion: no
+
+---
+
+slide: hero
+header: no
+eyebrow: SEARCH BARCELONA · 2026
+titular: Gnōthi seautón.
+griego: Γνῶθι σεαυτόν
+autor: David Carrasco · Magnify
+fecha: 5 de mayo de 2026 · @SearchLDN
+notas: v10 — header: no para evitar overlay del evento. La info se incorpora tipográficamente: eyebrow muestra el nombre del evento (lectura natural arriba del título), y la fecha lleva el handle del evento como elemento de cierre. Más editorial, menos overlay UI. Portada. Juliana presenta. Esperar a que termine.
+
+---
+
+slide: diptych
+header: no
+imagen_a: img1
+label_a: LA MARCA
+titulo_a: 24.700 seguidores. Dos locales. Barcelona y Madrid.
+imagen_b: img2
+label_b: CHATGPT
+titulo_b: Envía fotos desnudo/a.
+notas: Gancho. img1 = Instagram @eat.nudes. img2 = ChatGPT "qué es Nudes". No narres durante los primeros 5 segundos. Luego "Nudes. Restaurante saludable en Barcelona. Dos locales. 24.700 seguidores. Existe. Y está a 1,2 kilómetros de esta sala." Pausa. "Para ChatGPT, no existe."
+
+---
+
+slide: manifiesto
+header: no
+fondo: amarillo
+titular: El espejo se volvió HD.
+notas: Cierre del gancho. Frase ancla número uno. 2 segundos de silencio.
+
+---
+
+slide: manifiesto
+header: no
+fondo: oscuro
+titular: El [diagnóstico].
+notas: Divisor I. v5 — cambiado a fondo oscuro para distinguir los divisores de los manifiestos amarillos (antes todos salían amarillos, no había diferencia visual).
+
+---
+
+slide: diptych
+header: no
+imagen_a: img3
+label_a: QUÉ ES EL SEO
+titulo_a: La industria se mira a sí misma.
+imagen_b: img4
+label_b: QUÉ ES EL MARKETING
+titulo_b: Un idioma distinto.
+notas: SERPs comparadas. La asimetría del vocabulario es el mensaje.
+
+---
+
+slide: quote-big
+header: no
+fondo: oscuro
+cita: La IA ha bajado el listón para crear contenido. Google ha subido el listón para [indexarlo].
+nombre: Danny Sullivan
+rol: Google · Search Central Live Toronto, abril 2026
+notas: Cita parafraseada. Original EN "AI has lowered the barrier for content creation, forcing Google to raise the bar for what actually gets indexed".
+
+---
+
+slide: quote-big
+header: no
+fondo: oscuro
+cita: Metric debt — el coste acumulado de optimizar por KPIs que ya no reflejan cómo crece el [negocio].
+nombre: Bengu Sarica Dincer
+rol: Search Engine Journal, febrero 2026
+notas: v13 — eliminado salto forzado. La cita ahora es una sola línea, el template decide dónde romper. Doble evidencia. Sullivan desde fuera, Dincer desde dentro.
+
+---
+
+slide: manifiesto
+header: no
+fondo: oscuro
+titular: Sin brújula [emocional], la razón se paraliza.
+notas: v13 — quitado salto forzado. Damasio/Elliot. Bajar ritmo.
+
+---
+
+slide: stat-hero
+header: no
+fondo: oscuro
+eyebrow: KEYWORD RESEARCH
+numero: 40
+descripcion: '[Descartada].'
+fuente: Volumen 40. KD 72. Una fila en un spreadsheet. Para esa persona, era una pregunta.
+
+---
+
+slide: manifiesto
+header: no
+fondo: amarillo
+titular: Pero hay otra forma. Y empieza por mirarse.
+notas: v13 — quitado salto. Transición al Acto 2.
+
+---
+
+slide: manifiesto
+header: no
+fondo: oscuro
+titular: Brecha de [percepción].
+
+---
+
+slide: manifiesto
+header: no
+fondo: oscuro
+titular: Deuda de [identidad].
+
+---
+
+slide: manifiesto
+header: no
+fondo: oscuro
+titular: Muchos problemas de crecimiento parecen problemas de captación. Casi siempre son problemas de [identidad].
+notas: v13 — CAMBIO MAYOR. (1) Tipo cambiado de quote-big a manifiesto (no muestra atribución, evita autocita en escenario). (2) Texto en una sola línea sin saltos forzados, deja que el template decida. (3) Eliminado nombre y rol — la frase queda como axioma anónimo. Si en Q&A alguien pregunta de quién es, David puede decir "es algo que digo yo" sin tener que ponerlo en pantalla. Cita ancla. Concepto propio. Va a LinkedIn post-evento (donde sí firma). ATENCIÓN — verificar que manifiesto soporta titulares de 2 frases (esta es más larga que un manifiesto típico). Si el template lo encoge demasiado o lo recorta, alternativa: dejar como quote-big con nombre vacío y rol vacío (depende de cómo Code maneje campos vacíos).
+
+---
+
+slide: imagen-full
+header: no
+imagen: img5
+imagen_ajuste: contain
+eyebrow: UN CASO REAL
+titular: Lo que [Google] lee.
+notas: v12 — añadido imagen_ajuste: contain. En v11 el treemap se recortó lateralmente (solo se veía Editorial/Marca/Adyacente, el cluster grande "Recursos 82%" y el filamento amarillo "Producto" quedaban fuera). Con contain la imagen se renderiza entera respetando aspect ratio. Treemap FIT anonimizado.
+
+---
+
+slide: triptych
+header: no
+imagen1: img6
+num1: '01'
+titulo1: Pompeii
+descripcion1: La ciudad romana ocupa todo. La marca no aparece.
+imagen2: img7
+num2: '02'
+titulo2: Living Things
+descripcion2: Compite con Linkin Park y cuatro marcas más.
+imagen3: img8
+num3: '03'
+titulo3: Mango
+descripcion3: La fruta gana. La marca, una de las mayores de España, no existe para la IA.
+notas: Tres severidades del mismo problema.
+
+---
+
+slide: imagen-split
+header: no
+imagen: img9
+imagen_ajuste: contain
+posicion: izquierda
+eyebrow: PERO TAMBIÉN GOOGLE
+titular: Y ni siquiera los canales se ponen de [acuerdo].
+cuerpo: La misma marca, tres entidades distintas. Pastelería. Restaurante. Escuela. Y al lado, Albert Hofmann y Dustin Hoffman. Google no sabe quién eres. ChatGPT te conoce perfectamente. Y entre ellos no se ponen de acuerdo.
+meta: SERP de "hoffman" — abril 2026
+
+---
+
+# ============================
+# ACTO 2 — CASO H&W — FONDO CLARO
+# ============================
+
+slide: manifiesto
+header: no
+fondo: claro
+titular: El caso.
+notas: v13 — quitado highlight [caso] porque en fondo claro el subrayado se renderiza fuera del margen de la palabra, queda feo. El "El caso." sin highlight es suficiente como divisor — la potencia viene del cambio de fondo claro vs los actos oscuros del 1 y 3. Divisor II del bloque H&W.
+
+---
+
+slide: stat-hero
+header: no
+fondo: oscuro
+eyebrow: BLOG vs. TIENDA
+numero: 8
+sufijo: ':1'
+descripcion: Ratio de sesiones orgánicas.
+fuente: Cliente health & wellness. Auditoría Magnify.
+notas: Blog 35.000 sesiones mes, tienda 4.500.
+
+---
+
+# NUEVA SLIDE v5 — Tomato problem
+slide: manifiesto
+header: no
+fondo: claro
+titular: Un tomate, botánicamente, es una fruta. Nadie lo busca en el pasillo de fruta.
+notas: v13 — (1) eliminado salto forzado, una sola línea, deja al template decidir. (2) Eliminado highlight [fruta] (en fondo claro el subrayado se renderiza mal, mismo bug que slide 17). v5 NUEVA. Momento metodológico del caso H&W. Warehouse architecture explicada sin jerga SEO. Frase verbal de cierre "La web se organizaba como un almacén. El comprador piensa como persona."
+
+---
+
+slide: citas-grid
+header: no
+fondo: claro
+titular: Preguntamos a los clientes.
+cita1: ¿Cómo duermo mejor de forma natural?
+autor1: cliente H&W
+cita2: ¿Qué debería tomar para la inflamación?
+autor2: cliente H&W
+cita3: Quiero una rutina sencilla, no cinco suplementos.
+autor3: cliente H&W
+cita4: Tengo más de 40 y no sé por dónde empezar.
+autor4: cliente H&W
+notas: v5 — cambiado a fondo claro. Momento del click. Las citas en serif sobre fondo hueso quedan como editoriales de revista.
+
+---
+
+# NUEVA SLIDE v5 — Compare warehouse vs buyer-problem
+slide: compare
+header: no
+fondo: claro
+titular: Cómo estaba organizada / cómo debería estarlo.
+label_a: ALMACÉN
+a1: Supplements
+a2: Food
+a3: Cosmetics
+a4: ''
+label_b: PROBLEMA DEL COMPRADOR
+b1: ¿Cómo duermo mejor de forma natural?
+b2: Alimentos antiinflamatorios
+b3: Rutina mínima para mujeres 40+
+b4: ''
+notas: v5 NUEVA. Traducción visual del "tomate" aplicada al caso. Izquierda = taxonomía de inventario. Derecha = taxonomía del comprador. Frase verbal "No redecoramos la tienda. Cambiamos las preguntas que se podían hacer al entrar."
+
+---
+
+slide: stats-charla
+header: no
+fondo: oscuro
+titular: Seis meses después.
+num1: ×3
+label1: Sesiones orgánicas
+desc1: Multiplicadas
+num2: ×6
+label2: Conversión
+desc2: Multiplicada
+num3: 55%
+label3: Mix blog
+desc3: Antes 89%
+layout: 1x3
+fuente: Magnify · Cliente H&W · 6 meses
+notas: Resultados. Los tres en amarillo homogéneo.
+
+---
+
+# NUEVA SLIDE v5 — -37% como decisión consciente
+slide: stat-hero
+header: no
+fondo: claro
+eyebrow: EL COSTE DE LA LIMPIEZA
+numero: -37
+sufijo: '%'
+descripcion: 'Tráfico vanity eliminado.'
+fuente: 120 posts pruneados. Decisión consciente. La web mejoró porque aceptamos perder lo que no aportaba.
+notas: v5 NUEVA. Fricción narrativa antes del cierre. Crecer quitando. Si un cliente en Q&A dice "pero cayó el tráfico" — ya está respondido desde la narrativa.
+
+---
+
+slide: manifiesto
+header: no
+fondo: claro
+titular: Los problemas cambiaron la arquitectura. Y después, el catálogo.
+notas: v13 — quitado salto forzado y highlight [catálogo] (en fondo claro el subrayado se renderiza mal). Cierre del acto 2. Cuando entiendes al usuario, hasta el negocio cambia.
+
+---
+
+# ============================
+# VUELVE EL FONDO OSCURO — ACTO 3
+# ============================
+
+slide: framework
+header: no
+fondo: oscuro
+titular: Las [cuatro] etapas de confianza.
+paso1_titulo: Reconocimiento
+paso2_titulo: Credibilidad
+paso3_titulo: Reducción de riesgo
+paso4_titulo: Compromiso
+notas: Atribución Poddar en voz.
+
+---
+
+slide: stats-charla
+header: no
+fondo: oscuro
+titular: Dónde se rompe el [pipeline].
+num1: 55%
+label1: Reconocimiento
+desc1: Te conozco
+num2: 10%
+label2: Credibilidad
+desc2: Me pareces serio
+num3: 5%
+label3: Reducción de riesgo
+desc3: Confío lo bastante
+num4: 30%
+label4: Compromiso
+desc4: Compro / contacto
+hi3: si
+layout: 2x2
+fuente: Ayush Poddar · Trust Architecture
+
+---
+
+slide: compare
+header: no
+fondo: oscuro
+titular: Cómo empezamos hoy / cómo deberíamos empezar.
+label_a: HOY
+a1: Keyword research por volumen
+a2: Lista de 2.400 búsquedas/mes con KD 34
+a3: Briefing al redactor
+a4: Publicar y optimizar
+label_b: DEBERÍAMOS
+b1: Entrevistas a 5 clientes reales
+b2: Preguntas que hacen, en sus palabras
+b3: Mapeo a las 4 etapas de confianza
+b4: Prioridad por pipeline, no por volumen
+
+---
+
+slide: manifiesto
+header: no
+fondo: oscuro
+titular: El [espejo].
+notas: Divisor III. v5 — cambiado a fondo oscuro (antes amarillo).
+
+---
+
+slide: manifiesto
+header: no
+fondo: amarillo
+titular: Conócete a ti mismo.
+griego: Γνῶθι σεαυτόν
+notas: Delfos. 2 segundos de silencio. Frase griega del título aterriza aquí. v6 — añadido campo griego (F3) como sello/inscripción encima del titular. Cierra el círculo del hilo: lo que abrió en slide 1 reaparece aquí.
+
+---
+
+slide: manifiesto
+header: no
+fondo: oscuro
+titular: |
+  El síntoma es SEO.
+  La causa es [marca].
+notas: Tesis. Paralelismo sintáctico en 2 líneas.
+
+---
+
+slide: imagen-split
+header: no
+imagen: img10
+posicion: derecha
+eyebrow: HERRAMIENTA
+titular: Mírate antes de que lo haga la [IA].
+cuerpo: Identity Debt Check · gratuito · 3 minutos.
+meta: mirror.magnifytools.com
+
+---
+
+slide: cta-final
+header: no
+fondo: amarillo
+eyebrow: PRUÉBALO
+titular: Mírate.
+contacto: mirror.magnifytools.com
+qr: img11
+qr_size: grande
+notas: La sala saca el móvil. "No lo hagáis ahora."
+
+---
+
+# v7 NUEVA — Cierre filosófico griego (tercera ancla del hilo)
+slide: manifiesto
+fondo: oscuro
+header: no
+titular: |
+  Γνῶθι σεαυτόν.
+  conócete a ti mismo.
+notas: v9 — añadido header: no. La slide griega debe respirar sin metadata visual del evento. Es el momento más limpio del deck — solo griego sobre negro. Cierre filosófico antes del cierre práctico. Bloque literal con dos líneas — el griego protagoniza arriba, la traducción al castellano abajo. La sala lleva 18 minutos viendo "Gnōthi seautón" sin traducción explícita en slide. Aquí se cierra el círculo abierto en slide 1. Verbalmente NO digas nada — 4 segundos de silencio, deja que la sala lea.
+
+---
+
+slide: imagen-split
+header: no
+imagen: img12
+imagen_ajuste: contain
+posicion: izquierda
+eyebrow: τέλος
+titular: David Carrasco Pamies.
+griego: fin · propósito · causa final
+cuerpo: Magnify · magnifytools.com
+  Mirror · mirror.magnifytools.com
+  linkedin.com/in/david-carrasco-pamies
+notas: v11 — REDISEÑO CIERRE COMPLETO. Cambios respecto a v10: (1) eyebrow "HASTA AQUÍ LLEGO YO" reemplazado por τέλος (telos = fin/propósito en griego, cierra el círculo griego apertura→Conócete→τέλος). (2) Nombre completo "David Carrasco Pamies." (apellido completo). (3) Cuerpo simplificado a 3 líneas — nombre Magnify + nombre Mirror + LinkedIn URL. (4) Eliminada línea "Search Barcelona 2026 · @SearchLDN" (info ya presente en portada y David la dirá verbalmente al cerrar). (5) griego field abajo "fin · propósito · causa final" como traducción del eyebrow τέλος, mismo patrón que slide griego puro anterior. NOTA TÉCNICA — el imagen-split no soporta QR. El QR LinkedIn (img13) NO se incluye aquí. Se incluye en recursos-agrupados como link clicable cat1_item1_link. La sala que quiera LinkedIn puede teclear la URL legible o esperar a la slide siguiente (recursos).
+
+---
+
+# v10 — REUBICADA al final (después del cierre práctico).
+# Razón editorial: los recursos son lo que queda proyectado durante Q&A
+# y la gente saca foto. Tienen que ser lo último que se ve, no algo
+# enmascarado en medio del cierre.
+slide: recursos-agrupados
+fondo: oscuro
+header: no
+titular: Para [profundizar].
+cat1_titulo: El caso de hoy
+cat1_item1: Caso completo H&W · PDF descargable
+cat1_item1_link: https://magnifytools.com/casos/hw.pdf
+cat1_item2: Beyond Keywords (Sitebulb) · marco conceptual
+cat1_item2_link: https://sitebulb.com/resources/guides/beyond-keywords-designing-empathy-based-ecommerce-architectures/
+cat2_titulo: Lecturas sobre IA y usuario
+cat2_item1: Leah Tharin — Why AI Cannot Simulate Your Customers
+cat2_item1_link: https://www.leahtharin.com/p/why-ai-cannot-simulate-your-customers
+cat2_item2: Amanda Natividad — This Is How You Win
+cat2_item2_link: https://amandanat.substack.com/p/this-is-how-you-win-when-everyone
+cat2_item3: Steve Toth — AI Mode buyer journey
+cat2_item3_link: https://www.linkedin.com/posts/stevetothjr_google-ai-mode-already-mapped-your-buyers-activity-7440366573325795329-HtpR/
+cat3_titulo: Frameworks
+cat3_item1: Ayush Poddar — Trust Architecture
+cat3_item1_link: https://startupgtm.substack.com/p/building-b2b-growth-through-trust
+cat3_item2: Scott Bair — How to Brand Your Company
+cat3_item2_link: https://x.com/scott_bair/status/2043596395580670401
+cat3_item3: Bengu Sarica Dincer — Why Your SEO KPIs Are Failing
+cat3_item3_link: https://www.searchenginejournal.com/why-your-seo-kpis-are-failing-your-business-and-how-to-fix-them/564769/
+cat4_titulo: Magnify
+cat4_item1: Mirror — Identity Debt Check
+cat4_item1_link: https://mirror.magnifytools.com
+cat4_item2: David en LinkedIn
+cat4_item2_link: https://www.linkedin.com/in/david-carrasco-pamies/
+cat4_item3: magnifytools.com
+cat4_item3_link: https://magnifytools.com
+notas: v11 — REORGANIZACIÓN COMPLETA. (1) Nueva cat1 "El caso de hoy" reagrupa el contenido directamente vinculado a la charla — el PDF del caso H&W (descargable post-evento) + el artículo Sitebulb que es el marco conceptual. URL del PDF como placeholder magnifytools.com/casos/hw.pdf — ACTUALIZAR cuando David confirme la URL definitiva. (2) cat2 y cat3 sin cambios. (3) Nueva cat4 "Magnify" agrupa los links de acceso al universo Magnify — Mirror, LinkedIn de David, web Magnify. Los links clicables en PDF post-evento son útiles aquí. La slide queda durante todo el Q&A — la gente saca foto. Si quieren acceder a algo de Magnify después, está en una sola pantalla. header: no.
