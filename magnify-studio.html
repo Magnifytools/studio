@@ -1187,6 +1187,11 @@
   /* manifiesto (hero-xxl italic) — tamaños dinámicos espejan buildPptxManifiesto:
      80pt≈160px / 64pt≈128px / 52pt≈104px / 42pt≈84px. align:flex-start para match con PPTX (x:0.7, align:left). */
   .ps-manif { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; height:100%; padding:0 95px; }
+  /* B18: titulares muy cortos (<= 15 chars) en manifiesto se sienten huérfanos
+     en la esquina sup-izq con tanto espacio vacío. Centramos horizontalmente y
+     añadimos peso visual para que ocupen el escenario. */
+  .ps-manif.short { align-items:center; text-align:center; }
+  .ps-manif.short .hero-xxl { text-align:center; }
   /* F3 hilo griego: stamp encima del titular, tenue. */
   .ps-manif .griego-stamp { font-family:var(--sans); font-size:40px; letter-spacing:0.2em; color:rgba(250,250,250,0.5); margin-bottom:40px; font-weight:400; }
   .ps-slide.lt .ps-manif .griego-stamp, .ps-slide.yl .ps-manif .griego-stamp { color:rgba(10,10,10,0.55); }
@@ -1197,7 +1202,9 @@
   .ps-slide.lt .ps-manif .hero-xxl, .ps-slide.yl .ps-manif .hero-xxl { color:var(--bg); }
 
   /* stat-hero (big number + side explanation) */
-  .ps-stat-hero { padding:0 160px; display:flex; align-items:center; gap:120px; height:100%; }
+  /* B18: gap 120px hacía que el número y la explicación se sintieran "en zonas
+     distintas". 80px conserva separación pero los conecta como un mismo bloque. */
+  .ps-stat-hero { padding:0 160px; display:flex; align-items:center; gap:80px; height:100%; }
   .ps-stat-hero .stat-block { flex-shrink:0; display:flex; flex-direction:column; align-items:flex-start; }
   /* white-space:nowrap evita que sufijos con espacio (' · KD 72', '/mes') se partan en dos líneas.
      Cuando numero+sufijo suman muchos caracteres, el renderer ya baja el font-size dinámicamente. */
@@ -1343,14 +1350,18 @@
   .ps-dip .pane .body { font-family:var(--sans); font-size:40px; line-height:1.4; color:#CCC; margin-top:10px; max-width:540px; }
   .ps-dip em { font-style:italic; }
 
-  /* triptych (3 image tiles + caption overlay) */
+  /* triptych (3 image tiles + caption overlay).
+     B17: imágenes como <img> reales (no background-image) — html2canvas tiene bug con
+     background-size:cover en data:URLs y pinta a tamaño natural, desbordando la celda.
+     <img class="tile-img"> con object-fit:cover replica el comportamiento y exporta bien. */
   .ps-trp { position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr 1fr; }
-  .ps-trp .tile { position:relative; overflow:hidden; display:flex; align-items:flex-end; padding:64px 64px 200px; background-size:cover; background-position:center; }
+  .ps-trp .tile { position:relative; overflow:hidden; display:flex; align-items:flex-end; padding:64px 64px 200px; }
+  .ps-trp .tile .tile-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; z-index:0; }
   .ps-trp .tile.ph1 { background:linear-gradient(135deg,#383838,#1a1a1a); }
   .ps-trp .tile.ph2 { background:linear-gradient(135deg,#555,#1c1c1c); }
   .ps-trp .tile.ph3 { background:linear-gradient(135deg,#2a2a2a,#0f0f0f); }
-  .ps-trp .tile::after { content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.7), transparent 50%); }
-  .ps-trp .tile .cap { position:relative; z-index:1; }
+  .ps-trp .tile::after { content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.7), transparent 50%); z-index:1; }
+  .ps-trp .tile .cap { position:relative; z-index:2; }
   .ps-trp .tile .num { font-family:var(--serif); font-size:80px; line-height:0.9; color:var(--yellow); margin-bottom:16px; font-weight:400; }
   .ps-trp .tile .t { font-family:var(--serif); font-size:40px; line-height:1.1; color:#FAFAFA; letter-spacing:-0.01em; font-weight:400; }
   .ps-trp .tile .s { font-family:var(--sans); font-size:40px; color:#FAFAFA; opacity:0.85; margin-top:16px; max-width:320px; }
@@ -1465,8 +1476,12 @@
      - .num nowrap para que "55/45" o "3.4×" no se partan en slash/punto (B8).
      - .hi con variantes .hi-neg (rojo, default) y .hi-pos (destacado brand) para darle semántica
        al highlight — un 5% puede ser alerta, un 92% puede ser logro (B11). */
-  .ps-statsc { padding:120px 160px 200px; height:100%; display:flex; flex-direction:column; justify-content:center; position:relative; }
-  .ps-statsc h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:48px; color:#FAFAFA; font-weight:400; }
+  /* B18: padding 120/200 era asimétrico (top<bottom) → centro real desplazado
+     hacia arriba. 200/200 simétrico devuelve true center vertical. */
+  .ps-statsc { padding:200px 160px 200px; height:100%; display:flex; flex-direction:column; justify-content:center; position:relative; }
+  /* B18: margin-bottom 48px alejaba el titular del grid. 32px lo ata más como
+     unidad cabecera→datos. */
+  .ps-statsc h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:32px; color:#FAFAFA; font-weight:400; }
   .ps-slide.lt .ps-statsc h2, .ps-slide.yl .ps-statsc h2 { color:var(--bg); }
   .ps-statsc .grid { display:grid; gap:32px 80px; }
   .ps-statsc .grid.cols2 { grid-template-columns:repeat(2, 1fr); gap:20px 80px; }
@@ -4714,11 +4729,15 @@ function renderPsManifiesto(d, g, n, tot) {
   const raw = (d.titular || d.frase || '').replace(/\s+/g, ' ').trim();
   const len = raw.length;
   const sizeCls = len < 30 ? '' : len < 60 ? 's-md' : len < 100 ? 's-sm' : 's-xs';
+  // B18: titulares muy cortos (≤15 chars como "El caso." / "El espejo.") se sienten
+  // descolgados en la esquina sup-izq sobre fondo claro/amarillo. Modo `short` los
+  // centra horizontalmente para darles peso editorial.
+  const shortCls = len <= 15 ? ' short' : '';
   // F3 — hilo griego: stamp encima del titular (p.ej. "Γνῶθι σεαυτόν" en slide 26).
   const griego = d.griego || d.subtitular_griego || '';
   return `<div class="frame ps"><div class="ps-slide ${surface}">
     ${psTopMeta(g, d)}
-    <div class="ps-manif">
+    <div class="ps-manif${shortCls}">
       ${griego ? `<div class="griego-stamp">${griego}</div>` : ''}
       <div class="hero-xxl ${sizeCls}">${applyHighlights(d.titular || d.frase || '').replace(/\n/g, '<br>')}</div>
     </div>
@@ -4957,13 +4976,16 @@ function renderPsDiptych(d, g, n, tot) {
 }
 
 // Charla — Triptych (3 image tiles)
+// B17: cuando hay imagen subida la emitimos como <img class="tile-img"> en vez de
+// background-image — html2canvas (export PDF) ignora background-size:cover en data:URLs
+// y pinta a tamaño natural, desbordando la celda. <img> con object-fit:cover sí se respeta.
 function renderPsTriptych(d, g, n, tot) {
   const tiles = [];
   for (let i = 1; i <= 3; i++) {
-    const bg = psBgFromImage(d[`imagen${i}`], `ph${i}`);
+    const src = uploadedImages[d[`imagen${i}`]];
     tiles.push({
-      style: bg.style,
-      className: bg.className,
+      src,
+      phCls: src ? '' : `ph${i}`,
       num: d[`num${i}`] || String(i).padStart(2, '0'),
       t: d[`titulo${i}`] || '',
       s: d[`descripcion${i}`] || d[`meta${i}`] || ''
@@ -4971,7 +4993,7 @@ function renderPsTriptych(d, g, n, tot) {
   }
   return `<div class="frame ps"><div class="ps-slide dk on-image">
     <div class="ps-trp">
-      ${tiles.map(t => `<div class="tile ${t.className}" style="${t.style}"><div class="cap"><div class="num">${t.num}</div><div class="t">${applyHighlights(t.t)}</div>${t.s ? `<div class="s">${t.s}</div>` : ''}</div></div>`).join('')}
+      ${tiles.map(t => `<div class="tile ${t.phCls}">${t.src ? `<img class="tile-img" src="${t.src}" alt="">` : ''}<div class="cap"><div class="num">${t.num}</div><div class="t">${applyHighlights(t.t)}</div>${t.s ? `<div class="s">${t.s}</div>` : ''}</div></div>`).join('')}
     </div>
     ${psTopMeta(g, d)}
     <div class="ps-wmk-bl">${psBrandIcon('img')}</div>
@@ -5846,7 +5868,7 @@ function buildPptxImgGeneric(pptx, d, g, n, tot, imgKey, textBuilder) {
   const src = uploadedImages[d[imgKey]];
   // `ajuste: contain` preserva la imagen completa con letterbox (útil para treemaps
   // 2:1, infografías portrait, etc.). Default cover llena el frame cropeando lo que sobre.
-  const fit = (d.ajuste || d.fit || 'cover').toLowerCase() === 'contain' ? 'contain' : 'cover';
+  const fit = (d.imagen_ajuste || d.ajuste || d.fit || 'cover').toLowerCase() === 'contain' ? 'contain' : 'cover';
   if (src) s.addImage({ data: src, x: 0, y: 0, w: PPTX_W, h: PPTX_H, sizing: { type: fit, w: PPTX_W, h: PPTX_H } });
   else s.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: PPTX_W, h: PPTX_H, fill: { color: '1a1a1a' }, line: { color: '1a1a1a' } });
   // Dark scrim bar at bottom for text readability
@@ -5862,7 +5884,7 @@ function buildPptxImagenFull(pptx, d, g, n, tot) {
   // El overlay tradicional pisaría el contenido central, así que en contain movemos
   // texto a una banda negra dedicada arriba (y ocupa 5.8 abajo para imagen). En cover
   // mantenemos overlay clásico con scrim (ya viene del buildPptxImgGeneric).
-  const fit = (d.ajuste || d.fit || 'cover').toLowerCase() === 'contain' ? 'contain' : 'cover';
+  const fit = (d.imagen_ajuste || d.ajuste || d.fit || 'cover').toLowerCase() === 'contain' ? 'contain' : 'cover';
   if (fit === 'contain') {
     const s = pptx.addSlide();
     s.background = { color: COLOR_DARK };
