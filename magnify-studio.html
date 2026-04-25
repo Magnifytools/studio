@@ -1142,6 +1142,23 @@
   .ps-slide.on-image::before { content:""; position:absolute; top:0; left:0; right:0; height:160px; background:linear-gradient(to bottom, rgba(0,0,0,0.88) 0, rgba(0,0,0,0.88) 120px, rgba(0,0,0,0) 100%); pointer-events:none; z-index:2; }
   .ps-slide.on-image::after { content:""; position:absolute; bottom:0; left:0; right:0; height:140px; background:linear-gradient(to top, rgba(0,0,0,0.85) 0, rgba(0,0,0,0.85) 100px, rgba(0,0,0,0) 100%); pointer-events:none; z-index:2; }
 
+  /* ════════════════════════════════════════════════════════════════════════
+     SISTEMA TIPOGRÁFICO ps-* (Charla / Keynote) — B19 audit Apr 2026
+     ────────────────────────────────────────────────────────────────────────
+     Roles:
+       titular (h1/h2/.title/.text/.num grandes) → PP Editorial New 400 (serif)
+       eyebrow (kicker uppercase letterspaced)   → NM 700 Bold uppercase
+       cuerpo (.body-l, .body-m, .body-xl)       → NM 400 Book (regular)
+       énfasis dentro de body (.name, em weight) → NM 500 Medium
+       meta/fuente (.meta-s, .src, .desc, .lbl)  → NM 400 Book
+       acentos (.hl, .ing-ap)                    → estilo cromático, no peso
+     ────────────────────────────────────────────────────────────────────────
+     Cascada: la regla genérica .eyebrow (línea ~281) define 700 Bold y aplica
+     a todos los .eyebrow del sistema ps-* salvo los .ps-charla que sobrescriben
+     a 400 (decisión histórica para slides estándar — los demás van bold).
+     Hierarchy de font-weight explícita abajo evita ambigüedad por cascada.
+     ════════════════════════════════════════════════════════════════════════ */
+
   /* Generic charla body area (matches Deck template geometry). 20px min enforced. */
   .ps-charla { padding:160px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
   .ps-charla .eyebrow { font-family:var(--sans); font-size:40px; font-weight:400; letter-spacing:0.15em; color:#B8B8B8; text-transform:uppercase; }
@@ -1150,11 +1167,11 @@
   .ps-slide.lt .ps-charla h1.h1, .ps-slide.yl .ps-charla h1.h1 { color:var(--bg); }
   .ps-charla h2.h2 { font-family:var(--serif); font-weight:400; font-size:64px; line-height:1.10; letter-spacing:-0.02em; color:#FAFAFA; margin:0; }
   .ps-slide.lt .ps-charla h2.h2, .ps-slide.yl .ps-charla h2.h2 { color:var(--bg); }
-  .ps-charla .body-l { font-family:var(--sans); font-size:44px; line-height:1.35; color:#FAFAFA; max-width:1200px; }
+  .ps-charla .body-l { font-family:var(--sans); font-weight:400; font-size:44px; line-height:1.35; color:#FAFAFA; max-width:1200px; }
   .ps-slide.lt .ps-charla .body-l, .ps-slide.yl .ps-charla .body-l { color:var(--bg); }
-  .ps-charla .body-m { font-family:var(--sans); font-size:40px; line-height:1.4; color:#FAFAFA; }
+  .ps-charla .body-m { font-family:var(--sans); font-weight:400; font-size:40px; line-height:1.4; color:#FAFAFA; }
   .ps-slide.lt .ps-charla .body-m, .ps-slide.yl .ps-charla .body-m { color:var(--bg); }
-  .ps-charla .meta-s { font-family:var(--sans); font-size:40px; line-height:1.5; color:#B8B8B8; }
+  .ps-charla .meta-s { font-family:var(--sans); font-weight:400; font-size:40px; line-height:1.5; color:#B8B8B8; }
   .ps-slide.lt .ps-charla .meta-s { color:#666; }
   .ps-slide.yl .ps-charla .meta-s { color:var(--bg); }
   .ps-charla .h3-label { font-family:var(--sans); font-size:40px; font-weight:400; letter-spacing:0.10em; color:#B8B8B8; text-transform:uppercase; }
