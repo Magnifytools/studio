@@ -4982,7 +4982,10 @@ function renderPsImagenFull(d, g, n, tot) {
   // (tablas, esquemas, treemaps con datos). Permite mostrar la imagen sin overlay.
   const src = uploadedImages[d.imagen];
   const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
-  const noOverlay = d.overlay_texto === 'no' || d.overlay === 'no';
+  // B24: si el YAML no trae eyebrow ni titular, no hace falta overlay — auto-skip scrim+gradients.
+  // Sin esto, quitar los textos del YAML deja la imagen con bandas oscuras encima (gradients on-image).
+  const hasOverlayContent = (d.eyebrow && String(d.eyebrow).trim()) || (d.titular && String(d.titular).trim());
+  const noOverlay = d.overlay_texto === 'no' || d.overlay === 'no' || !hasOverlayContent;
   const ajuste = (d.imagen_ajuste || d.ajuste || 'cover').toLowerCase();
   const ajusteCls = ajuste === 'contain' ? ' fit-contain' : '';
   const bgEl = src
@@ -5973,20 +5976,37 @@ function buildPptxImgGeneric(pptx, d, g, n, tot, imgKey, textBuilder) {
 function buildPptxImagenFull(pptx, d, g, n, tot) {
   // Cuando ajuste=contain la imagen puede llegar hasta el borde inferior sin recortar.
   // El overlay tradicional pisaría el contenido central, así que en contain movemos
-  // texto a una banda negra dedicada arriba (y ocupa 5.8 abajo para imagen). En cover
+  // texto a una banda dedicada arriba (y ocupa 5.6 abajo para imagen). En cover
   // mantenemos overlay clásico con scrim (ya viene del buildPptxImgGeneric).
+  // B22: respetar fondo:claro|amarillo|oscuro (antes hardcoded a COLOR_DARK).
+  // B24: si no hay eyebrow+titular y no se pide overlay_texto:si → la imagen ocupa el slide
+  // completo sin banda ni scrim, mismo criterio que el preview HTML.
   const fit = (d.imagen_ajuste || d.ajuste || d.fit || 'cover').toLowerCase() === 'contain' ? 'contain' : 'cover';
+  const surf = surfaceBg(d, true);
+  const hasOverlayContent = (d.eyebrow && String(d.eyebrow).trim()) || (d.titular && String(d.titular).trim());
+  const noOverlay = d.overlay_texto === 'no' || d.overlay === 'no' || !hasOverlayContent;
+  const src = uploadedImages[d.imagen];
+  if (noOverlay) {
+    const s = pptx.addSlide();
+    s.background = { color: surf.bg };
+    if (src) s.addImage({ data: src, x: 0, y: 0, w: PPTX_W, h: PPTX_H, sizing: { type: fit, w: PPTX_W, h: PPTX_H } });
+    else s.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: PPTX_W, h: PPTX_H, fill: { color: '1a1a1a' }, line: { color: '1a1a1a' } });
+    addTopMetaPptx(s, g, surf.meta, d);
+    surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+    addPaginator(s, n, tot, surf.meta);
+    return;
+  }
   if (fit === 'contain') {
     const s = pptx.addSlide();
-    s.background = { color: COLOR_DARK };
-    const src = uploadedImages[d.imagen];
-    // Banda de texto arriba (0 a 1.4), imagen contain abajo (1.4 a 7.5).
-    if (d.eyebrow) s.addText(d.eyebrow, { x: 0.7, y: 0.45, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: 'CCCCCC', charSpacing: 2 });
-    s.addText(richWithHighlights((d.titular || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 42, color: 'FFFFFF' }, 'dark'),
+    s.background = { color: surf.bg };
+    // Banda de texto arriba (0 a 1.7), imagen contain abajo.
+    if (d.eyebrow) s.addText(d.eyebrow, { x: 0.7, y: 0.45, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: surf.meta, charSpacing: 2 });
+    s.addText(richWithHighlights((d.titular || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 42, color: surf.fg }, surf.bg === COLOR_YELLOW ? 'yellow' : (surf.bg === COLOR_DARK ? 'dark' : 'light')),
       { x: 0.7, y: 0.85, w: 12, h: 0.9 });
     if (src) s.addImage({ data: src, x: 0.4, y: 1.9, w: PPTX_W - 0.8, h: 5.2, sizing: { type: 'contain', w: PPTX_W - 0.8, h: 5.2 } });
-    addTopMetaPptx(s, g, 'CCCCCC', d);
-    addPaginator(s, n, tot, 'CCCCCC');
+    addTopMetaPptx(s, g, surf.meta, d);
+    surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+    addPaginator(s, n, tot, surf.meta);
     return;
   }
   buildPptxImgGeneric(pptx, d, g, n, tot, 'imagen', (s) => {
