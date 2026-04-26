@@ -191,6 +191,15 @@ visual_caption: <strong>Distribución de tráfico orgánico, 6 meses pre-interve
 ```
 `visual_id` referencia un placeholder de imagen que Studio renderiza como caja gris con el ID dentro (luego sustituyes con un export real). `visual_caption` admite HTML inline (`<strong>`, `<em>`).
 
+#### `seccion-visual` — página entera con SOLO un visual (sin titulares ni prosa)
+```yaml
+seccion: seccion-visual
+fondo: oscuro          # opcional: oscuro | claro | amarillo
+eyebrow: ANEXO · CAPTURA   # opcional, único texto permitido
+visual_id: img7        # img1..imgN para imagen real, o ID humano (placeholder)
+```
+El visual ocupa toda la página dentro del margen estándar de Studio. Sin `titular`, `cuerpo`, `pull`, `caption`. Útil para anexos, capturas full-bleed, visualizaciones que se sostienen solas.
+
 #### `citas-clientes` — grid 2×3 sobre hueso
 ```yaml
 seccion: citas-clientes
@@ -246,6 +255,7 @@ meta: Magnify Digital SL · CIF B-XXXXXXXX · Edición abril 2026
 - **Default = hueso (lt)** para bloque caso/datos
 - **Oscuro (dk)** para divisores conceptuales (típicamente 01, 05, 06, 07)
 - **Amarillo (yl)** SOLO para cierre — regla del crescendo
+- **Cadencia de cierre**: tras el `cierre` amarillo, la `footer-anonimizacion` debe llevar `fondo: oscuro` para cerrar como contraportada (amarillo → oscuro = punto y final visual)
 
 ---
 
