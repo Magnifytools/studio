@@ -1713,12 +1713,12 @@
       </div>
       <div class="uploads" id="uploads">
         <div class="uploads-head">
-          <label>Imágenes</label>
-          <span class="hint-inline">Referencia en tu texto como <code>img1</code>, <code>img2</code>…</span>
+          <label>Imágenes y archivos</label>
+          <span class="hint-inline">Imágenes (<code>img1</code>…), <code>.yaml</code> al textarea, <code>.md</code> con tabla mapping para auto-asignar</span>
         </div>
         <div class="upload-drop" id="upload-drop">
-          Arrastra imágenes aquí o <u>pulsa para subir</u>
-          <input type="file" id="upload-input" accept="image/*" multiple style="display:none">
+          Arrastra imágenes, <code>.yaml</code> o <code>.md</code> aquí — o <u>pulsa para subir</u>
+          <input type="file" id="upload-input" accept="image/*,.yaml,.yml,.md,.markdown,text/yaml,text/markdown" multiple style="display:none">
         </div>
         <div class="upload-thumbs" id="upload-thumbs"></div>
       </div>
@@ -1759,6 +1759,10 @@ let renderedFrames = [];
 // Persists across type switches so the user can switch between post/carousel without losing their upload.
 let uploadedImages = {};
 let uploadCounter = 0;
+// Filename → 'imgN' map cargado desde un .md con tabla "Mapping crítico" del estilo
+// `| **img1** | VISUAL_02_FILE.png | …`. Cuando el usuario arrastra imágenes, las que
+// coinciden con esta tabla se asignan al slot exacto en vez de orden alfabético.
+let imageMapping = {};
 // Active color for the current variant. null when the variant doesn't support color modes.
 // Renderers read `d.color` first (explicit override in textarea) and fall back to this state.
 let currentColor = null;
@@ -2887,33 +2891,89 @@ function setColor(color) {
 // ~5MB per image cap: larger files produce data URIs that make the HTML and exports sluggish. LinkedIn compresses anyway.
 const MAX_IMG_BYTES = 5 * 1024 * 1024;
 
+// Dispatcher: separa drops mixtos (imágenes + .yaml + .md) y los procesa en el orden
+// correcto (md primero para tener el mapping, yaml al textarea, imágenes con mapping aplicado).
+// Permite arrastrar el bundle entero de un dossier (yaml + guía + 8 visuales) en un solo gesto.
+function handleDroppedFiles(files) {
+  const list = Array.from(files || []);
+  const images = [], yamls = [], mds = [];
+  list.forEach(f => {
+    const n = f.name.toLowerCase();
+    if (f.type.startsWith('image/')) images.push(f);
+    else if (n.endsWith('.yaml') || n.endsWith('.yml')) yamls.push(f);
+    else if (n.endsWith('.md') || n.endsWith('.markdown')) mds.push(f);
+    else toast(`${f.name}: tipo no soportado`);
+  });
+  // MD primero: parsear mapping antes de asignar imágenes.
+  const pre = [];
+  mds.forEach(f => pre.push(readTextFile(f).then(txt => {
+    const n = parseImageMappingFromMd(txt);
+    toast(n ? `Mapping cargado · ${n} imágenes` : `${f.name}: sin tabla mapping reconocible`);
+  })));
+  yamls.forEach(f => pre.push(readTextFile(f).then(txt => {
+    document.getElementById('content').value = txt;
+    toast(`YAML cargado · ${f.name}`);
+  })));
+  Promise.all(pre).then(() => { if (images.length) handleImageFiles(images); });
+}
+
+function readTextFile(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = () => reject(new Error('read fail: ' + file.name));
+    r.readAsText(file);
+  });
+}
+
+// Parsea filas de markdown del estilo `| **img1** | VISUAL_02_FILE.png | …` y guarda
+// basename→imgN en imageMapping. Acepta filename con o sin backticks.
+function parseImageMappingFromMd(md) {
+  const rowRe = /\|\s*\*\*img(\d+)\*\*\s*\|\s*`?([^`|]+\.(?:png|jpe?g|webp|gif|svg))`?\s*\|/i;
+  let count = 0;
+  md.split('\n').forEach(row => {
+    const m = row.match(rowRe);
+    if (m) { imageMapping[m[2].trim().toLowerCase()] = 'img' + m[1]; count += 1; }
+  });
+  return count;
+}
+
 function handleImageFiles(files) {
-  // Orden determinístico por nombre para que drag-drop múltiple respete el orden
-  // alfabético del filesystem (01_*, 02_*, 03_*...). Antes el ID dependía de cuándo
-  // terminaba FileReader cada archivo: archivos pequeños ganaban ID bajos y los grandes
-  // quedaban al final, rompiendo el mapping esperado por el YAML.
   const list = Array.from(files || [])
     .filter(f => f.type.startsWith('image/'))
     .filter(f => {
       if (f.size > MAX_IMG_BYTES) { toast(`${f.name}: supera los 5MB`); return false; }
       return true;
-    })
-    .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+    });
   if (!list.length) return;
-
-  // Reservamos el ID ANTES del async: así img(N) queda asignado al archivo en la posición N
-  // independientemente del orden en que FileReader termine.
-  const assignments = list.map(file => {
+  // Particiona: las imágenes con filename en imageMapping van directas a su slot fijo;
+  // el resto sigue la lógica clásica (orden alfabético, IDs secuenciales).
+  const mapped = [], unmapped = [];
+  list.forEach(f => {
+    const id = imageMapping[f.name.toLowerCase()];
+    if (id) mapped.push({ id, file: f });
+    else unmapped.push(f);
+  });
+  // Mapped: asignación directa al slot (img4 = ese archivo, sin importar orden de drop).
+  mapped.forEach(({ id, file }) => {
+    const n = parseInt(id.slice(3), 10);
+    if (!isNaN(n) && n > uploadCounter) uploadCounter = n;
+    const reader = new FileReader();
+    reader.onload = () => { uploadedImages[id] = reader.result; renderImageThumbs(); };
+    reader.onerror = () => toast('Error leyendo ' + file.name);
+    reader.readAsDataURL(file);
+  });
+  // Unmapped: orden alfabético + IDs secuenciales. Reserva ID antes del async para que
+  // img(N) quede ligado al archivo en la posición N independientemente del orden en que
+  // termine FileReader (los grandes terminan después que los pequeños).
+  unmapped.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+  const assignments = unmapped.map(file => {
     uploadCounter += 1;
     return { id: 'img' + uploadCounter, file };
   });
-
   assignments.forEach(({ id, file }) => {
     const reader = new FileReader();
-    reader.onload = () => {
-      uploadedImages[id] = reader.result;
-      renderImageThumbs();
-    };
+    reader.onload = () => { uploadedImages[id] = reader.result; renderImageThumbs(); };
     reader.onerror = () => toast('Error leyendo ' + file.name);
     reader.readAsDataURL(file);
   });
@@ -2967,7 +3027,7 @@ function wireUploadZone() {
   const input = document.getElementById('upload-input');
   if (!drop || !input) return;
   drop.addEventListener('click', () => input.click());
-  input.addEventListener('change', e => { handleImageFiles(e.target.files); input.value = ''; });
+  input.addEventListener('change', e => { handleDroppedFiles(e.target.files); input.value = ''; });
   ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => {
     e.preventDefault(); e.stopPropagation(); drop.classList.add('drag');
   }));
@@ -2976,7 +3036,7 @@ function wireUploadZone() {
     if (ev === 'dragleave' && e.target !== drop) return;
     drop.classList.remove('drag');
   }));
-  drop.addEventListener('drop', e => handleImageFiles(e.dataTransfer.files));
+  drop.addEventListener('drop', e => handleDroppedFiles(e.dataTransfer.files));
 }
 
 // ── SIDEBAR / TYPE SELECTION ──
