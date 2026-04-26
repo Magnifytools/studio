@@ -1136,11 +1136,27 @@
   .ps-slide.lt .ps-pag, .ps-slide.lt .ps-top-meta { color:#666; }
   .ps-slide.yl .ps-pag, .ps-slide.yl .ps-top-meta { color:rgba(10,10,10,0.6); }
   .ps-slide.on-image .ps-pag, .ps-slide.on-image .ps-top-meta { color:#FAFAFA; opacity:0.95; }
+  /* B22: surfaces lt/yl en imagen-full → ps-pag/top-meta vuelven a colores oscuros y
+     los scrims se pintan del color del fondo (no negro). */
+  .ps-slide.lt.on-image .ps-pag, .ps-slide.lt.on-image .ps-top-meta { color:#444; opacity:0.85; }
+  .ps-slide.yl.on-image .ps-pag, .ps-slide.yl.on-image .ps-top-meta { color:rgba(10,10,10,0.7); opacity:1; }
   /* Scrim sobre slides con imagen: barra superior densa para aislar top-meta de chips/SERP
      headers que suelen vivir en la franja alta. 120px opacos (0.88) con fade rápido en los
      últimos 40px para no crear línea dura. Igual tratamiento abajo para el paginator. */
   .ps-slide.on-image::before { content:""; position:absolute; top:0; left:0; right:0; height:160px; background:linear-gradient(to bottom, rgba(0,0,0,0.88) 0, rgba(0,0,0,0.88) 120px, rgba(0,0,0,0) 100%); pointer-events:none; z-index:2; }
   .ps-slide.on-image::after { content:""; position:absolute; bottom:0; left:0; right:0; height:140px; background:linear-gradient(to top, rgba(0,0,0,0.85) 0, rgba(0,0,0,0.85) 100px, rgba(0,0,0,0) 100%); pointer-events:none; z-index:2; }
+  /* B22: scrims surface-aware. En lt el gradient va de hueso opaco a transparente; en yl,
+     amarillo opaco a transparente. Mantienen legibilidad de header/paginator sin meter
+     bandas oscuras sobre fondo claro. */
+  .ps-slide.lt.on-image::before { background:linear-gradient(to bottom, rgba(250,250,250,0.92) 0, rgba(250,250,250,0.92) 120px, rgba(250,250,250,0) 100%); }
+  .ps-slide.lt.on-image::after { background:linear-gradient(to top, rgba(250,250,250,0.92) 0, rgba(250,250,250,0.92) 100px, rgba(250,250,250,0) 100%); }
+  .ps-slide.yl.on-image::before { background:linear-gradient(to bottom, rgba(255,214,0,0.92) 0, rgba(255,214,0,0.92) 120px, rgba(255,214,0,0) 100%); }
+  .ps-slide.yl.on-image::after { background:linear-gradient(to top, rgba(255,214,0,0.92) 0, rgba(255,214,0,0.92) 100px, rgba(255,214,0,0) 100%); }
+  /* B23: overlay_texto:no skipea scrims globales (top + bottom) para no tapar contenido
+     denso de la imagen (tablas, esquemas, treemaps con datos). El header y paginator
+     siguen visibles encima; si la imagen los pisa visualmente, mover el contenido en
+     el YAML (no es responsabilidad del template). */
+  .ps-slide.no-overlay::before, .ps-slide.no-overlay::after { display:none; }
 
   /* ════════════════════════════════════════════════════════════════════════
      SISTEMA TIPOGRÁFICO ps-* (Charla / Keynote) — B19 audit Apr 2026
@@ -1322,9 +1338,17 @@
     background-color:#0A0A0A;
   }
   .ps-imgfull .scrim { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.75), transparent 55%); }
+  /* B22: scrim/overlay surface-aware. Sobre lt el scrim es hueso→transparent, texto negro;
+     sobre yl el scrim es amarillo→transparent, texto negro. */
+  .ps-slide.lt .ps-imgfull .scrim { background:linear-gradient(to top, rgba(250,250,250,0.85), transparent 55%); }
+  .ps-slide.yl .ps-imgfull .scrim { background:linear-gradient(to top, rgba(255,214,0,0.85), transparent 55%); }
   .ps-imgfull .overlay { position:absolute; bottom:240px; left:120px; right:120px; }
   .ps-imgfull .overlay .eyebrow { color:#FAFAFA; opacity:0.85; margin-bottom:20px; display:block; font-size:40px; letter-spacing:0.15em; font-family:var(--sans); text-transform:uppercase; }
   .ps-imgfull .overlay .title { color:#FAFAFA; font-family:var(--serif); font-weight:400; font-size:96px; line-height:1.05; letter-spacing:-0.02em; }
+  .ps-slide.lt .ps-imgfull .overlay .eyebrow { color:rgba(10,10,10,0.65); opacity:1; }
+  .ps-slide.lt .ps-imgfull .overlay .title { color:#0A0A0A; }
+  .ps-slide.yl .ps-imgfull .overlay .eyebrow { color:rgba(10,10,10,0.7); opacity:1; }
+  .ps-slide.yl .ps-imgfull .overlay .title { color:#0A0A0A; }
   .ps-imgfull .overlay em { font-style:italic; }
 
   /* imagen split (2col: image + text) */
@@ -4952,23 +4976,34 @@ function renderPsImagenFull(d, g, n, tot) {
   // porque html2canvas — motor del export PDF — tiene bug con background-size:contain
   // en data:URLs y siempre lo pinta como cover. object-fit en <img> real sí lo respeta.
   // Sin imagen → placeholder con el .bg.ph clásico (gradiente + scanlines).
+  // B22: fondo: claro|amarillo soportado (antes hardcoded a dk). Las bandas de letterbox
+  // y los scrims de header/paginator se pintan del color del surface.
+  // B23: overlay_texto: no skipea eyebrow+titular+scrim+gradients para imágenes densas
+  // (tablas, esquemas, treemaps con datos). Permite mostrar la imagen sin overlay.
   const src = uploadedImages[d.imagen];
+  const surface = d.fondo === 'amarillo' ? 'yl' : d.fondo === 'claro' ? 'lt' : 'dk';
+  const noOverlay = d.overlay_texto === 'no' || d.overlay === 'no';
   const ajuste = (d.imagen_ajuste || d.ajuste || 'cover').toLowerCase();
   const ajusteCls = ajuste === 'contain' ? ' fit-contain' : '';
   const bgEl = src
     ? `<img class="bg-img${ajusteCls}" src="${src}" alt=""${ajuste === 'contain' ? ' onload="fitContainOnLoad(this)"' : ''}>`
     : `<div class="bg ph"></div>`;
-  return `<div class="frame ps"><div class="ps-slide dk on-image">
-    <div class="ps-imgfull">
-      ${bgEl}
+  const overlayHtml = noOverlay ? '' : `
       <div class="scrim"></div>
       <div class="overlay">
         ${d.eyebrow ? `<span class="eyebrow">${d.eyebrow}</span>` : ''}
         <div class="title">${applyHighlights(d.titular || '').replace(/\n/g, '<br>')}</div>
-      </div>
+      </div>`;
+  // .on-image añade scrims globales (header arriba + paginator abajo) que mejoran
+  // legibilidad sobre imagen. Con overlay_texto:no o si el slide ya está sobre fondo
+  // claro/amarillo coherente, los scrims pueden estorbar — los hacemos surface-aware.
+  const onImageCls = noOverlay ? 'no-overlay' : 'on-image';
+  return `<div class="frame ps"><div class="ps-slide ${surface} ${onImageCls}">
+    <div class="ps-imgfull">
+      ${bgEl}${overlayHtml}
     </div>
     ${psTopMeta(g, d)}
-    <div class="ps-wmk-bl">${psBrandIcon('img')}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface === 'dk' ? 'img' : surface)}</div>
     ${psPaginator(n, tot, true)}
   </div></div>`;
 }
