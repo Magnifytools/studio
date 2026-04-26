@@ -1233,8 +1233,11 @@
   .ps-stat-hero .suf { font-family:var(--sans); font-weight:500; font-size:44px; color:var(--yellow); letter-spacing:0.02em; margin-top:12px; }
   .ps-slide.yl .ps-stat-hero .suf { color:var(--bg); }
   .ps-stat-hero .explain { max-width:800px; }
-  .ps-stat-hero .explain .eyebrow { display:block; margin-bottom:32px; font-size:40px; }
-  .ps-stat-hero .explain h2 { font-family:var(--serif); font-weight:400; font-size:72px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:40px; color:#FAFAFA; }
+  /* B21: gaps eyebrow→titular (32) + titular→fuente (40) hacían que los tres elementos
+     se sintieran "tres slides distintas". 16px y 16px los unifican como una columna
+     semántica anclada al [num] de la izquierda. */
+  .ps-stat-hero .explain .eyebrow { display:block; margin-bottom:16px; font-size:40px; }
+  .ps-stat-hero .explain h2 { font-family:var(--serif); font-weight:400; font-size:72px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:16px; color:#FAFAFA; }
   .ps-slide.lt .ps-stat-hero .explain h2, .ps-slide.yl .ps-stat-hero .explain h2 { color:var(--bg); }
   .ps-stat-hero .explain .src { font-family:var(--sans); font-size:40px; color:#B8B8B8; }
   .ps-slide.lt .ps-stat-hero .explain .src { color:#666; }
@@ -1301,13 +1304,25 @@
   .ps-imgfull .bg { position:absolute; inset:0; }
   .ps-imgfull .bg.ph { background:linear-gradient(180deg,#2a2a2a 0%,#161616 70%,#0a0a0a 100%); }
   .ps-imgfull .bg.ph::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(90deg, transparent 0 80px, rgba(255,255,255,0.02) 80px 82px); }
-  /* B15: imagen real renderizada como <img>, no background-image. Razón: html2canvas
-     (motor del export PDF) tiene bug conocido con background-size:contain en imágenes
-     data:URL — siempre las pinta como cover sin importar el CSS. object-fit en <img>
-     real sí lo respeta consistentemente. cover es default; .fit-contain conmuta a contain
-     con fondo neutro detrás (treemap 2:1, diagramas, capturas verticales). */
+  /* B15 + B16-bis: imagen real renderizada como <img>, no background-image.
+     Razón: html2canvas (motor del export PDF) tiene bug conocido con background-size:contain
+     en imágenes data:URL — siempre las pinta como cover.
+     B16-bis (Apr 2026): html2canvas ALSO ignora object-fit:contain en <img> con data:URLs
+     (la pinta a tamaño natural o estirada). Por eso .fit-contain ahora usa
+     max-width/max-height + margin:auto + position:absolute + inset:0 — CSS estándar
+     sin object-fit que html2canvas sí respeta de manera fiable.
+     cover sigue usando object-fit (funciona porque llena el frame, no requiere cálculo
+     de aspect ratio respetado). contain usa el patrón de constrain + center que
+     preserva aspect ratio sin object-fit. */
   .ps-imgfull .bg-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; }
-  .ps-imgfull .bg-img.fit-contain { object-fit:contain; background-color:#0A0A0A; }
+  .ps-imgfull .bg-img.fit-contain {
+    /* override total del modo cover */
+    width:auto; height:auto;
+    max-width:100%; max-height:100%;
+    inset:0; margin:auto;
+    object-fit:initial;
+    background-color:#0A0A0A;
+  }
   .ps-imgfull .scrim { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.75), transparent 55%); }
   .ps-imgfull .overlay { position:absolute; bottom:240px; left:120px; right:120px; }
   .ps-imgfull .overlay .eyebrow { color:#FAFAFA; opacity:0.85; margin-bottom:20px; display:block; font-size:40px; letter-spacing:0.15em; font-family:var(--sans); text-transform:uppercase; }
@@ -1565,6 +1580,13 @@
   .ps-recursos .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:48px; }
   .ps-recursos .grid.cols2 { grid-template-columns:repeat(2, 1fr); gap:56px 72px; }
   .ps-recursos .grid.cols4 { grid-template-columns:repeat(4, 1fr); gap:32px; }
+  /* B20: con 4 columnas y 3+ items/columna (algunos a 2-3 líneas), las columnas pasaban
+     de los ~750px disponibles y los últimos items se salían por abajo. Reducimos tamaños
+     en cols4 manteniendo la jerarquía visual. */
+  .ps-recursos .grid.cols4 .cat .hd { font-size:32px; margin-bottom:18px; padding-bottom:10px; }
+  .ps-recursos .grid.cols4 .cat ul { gap:14px; }
+  .ps-recursos .grid.cols4 .cat li { font-size:28px; line-height:1.3; }
+  .ps-recursos .grid.cols4 .cat li .src { font-size:24px; }
   /* F1: link clicable — subrayado sutil del mismo color del texto (nada de azul). */
   .ps-recursos .cat li a.lnk { color:inherit; text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px; text-decoration-color:rgba(255,214,0,0.5); }
   .ps-slide.lt .ps-recursos .cat li a.lnk { text-decoration-color:rgba(184,160,0,0.7); }
