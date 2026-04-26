@@ -786,8 +786,12 @@
      enteras; si una palabra concreta es más larga que la columna (raro), `overflow-wrap:
      anywhere` la parte limpio sin guion ni carácter custom. Pattern Magnify Design System. */
   .csl-page h1, .csl-page h2, .csl-page h3 { hyphens:none; -webkit-hyphens:none; word-break:keep-all; overflow-wrap:anywhere; }
-  .csl-page .hl-c { font-style:italic; text-decoration:underline; text-decoration-thickness:0.08em; text-underline-offset:0.14em; text-decoration-color:var(--yellow); color:inherit; }
-  .csl-page.dk .hl-c { background:var(--yellow); color:var(--bg); font-style:italic; padding:0.02em 0.3em; text-decoration:none; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
+  /* Highlight uniforme en TODOS los surfaces (lt, dk): fondo amarillo + texto negro italic.
+     Pattern Magnify Design System (slide 13: <a:highlight FFD600 + color 0A0A0A>). */
+  .csl-page .hl-c { background:var(--yellow); color:var(--bg); font-style:italic; padding:0.02em 0.3em; text-decoration:none; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
+  /* Surface amarillo: el highlight con fondo amarillo se confundiría con el fondo de la página.
+     Mantenemos solo el italic editorial (mismo color que el resto del titular). */
+  .csl-page.yl .hl-c { background:transparent; color:inherit; padding:0; font-weight:500; }
   .csl-page.yl .hl-c { color:var(--bg); text-decoration:underline; text-decoration-thickness:0.1em; text-decoration-color:var(--bg); font-style:italic; }
 
   /* PORTADA — dossier hero, dark, large serif title */
@@ -835,6 +839,11 @@
   .csl-section .sec-eyebrow { font-family:var(--mono,monospace); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:#666; font-weight:600; margin-bottom:12px; }
   .csl-page.dk .csl-section .sec-eyebrow { color:rgba(250,250,250,0.55); }
   .csl-section h2 { font-family:var(--serif); font-size:36px; font-weight:400; line-height:1.1; letter-spacing:-0.6px; color:inherit; margin:0 0 28px; max-width:620px; }
+  /* Sección minimal: solo eyebrow + titular sin cuerpo/pull/visual. Centra contenido vertical
+     y aumenta el titular para que la página tenga peso editorial (no quede vacía). */
+  .csl-section.is-minimal .csl-body { justify-content:center; }
+  .csl-section.is-minimal h2 { font-size:52px; line-height:1.05; letter-spacing:-1px; max-width:720px; margin-bottom:0; }
+  .csl-section.is-minimal .sec-eyebrow { margin-bottom:24px; }
   .csl-section .sec-body { font-size:14px; line-height:1.75; color:inherit; margin-bottom:18px; max-width:580px; }
   .csl-page.dk .csl-section .sec-body { color:rgba(250,250,250,0.85); }
   .csl-section .sec-body p { margin:0 0 14px; }
@@ -4346,7 +4355,10 @@ function renderCSLSeccion(g, d, pN, tot) {
       ${d.visual_caption ? `<div class="v-cap">${applyHighlights(d.visual_caption)}</div>` : ''}
     </div>`;
   }
-  return `<div class="frame a4"><div class="csl-page ${surf} csl-section">
+  // Si la sección es minimal (solo eyebrow + titular, sin cuerpo/pull/visual) centramos
+  // el contenido verticalmente para que no quede pegado arriba con la página vacía.
+  const isMinimal = !cuerpoHtml && !pull && !visualHtml;
+  return `<div class="frame a4"><div class="csl-page ${surf} csl-section${isMinimal ? ' is-minimal' : ''}">
     ${cslHead(g, d)}
     <div class="csl-body">
       ${d.eyebrow ? `<div class="sec-eyebrow">${d.eyebrow.toUpperCase()}</div>` : ''}
