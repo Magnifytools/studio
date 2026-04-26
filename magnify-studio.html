@@ -22,12 +22,12 @@
     --bg: #0A0A0A; --yellow: #FFD600; --h1: #F0F0F0; --h2: #FAFAFA;
     --body-dk: #999999; --body-lt: #444444;
     --border-dk: rgba(255,255,255,0.1); --border-lt: rgba(0,0,0,0.1);
-    /* PP Editorial New va primera: instalada localmente en máquinas Magnify y la fuente real
-       que veis en los decks. DM Serif Display y Georgia son fallbacks para máquinas sin EN.
+    /* DM Serif Display es la fuente oficial Magnify (cargada via Google Fonts arriba; misma
+       que usa la web magnify.ing y el design system PPTX). Georgia es fallback offline.
        Helvetica Neue/Arial cubren glyphs griegos que NM no incluye (B14: τέλος, Έ, etc.) —
        per-glyph fallback, NM se sigue usando para latín. */
-    --serif: 'PP Editorial New', 'DM Serif Display', Georgia, serif;
-    --sans: 'NM', 'Helvetica Neue', Arial, system-ui, sans-serif;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'NM', 'PP Neue Montreal', 'Helvetica Neue', Arial, system-ui, sans-serif;
     /* Mono coherente con la marca (pies de dossier, eyebrows técnicos, .ing en footer).
        JetBrains Mono se carga vía Google Fonts arriba; SF Mono es el fallback en Mac. */
     --mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
@@ -5658,10 +5658,12 @@ const PS_RENDERERS = {
 const PPTX_W = 13.33, PPTX_H = 7.5;
 const COLOR_DARK = '0A0A0A', COLOR_YELLOW = 'FFD600', COLOR_WHITE = 'FFFFFF';
 const COLOR_LIGHT_TEXT = 'F0F0F0', COLOR_GREY = '999999', COLOR_GREY_DK = '444444';
-// Fuentes Magnify reales. Asumen que la máquina que abre el PPTX las tiene
-// instaladas (PP Editorial New + PP Neue Montreal). Si no, PowerPoint sustituye
-// por la fuente más cercana del sistema, pero los nombres en el XML son los buenos.
-const FONT_SERIF = 'PP Editorial New', FONT_SANS = 'PP Neue Montreal';
+// Fuentes Magnify reales (mismas que escribe el design system PPTX y la web magnify.ing):
+// - serif: DM Serif Display (Google Fonts, cargada en el preview HTML)
+// - sans: PP Neue Montreal (instalada localmente en máquinas Magnify)
+// PowerPoint sustituye por fuente del sistema si no las tiene, pero los nombres en el XML
+// son los correctos.
+const FONT_SERIF = 'DM Serif Display', FONT_SANS = 'PP Neue Montreal';
 
 // Convert [highlight] syntax to pptxgenjs rich text array.
 // bgMode: 'light' (default), 'dark', or 'yellow' — determines highlight treatment since Keynote doesn't render OOXML highlight reliably.
