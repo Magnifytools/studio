@@ -299,10 +299,11 @@
      sin fondo de color. Funciona con la tipografía serif sin romper el amarillo
      dominante del slide. */
   .frame.yl .hl, .ps-slide.yl .hl { background:transparent; color:var(--bg); text-decoration:underline; text-decoration-thickness:0.08em; text-underline-offset:0.14em; padding:0; }
-  /* Sobre fondo oscuro el stamp amarillo compite con el fondo y rompe la legibilidad.
-     Espejo del richWithHighlights (mode='dark'): texto amarillo italic bold sin fondo —
-     así el preview predice lo que Keynote pinta en el PPTX. */
-  .ps-slide.dk .hl, .frame.dk .hl { background:transparent; color:var(--yellow); font-style:italic; font-weight:700; text-decoration:none; padding:0; }
+  /* Sobre fondo oscuro el patrón del Magnify Design System es fondo amarillo + texto negro
+     (igual que en surface lt/default). Coincide con `<a:highlight val="FFD600"/>` + color
+     `0A0A0A` que escribe richWithHighlights en el PPTX. Visualmente: la palabra "salta"
+     como un stamp amarillo sobre el dark. */
+  .ps-slide.dk .hl, .frame.dk .hl { background:var(--yellow); color:var(--bg); font-style:italic; padding:0.02em 0.3em; display:inline; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
   /* Sobre fondo claro/hueso el highlighter amarillo queda flojo. Tratamiento editorial
      alternativo: texto negro italic con underline grueso negro (mismo patrón que yellow). */
   .ps-slide.lt .hl, .frame.lt .hl { background:transparent; color:var(--bg); text-decoration:underline; text-decoration-thickness:0.08em; text-underline-offset:0.14em; padding:0; font-style:italic; font-weight:400; }
@@ -781,13 +782,22 @@
   .csl-body { flex:1; padding:56px 64px 84px; display:flex; flex-direction:column; }
 
   /* Highlight `[palabra]` editorial: amarillo subrayado sobre claro, italic sobre oscuro/amarillo. */
+  /* Titulares del dossier nunca se parten por sílabas. Las palabras saltan de línea
+     enteras; si una palabra concreta es más larga que la columna (raro), `overflow-wrap:
+     anywhere` la parte limpio sin guion ni carácter custom. Pattern Magnify Design System. */
+  .csl-page h1, .csl-page h2, .csl-page h3 { hyphens:none; -webkit-hyphens:none; word-break:keep-all; overflow-wrap:anywhere; }
   .csl-page .hl-c { font-style:italic; text-decoration:underline; text-decoration-thickness:0.08em; text-underline-offset:0.14em; text-decoration-color:var(--yellow); color:inherit; }
-  .csl-page.dk .hl-c { color:var(--yellow); text-decoration:none; font-weight:700; font-style:italic; }
+  .csl-page.dk .hl-c { background:var(--yellow); color:var(--bg); font-style:italic; padding:0.02em 0.3em; text-decoration:none; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
   .csl-page.yl .hl-c { color:var(--bg); text-decoration:underline; text-decoration-thickness:0.1em; text-decoration-color:var(--bg); font-style:italic; }
 
   /* PORTADA — dossier hero, dark, large serif title */
   .csl-portada { background:var(--bg); color:#FAFAFA; padding:84px 64px; display:flex; flex-direction:column; height:100%; position:relative; }
   .csl-portada .pt-wm { height:24px; margin-bottom:auto; }
+  /* wordmark: abajo — pattern editorial maduro (contenido manda, marca firma).
+     El wordmark grande va al pie, encima del pt-bottom (URL + Confidencial). */
+  .csl-portada .pt-wm-bottom { height:32px; margin-top:auto; margin-bottom:32px; }
+  .csl-portada .pt-wm-bottom svg { height:100%; width:auto; display:block; }
+  .csl-portada.wm-bottom { padding-top:64px; }
   .csl-portada .pt-eyebrow { font-family:var(--mono,monospace); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--yellow); margin-bottom:24px; font-weight:600; }
   .csl-portada h1 { font-family:var(--serif); font-size:64px; font-weight:400; line-height:1.04; letter-spacing:-1.4px; color:#FAFAFA; max-width:660px; margin:0; }
   .csl-portada .pt-sub { font-size:20px; line-height:1.45; color:#D0D0D0; margin-top:30px; max-width:600px; font-weight:400; }
@@ -853,8 +863,10 @@
   .csl-seccion-visual .sv-slot { flex:1; min-height:0; display:flex; align-items:center; justify-content:center; background:repeating-linear-gradient(45deg,#F0F0F0 0 12px,#FAFAFA 12px 24px); font-family:var(--mono,monospace); font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#999; }
   .csl-page.dk .csl-seccion-visual .sv-slot { background:repeating-linear-gradient(45deg,#1a1a1a 0 12px,#222 12px 24px); color:#666; }
   .csl-page.yl .csl-seccion-visual .sv-slot { background:repeating-linear-gradient(45deg,rgba(10,10,10,0.06) 0 12px,rgba(10,10,10,0.02) 12px 24px); color:rgba(10,10,10,0.55); }
-  .csl-seccion-visual .sv-slot.has-img { background:none; }
-  .csl-seccion-visual .sv-slot.has-img img { width:100%; height:100%; object-fit:contain; display:block; }
+  .csl-seccion-visual .sv-slot.has-img { background:none; padding:0; }
+  /* La imagen ocupa el ancho útil completo de la página (no se queda chica si es panorámica
+     o si tiene aspect ratio extremo). object-fit:contain limita la altura al slot disponible. */
+  .csl-seccion-visual .sv-slot.has-img img { width:100%; height:auto; max-height:100%; object-fit:contain; display:block; margin:auto; }
 
   /* CITAS-CLIENTES — grid 2x3 sobre hueso */
   .csl-citas { background:#F5F1EA; }
@@ -1215,18 +1227,22 @@
   .ps-slide.lt .ps-charla .h3-label, .ps-slide.yl .ps-charla .h3-label { color:#444; }
   .ps-charla em { font-style:italic; }
 
-  /* hero (cover with hairline) */
-  .ps-hero { padding:0 160px 240px 160px; display:flex; flex-direction:column; justify-content:flex-end; height:100%; }
-  .ps-hero .eyebrow { font-size:44px; margin-bottom:56px; }
-  .ps-hero .title { font-family:var(--serif); font-weight:400; font-size:140px; line-height:1.0; letter-spacing:-0.02em; color:#F0F0F0; max-width:1500px; }
+  /* hero (cover) — pattern Magnify Design System slide 1: griego ARRIBA italic amarillo,
+     eyebrow gris uppercase letterspaced, titular grande italic serif, hairline amarilla,
+     autor + fecha apilados (sans). Centrado vertical, no pegado al fondo. */
+  .ps-hero { padding:120px 160px; display:flex; flex-direction:column; justify-content:center; height:100%; }
+  .ps-hero .griego { font-family:var(--serif); font-style:italic; font-size:40px; color:var(--yellow); letter-spacing:0.02em; margin-bottom:36px; }
+  .ps-slide.lt .ps-hero .griego, .ps-slide.yl .ps-hero .griego { color:var(--bg); }
+  .ps-hero .eyebrow { font-size:26px; font-weight:500; letter-spacing:0.18em; color:#999; margin-bottom:48px; }
+  .ps-slide.lt .ps-hero .eyebrow, .ps-slide.yl .ps-hero .eyebrow { color:rgba(10,10,10,0.55); }
+  .ps-hero .title { font-family:var(--serif); font-style:italic; font-weight:400; font-size:140px; line-height:1.0; letter-spacing:-0.02em; color:#F0F0F0; max-width:1500px; }
   .ps-slide.lt .ps-hero .title, .ps-slide.yl .ps-hero .title { color:var(--bg); }
-  /* F3 — griego opcional debajo del título: tenue, serif, marca de agua conceptual. */
-  .ps-hero .griego { font-family:var(--serif); font-style:italic; font-size:56px; color:rgba(240,240,240,0.35); margin-top:24px; letter-spacing:0.02em; }
-  .ps-slide.lt .ps-hero .griego, .ps-slide.yl .ps-hero .griego { color:rgba(10,10,10,0.4); }
-  .ps-hero .hairline { width:80px; height:2px; background:var(--yellow); margin:40px 0; }
-  .ps-hero .author { font-family:var(--sans); font-size:44px; color:#CCC; }
-  .ps-slide.lt .ps-hero .author { color:#666; }
-  .ps-slide.yl .ps-hero .author { color:var(--bg); }
+  .ps-hero .hairline { width:80px; height:2px; background:var(--yellow); margin:48px 0 28px; }
+  .ps-slide.yl .ps-hero .hairline { background:var(--bg); }
+  .ps-hero .author { font-family:var(--sans); font-size:26px; color:#FAFAFA; line-height:1.3; }
+  .ps-slide.lt .ps-hero .author, .ps-slide.yl .ps-hero .author { color:var(--bg); }
+  .ps-hero .fecha { font-family:var(--sans); font-size:26px; color:#999; line-height:1.3; margin-top:6px; }
+  .ps-slide.lt .ps-hero .fecha, .ps-slide.yl .ps-hero .fecha { color:rgba(10,10,10,0.55); }
 
   /* agenda */
   .ps-agenda-list { list-style:none; margin-top:48px; padding:0; }
@@ -1253,34 +1269,39 @@
   .ps-manif .griego-stamp.anchor { font-family:var(--serif); font-style:italic; font-size:120px; letter-spacing:0.02em; color:rgba(250,250,250,0.4); margin-bottom:48px; font-weight:400; line-height:1; }
   .ps-slide.lt .ps-manif .griego-stamp, .ps-slide.yl .ps-manif .griego-stamp { color:rgba(10,10,10,0.55); }
   .ps-slide.lt .ps-manif .griego-stamp.anchor, .ps-slide.yl .ps-manif .griego-stamp.anchor { color:rgba(10,10,10,0.4); }
-  .ps-manif .hero-xxl { font-family:var(--serif); font-weight:400; font-style:italic; font-size:160px; line-height:1.0; letter-spacing:-0.02em; text-align:left; color:#F0F0F0; }
-  .ps-manif .hero-xxl.s-md { font-size:128px; }
-  .ps-manif .hero-xxl.s-sm { font-size:104px; }
-  .ps-manif .hero-xxl.s-xs { font-size:84px; }
+  /* manifiesto — pattern Magnify Design System slide 29: titular serif regular (no italic global,
+     solo el highlight [palabra] activa el italic). Tamaños alineados al ratio DS. */
+  .ps-manif .hero-xxl { font-family:var(--serif); font-weight:400; font-style:normal; font-size:140px; line-height:1.05; letter-spacing:-0.02em; text-align:left; color:#F0F0F0; }
+  .ps-manif .hero-xxl.s-md { font-size:120px; }
+  .ps-manif .hero-xxl.s-sm { font-size:96px; }
+  .ps-manif .hero-xxl.s-xs { font-size:80px; }
   .ps-slide.lt .ps-manif .hero-xxl, .ps-slide.yl .ps-manif .hero-xxl { color:var(--bg); }
 
   /* stat-hero (big number + side explanation) */
   /* B18: gap 120px hacía que el número y la explicación se sintieran "en zonas
      distintas". 80px conserva separación pero los conecta como un mismo bloque. */
-  .ps-stat-hero { padding:0 160px; display:flex; align-items:center; gap:80px; height:100%; }
-  .ps-stat-hero .stat-block { flex-shrink:0; display:flex; flex-direction:column; align-items:flex-start; }
+  /* stat-hero — pattern Magnify Design System slide 18: layout VERTICAL CENTRADO.
+     Eyebrow gris → número italic amarillo grande → descripción serif blanco → fuente sans gris. */
+  .ps-stat-hero { padding:0 160px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; height:100%; text-align:center; }
+  .ps-stat-hero .stat-block { flex-shrink:0; display:flex; flex-direction:column; align-items:center; }
   /* white-space:nowrap evita que sufijos con espacio (' · KD 72', '/mes') se partan en dos líneas.
      Cuando numero+sufijo suman muchos caracteres, el renderer ya baja el font-size dinámicamente. */
-  .ps-stat-hero .num { font-family:var(--serif); font-weight:400; font-size:320px; line-height:0.9; letter-spacing:-0.04em; color:var(--yellow); white-space:nowrap; }
-  .ps-stat-hero .num.long { font-size:200px; }
-  .ps-stat-hero .num.xlong { font-size:140px; letter-spacing:-0.02em; }
+  .ps-stat-hero .num { font-family:var(--serif); font-style:italic; font-weight:400; font-size:200px; line-height:0.95; letter-spacing:-0.04em; color:var(--yellow); white-space:nowrap; margin:32px 0; }
+  .ps-stat-hero .num.long { font-size:160px; }
+  .ps-stat-hero .num.xlong { font-size:120px; letter-spacing:-0.02em; }
   /* Sufijo secundario debajo del número principal (p.ej. '· KD 72'). Tamaño ~1/3 del num y
      mismo color yellow, sin italic para que lea como dato complementario. */
   .ps-stat-hero .suf { font-family:var(--sans); font-weight:500; font-size:44px; color:var(--yellow); letter-spacing:0.02em; margin-top:12px; }
   .ps-slide.yl .ps-stat-hero .suf { color:var(--bg); }
-  .ps-stat-hero .explain { max-width:800px; }
+  .ps-stat-hero .explain { max-width:1200px; text-align:center; display:flex; flex-direction:column; align-items:center; }
   /* B21: gaps eyebrow→titular (32) + titular→fuente (40) hacían que los tres elementos
      se sintieran "tres slides distintas". 16px y 16px los unifican como una columna
      semántica anclada al [num] de la izquierda. */
-  .ps-stat-hero .explain .eyebrow { display:block; margin-bottom:16px; font-size:40px; }
-  .ps-stat-hero .explain h2 { font-family:var(--serif); font-weight:400; font-size:72px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:16px; color:#FAFAFA; }
+  .ps-stat-hero > .eyebrow { display:block; font-size:22px; font-weight:500; letter-spacing:0.18em; color:#999; text-transform:uppercase; }
+  .ps-slide.lt .ps-stat-hero > .eyebrow, .ps-slide.yl .ps-stat-hero > .eyebrow { color:rgba(10,10,10,0.55); }
+  .ps-stat-hero .explain h2 { font-family:var(--serif); font-weight:400; font-size:54px; line-height:1.15; letter-spacing:-0.01em; margin-bottom:24px; color:#FAFAFA; }
   .ps-slide.lt .ps-stat-hero .explain h2, .ps-slide.yl .ps-stat-hero .explain h2 { color:var(--bg); }
-  .ps-stat-hero .explain .src { font-family:var(--sans); font-size:40px; color:#B8B8B8; }
+  .ps-stat-hero .explain .src { font-family:var(--sans); font-size:22px; color:#999; }
   .ps-slide.lt .ps-stat-hero .explain .src { color:#666; }
   .ps-slide.yl .ps-stat-hero .explain .src { color:var(--bg); }
 
@@ -1308,18 +1329,23 @@
   .ps-compare .col li:last-child { border-bottom:none; }
 
   /* framework 3 steps */
-  .ps-fw { padding:160px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
-  .ps-fw h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:96px; color:#FAFAFA; }
+  /* framework — pattern Magnify Design System slide 25: titular grande arriba, hairline
+     amarilla fina sobre cada paso, número italic amarillo, descripción sans blanco. */
+  .ps-fw { padding:120px 160px 160px; height:100%; display:flex; flex-direction:column; justify-content:center; }
+  .ps-fw h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:80px; color:#FAFAFA; }
   .ps-slide.lt .ps-fw h2, .ps-slide.yl .ps-fw h2 { color:var(--bg); }
-  .ps-fw .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:80px; }
+  .ps-fw .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:48px; }
   .ps-fw .grid.cols4 { grid-template-columns:repeat(4, 1fr); gap:48px; }
-  .ps-fw .grid.cols4 .step .num { font-size:170px; }
-  .ps-fw .grid.cols4 .step .desc { font-size:40px; }
-  .ps-fw .step .num { color:var(--yellow); font-family:var(--serif); font-size:220px; line-height:0.9; letter-spacing:-0.04em; margin-bottom:32px; }
-  .ps-fw .step .label { font-family:var(--sans); font-size:40px; letter-spacing:0.1em; color:var(--yellow); margin-bottom:24px; text-transform:uppercase; }
-  .ps-slide.lt .ps-fw .step .label, .ps-slide.yl .ps-fw .step .label { color:#B8A000; }
-  .ps-fw .step .desc { font-family:var(--sans); font-size:44px; line-height:1.4; color:#FAFAFA; }
+  .ps-fw .step { padding-top:24px; border-top:1px solid var(--yellow); }
+  .ps-slide.yl .ps-fw .step { border-top-color:var(--bg); }
+  .ps-fw .step .num { color:var(--yellow); font-family:var(--serif); font-style:italic; font-size:120px; line-height:0.95; letter-spacing:-0.04em; margin-bottom:24px; }
+  .ps-slide.yl .ps-fw .step .num { color:var(--bg); }
+  .ps-fw .grid.cols4 .step .num { font-size:96px; }
+  .ps-fw .step .label { font-family:var(--sans); font-size:22px; letter-spacing:0.18em; color:#FAFAFA; margin-bottom:8px; text-transform:uppercase; font-weight:500; }
+  .ps-slide.lt .ps-fw .step .label, .ps-slide.yl .ps-fw .step .label { color:var(--bg); }
+  .ps-fw .step .desc { font-family:var(--sans); font-size:28px; line-height:1.3; color:#FAFAFA; }
   .ps-slide.lt .ps-fw .step .desc, .ps-slide.yl .ps-fw .step .desc { color:var(--bg); }
+  .ps-fw .grid.cols4 .step .desc { font-size:24px; }
 
   /* timeline charla (4 nodes on horizontal rail) */
   .ps-tl-c { padding:160px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
@@ -1417,33 +1443,37 @@
   /* Diptych: 2 columns, cada una partida en 70% imagen / 30% caption sólida abajo.
      Antes el caption iba superpuesto sobre la imagen tapando contenido crítico (SERPs, chips de ChatGPT).
      Ahora la imagen respira arriba y el caption va en zona exclusiva con fondo opaco del brand. */
+  /* Diptych — pattern Magnify Design System slide 2/5: imágenes top ~80%, captions bottom
+     ~20% sin línea amarilla separadora (el contraste de surface ya delimita). Label amarillo
+     pequeño + title italic. */
   .ps-dip { position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr; }
-  .ps-dip .pane { position:relative; overflow:hidden; display:grid; grid-template-rows:70% 30%; background:var(--bg); }
+  .ps-dip .pane { position:relative; overflow:hidden; display:grid; grid-template-rows:80% 20%; background:var(--bg); }
   .ps-dip .pane .img { position:relative; background-size:contain; background-repeat:no-repeat; background-position:center; background-color:#0A0A0A; }
   .ps-dip .pane .img.ph1 { background:linear-gradient(135deg,#3a3a3a 0%,#1a1a1a 100%); }
   .ps-dip .pane .img.ph2 { background:linear-gradient(135deg,#555,#1c1c1c 100%); }
-  .ps-dip .pane .cap { padding:32px 48px 40px; display:flex; flex-direction:column; justify-content:center; background:#0A0A0A; border-top:4px solid var(--yellow); }
-  .ps-dip .pane:nth-child(2) .cap { border-top-color:var(--yellow); }
-  .ps-dip .pane .lbl { font-family:var(--sans); font-size:40px; letter-spacing:0.15em; color:var(--yellow); margin-bottom:12px; display:block; text-transform:uppercase; font-weight:500; }
-  .ps-dip .pane .title { font-family:var(--serif); font-size:44px; line-height:1.08; letter-spacing:-0.01em; color:#FAFAFA; font-weight:400; }
-  .ps-dip .pane .body { font-family:var(--sans); font-size:40px; line-height:1.4; color:#CCC; margin-top:10px; max-width:540px; }
+  .ps-dip .pane .cap { padding:32px 64px 40px; display:flex; flex-direction:column; justify-content:center; background:#0A0A0A; }
+  .ps-dip .pane .lbl { font-family:var(--sans); font-size:22px; letter-spacing:0.18em; color:var(--yellow); margin-bottom:14px; display:block; text-transform:uppercase; font-weight:600; }
+  .ps-dip .pane .title { font-family:var(--serif); font-style:italic; font-size:44px; line-height:1.15; letter-spacing:-0.01em; color:#FAFAFA; font-weight:400; }
+  .ps-dip .pane .body { font-family:var(--sans); font-size:24px; line-height:1.4; color:#CCC; margin-top:10px; max-width:540px; }
   .ps-dip em { font-style:italic; }
 
   /* triptych (3 image tiles + caption overlay).
      B17: imágenes como <img> reales (no background-image) — html2canvas tiene bug con
      background-size:cover en data:URLs y pinta a tamaño natural, desbordando la celda.
      <img class="tile-img"> con object-fit:cover replica el comportamiento y exporta bien. */
+  /* Triptych — pattern Magnify Design System slide 15: imagen ARRIBA (~67%), caption BAJO (~33%)
+     en banda negra opaca SIN scrim ni gradient overlay. Número italic amarillo grande + título
+     blanco + descripción blanca. Imagen no se recorta con scrim. */
   .ps-trp { position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr 1fr; }
-  .ps-trp .tile { position:relative; overflow:hidden; display:flex; align-items:flex-end; padding:64px 64px 200px; }
-  .ps-trp .tile .tile-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; z-index:0; }
+  .ps-trp .tile { position:relative; overflow:hidden; display:grid; grid-template-rows:67% 33%; background:var(--bg); }
+  .ps-trp .tile .tile-img { width:100%; height:100%; object-fit:cover; object-position:center; }
   .ps-trp .tile.ph1 { background:linear-gradient(135deg,#383838,#1a1a1a); }
   .ps-trp .tile.ph2 { background:linear-gradient(135deg,#555,#1c1c1c); }
   .ps-trp .tile.ph3 { background:linear-gradient(135deg,#2a2a2a,#0f0f0f); }
-  .ps-trp .tile::after { content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.7), transparent 50%); z-index:1; }
-  .ps-trp .tile .cap { position:relative; z-index:2; }
-  .ps-trp .tile .num { font-family:var(--serif); font-size:80px; line-height:0.9; color:var(--yellow); margin-bottom:16px; font-weight:400; }
-  .ps-trp .tile .t { font-family:var(--serif); font-size:40px; line-height:1.1; color:#FAFAFA; letter-spacing:-0.01em; font-weight:400; }
-  .ps-trp .tile .s { font-family:var(--sans); font-size:40px; color:#FAFAFA; opacity:0.85; margin-top:16px; max-width:320px; }
+  .ps-trp .tile .cap { padding:48px 48px 56px; display:flex; flex-direction:column; background:var(--bg); }
+  .ps-trp .tile .num { font-family:var(--serif); font-style:italic; font-size:64px; line-height:1; color:var(--yellow); margin-bottom:18px; font-weight:400; }
+  .ps-trp .tile .t { font-family:var(--serif); font-size:48px; line-height:1.1; color:#FAFAFA; letter-spacing:-0.01em; font-weight:400; margin-bottom:14px; }
+  .ps-trp .tile .s { font-family:var(--sans); font-size:24px; color:#FAFAFA; opacity:0.85; line-height:1.35; max-width:380px; }
   .ps-trp em { font-style:italic; }
 
   /* mosaic (1 big + 3-4 small) */
@@ -1479,21 +1509,19 @@
   .ps-slide.lt .ps-port .pane-txt .role { color:#666; }
   .ps-port em { font-style:italic; }
 
-  /* quote-big (single centered quote with photo) */
-  .ps-qbig { padding:160px 160px 200px; height:100%; display:flex; flex-direction:column; justify-content:center; position:relative; }
-  /* Comilla decorativa: subida arriba-izquierda fuera del flujo. Antes padding-left:48 no era
-     suficiente con mayúsculas altas (M/L) — ahora 96px da aire a la primera letra sin tocar. */
-  /* Base: color light (texto/mark sobre fondo oscuro dk). Overrides para lt/yl cambian a oscuro. */
-  .ps-qbig .mark { position:absolute; top:120px; left:80px; font-family:var(--serif); font-size:260px; line-height:0.9; color:#FAFAFA; opacity:0.85; pointer-events:none; }
-  .ps-slide.lt .ps-qbig .mark, .ps-slide.yl .ps-qbig .mark { color:var(--bg); opacity:0.8; }
-  .ps-qbig .text { font-family:var(--serif); font-weight:400; font-size:88px; line-height:1.1; letter-spacing:-0.01em; color:#FAFAFA; max-width:1500px; margin-top:100px; padding-left:96px; position:relative; z-index:1; }
+  /* quote-big — pattern Magnify Design System slide 6/7: comilla AMARILLA pequeña arriba-izquierda,
+     cita serif italic-mixto, atribución en UNA LÍNEA (name bold + role gris) sin photo. */
+  .ps-qbig { padding:120px 160px 160px; height:100%; display:flex; flex-direction:column; justify-content:center; position:relative; }
+  .ps-qbig .mark { position:absolute; top:160px; left:160px; font-family:var(--serif); font-size:80px; line-height:1; color:var(--yellow); pointer-events:none; }
+  .ps-slide.lt .ps-qbig .mark, .ps-slide.yl .ps-qbig .mark { color:var(--bg); }
+  .ps-qbig .text { font-family:var(--serif); font-weight:400; font-size:80px; line-height:1.15; letter-spacing:-0.01em; color:#FAFAFA; max-width:1600px; margin-top:80px; position:relative; z-index:1; }
   .ps-slide.lt .ps-qbig .text, .ps-slide.yl .ps-qbig .text { color:var(--bg); }
-  .ps-qbig .attr { display:flex; align-items:center; gap:24px; margin-top:64px; padding-left:96px; }
-  .ps-qbig .attr .photo { width:120px; height:120px; background:#0A0A0A; background-size:cover; background-position:center; flex-shrink:0; border-radius:50%; }
-  .ps-qbig .attr .name { font-family:var(--sans); font-size:40px; color:#FAFAFA; font-weight:500; }
+  .ps-qbig .attr { display:flex; align-items:baseline; flex-wrap:wrap; gap:24px; margin-top:80px; }
+  .ps-qbig .attr .photo { display:none; }
+  .ps-qbig .attr .name { font-family:var(--sans); font-size:26px; color:#FAFAFA; font-weight:600; }
   .ps-slide.lt .ps-qbig .attr .name, .ps-slide.yl .ps-qbig .attr .name { color:var(--bg); }
-  .ps-qbig .attr .role { font-family:var(--sans); font-size:40px; color:#B8B8B8; margin-top:4px; }
-  .ps-slide.lt .ps-qbig .attr .role, .ps-slide.yl .ps-qbig .attr .role { color:#666; }
+  .ps-qbig .attr .role { font-family:var(--sans); font-size:26px; color:#999; font-weight:400; }
+  .ps-slide.lt .ps-qbig .attr .role, .ps-slide.yl .ps-qbig .attr .role { color:rgba(10,10,10,0.55); }
   .ps-qbig em { font-style:italic; }
 
   /* tabla (comparison table) */
@@ -1544,10 +1572,13 @@
   .ps-pricing .col li { font-family:var(--sans); font-size:40px; padding:12px 0; }
 
   /* cta-final (yellow big cta) */
-  .ps-ctafinal { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:0 160px; text-align:center; }
-  .ps-ctafinal .eyebrow { font-family:var(--sans); font-size:40px; letter-spacing:0.15em; color:var(--bg); margin-bottom:32px; display:block; text-transform:uppercase; }
-  .ps-ctafinal h1 { font-family:var(--serif); font-size:140px; line-height:1.0; color:var(--bg); margin-bottom:56px; font-weight:400; letter-spacing:-0.02em; }
-  .ps-ctafinal .contact { font-family:var(--sans); font-size:44px; color:var(--bg); }
+  /* cta-final — pattern Magnify Design System slide 32: eyebrow uppercase letterspaced,
+     titular italic serif grande, contacto sans pequeño. Con QR: layout horizontal con
+     bloque de texto a la izquierda. */
+  .ps-ctafinal { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; height:100%; padding:0 160px; text-align:left; }
+  .ps-ctafinal .eyebrow { font-family:var(--sans); font-size:22px; letter-spacing:0.18em; color:rgba(10,10,10,0.55); margin-bottom:48px; display:block; text-transform:uppercase; font-weight:500; }
+  .ps-ctafinal h1 { font-family:var(--serif); font-style:italic; font-size:160px; line-height:1.0; color:var(--bg); margin-bottom:64px; font-weight:400; letter-spacing:-0.02em; }
+  .ps-ctafinal .contact { font-family:var(--sans); font-size:30px; color:var(--bg); }
   .ps-ctafinal em { font-style:italic; }
 
   /* stats-charla (grid of big numbers, 2x2 or 1xN)
@@ -1557,19 +1588,24 @@
        al highlight — un 5% puede ser alerta, un 92% puede ser logro (B11). */
   /* B18: padding 120/200 era asimétrico (top<bottom) → centro real desplazado
      hacia arriba. 200/200 simétrico devuelve true center vertical. */
-  .ps-statsc { padding:200px 160px 200px; height:100%; display:flex; flex-direction:column; justify-content:center; position:relative; }
+  /* stats-charla — pattern Magnify Design System slide 22/26: titular grande arriba, hairline
+     fina horizontal arriba del grid, número italic AMARILLO, label uppercase BLANCO letterspaced
+     (no amarillo), descripción sans gris pequeña. */
+  .ps-statsc { padding:120px 160px 160px; height:100%; display:flex; flex-direction:column; justify-content:center; position:relative; }
+  .ps-statsc .grid::before { content:""; position:absolute; left:160px; right:160px; top:calc(50% - 80px); height:1px; background:rgba(250,250,250,0.15); }
+  .ps-slide.lt .ps-statsc .grid::before, .ps-slide.yl .ps-statsc .grid::before { background:rgba(10,10,10,0.15); }
   /* B18: margin-bottom 48px alejaba el titular del grid. 32px lo ata más como
      unidad cabecera→datos. */
-  .ps-statsc h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:32px; color:#FAFAFA; font-weight:400; }
+  .ps-statsc h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:80px; color:#FAFAFA; font-weight:400; }
   .ps-slide.lt .ps-statsc h2, .ps-slide.yl .ps-statsc h2 { color:var(--bg); }
-  .ps-statsc .grid { display:grid; gap:32px 80px; }
-  .ps-statsc .grid.cols2 { grid-template-columns:repeat(2, 1fr); gap:20px 80px; }
+  .ps-statsc .grid { display:grid; gap:48px 80px; padding-top:64px; position:relative; }
+  .ps-statsc .grid.cols2 { grid-template-columns:repeat(2, 1fr); gap:48px 80px; }
   .ps-statsc .grid.cols3 { grid-template-columns:repeat(3, 1fr); gap:48px; }
   .ps-statsc .grid.cols4 { grid-template-columns:repeat(4, 1fr); gap:40px; }
-  .ps-statsc .cell .num { font-family:var(--serif); font-weight:400; font-size:180px; line-height:0.9; letter-spacing:-0.04em; color:var(--yellow); margin-bottom:12px; white-space:nowrap; }
-  .ps-statsc .grid.cols2 .cell .num { font-size:150px; }
-  .ps-statsc .grid.cols3 .cell .num { font-size:140px; }
-  .ps-statsc .grid.cols4 .cell .num { font-size:110px; }
+  .ps-statsc .cell .num { font-family:var(--serif); font-style:italic; font-weight:400; font-size:140px; line-height:0.95; letter-spacing:-0.04em; color:var(--yellow); margin-bottom:24px; white-space:nowrap; }
+  .ps-statsc .grid.cols2 .cell .num { font-size:130px; }
+  .ps-statsc .grid.cols3 .cell .num { font-size:110px; }
+  .ps-statsc .grid.cols4 .cell .num { font-size:90px; }
   /* Variantes semánticas de highlight (B11). hi sin tipo = hi-neg para compat. */
   .ps-statsc .cell.hi .num, .ps-statsc .cell.hi-neg .num { color:#FF5A5A; }
   .ps-statsc .cell.hi-pos .num { color:var(--yellow); text-shadow:0 0 0 var(--yellow); }
@@ -1577,9 +1613,10 @@
   .ps-slide.yl .ps-statsc .cell .num { color:var(--bg); }
   .ps-slide.yl .ps-statsc .cell.hi .num, .ps-slide.yl .ps-statsc .cell.hi-neg .num { color:#C81E1E; }
   .ps-slide.yl .ps-statsc .cell.hi-pos .num { color:var(--bg); font-weight:700; }
-  .ps-statsc .cell .lbl { font-family:var(--sans); font-size:40px; letter-spacing:0.08em; color:var(--yellow); text-transform:uppercase; margin-bottom:12px; display:block; }
-  .ps-slide.lt .ps-statsc .cell .lbl, .ps-slide.yl .ps-statsc .cell .lbl { color:#B8A000; }
-  .ps-statsc .cell .desc { font-family:var(--sans); font-size:40px; line-height:1.4; color:#FAFAFA; max-width:420px; }
+  .ps-statsc .cell .lbl { font-family:var(--sans); font-size:22px; letter-spacing:0.18em; color:#FAFAFA; text-transform:uppercase; margin-bottom:10px; display:block; font-weight:500; }
+  .ps-slide.lt .ps-statsc .cell .lbl, .ps-slide.yl .ps-statsc .cell .lbl { color:var(--bg); }
+  .ps-statsc .cell .desc { font-family:var(--sans); font-size:22px; line-height:1.4; color:#999; max-width:420px; }
+  .ps-slide.lt .ps-statsc .cell .desc, .ps-slide.yl .ps-statsc .cell .desc { color:rgba(10,10,10,0.55); }
   .ps-slide.lt .ps-statsc .cell .desc, .ps-slide.yl .ps-statsc .cell .desc { color:var(--bg); }
   .ps-statsc .grid.cols4 .cell .desc { font-size:40px; }
   /* .src anclada abajo del container, fuera del grid — evita colisión con celdas en 2x2 (B9).
@@ -1589,18 +1626,21 @@
   .ps-slide.yl .ps-statsc .src { color:var(--bg); opacity:0.7; }
 
   /* citas-grid (2x2 testimonial grid) */
-  .ps-citas { padding:140px 160px 180px; height:100%; display:flex; flex-direction:column; justify-content:center; }
-  .ps-citas h2 { font-family:var(--serif); font-size:44px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:56px; color:#FAFAFA; font-weight:400; }
+  /* citas-grid — pattern Magnify Design System slide 20: titular grande arriba (no centrado),
+     grid 2x2 de celdas con barra vertical NEGRA (no amarilla), cita italic serif, autor
+     uppercase pequeño gris. */
+  .ps-citas { padding:120px 160px 160px; height:100%; display:flex; flex-direction:column; justify-content:center; }
+  .ps-citas h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:80px; color:#FAFAFA; font-weight:400; }
   .ps-slide.lt .ps-citas h2, .ps-slide.yl .ps-citas h2 { color:var(--bg); }
-  .ps-citas .grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:56px 72px; }
-  .ps-citas .grid.cols3 { grid-template-columns:repeat(3, 1fr); gap:40px 48px; }
-  .ps-citas .cell { display:flex; flex-direction:column; gap:16px; border-left:2px solid var(--yellow); padding-left:32px; }
-  .ps-citas .cell .q { font-family:var(--serif); font-style:italic; font-size:44px; line-height:1.25; letter-spacing:-0.01em; color:#FAFAFA; font-weight:400; }
-  .ps-slide.lt .ps-citas .cell .q, .ps-slide.yl .ps-citas .cell .q { color:var(--bg); }
-  .ps-citas .grid.cols3 .cell .q { font-size:40px; }
-  .ps-citas .cell .who { font-family:var(--sans); font-size:40px; color:#B8B8B8; margin-top:8px; }
+  .ps-citas .grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:64px 96px; }
+  .ps-citas .grid.cols3 { grid-template-columns:repeat(3, 1fr); gap:48px 64px; }
+  .ps-citas .cell { display:flex; flex-direction:column; gap:28px; border-left:2px solid currentColor; padding-left:32px; color:#FAFAFA; }
+  .ps-slide.lt .ps-citas .cell, .ps-slide.yl .ps-citas .cell { color:var(--bg); }
+  .ps-citas .cell .q { font-family:var(--serif); font-style:italic; font-size:36px; line-height:1.25; letter-spacing:-0.01em; color:inherit; font-weight:400; }
+  .ps-citas .grid.cols3 .cell .q { font-size:32px; }
+  .ps-citas .cell .who { font-family:var(--sans); font-size:18px; letter-spacing:0.18em; text-transform:uppercase; color:#999; font-weight:500; }
   .ps-slide.lt .ps-citas .cell .who { color:#666; }
-  .ps-slide.yl .ps-citas .cell .who { color:var(--bg); opacity:0.7; }
+  .ps-slide.yl .ps-citas .cell .who { color:rgba(10,10,10,0.55); }
 
   /* cta-final QR variant (keeps text layout but splits with QR tile on one side) */
   /* CTA con QR: el QR legible desde 5m ocupa ~25-30% del ancho. Dejamos espacio al titular para que domine. */
@@ -1611,9 +1651,9 @@
   .ps-ctafinal.with-qr .qr-box img { width:100%; height:100%; object-fit:contain; }
   .ps-ctafinal.with-qr .qr-box.empty { border:4px dashed rgba(10,10,10,0.3); background:transparent; color:var(--bg); font-family:var(--sans); font-size:40px; letter-spacing:2px; text-transform:uppercase; }
   .ps-ctafinal.with-qr .txt { max-width:1100px; }
-  .ps-ctafinal.with-qr h1 { font-size:120px; margin-bottom:32px; }
-  .ps-ctafinal.with-qr.qr-lg h1 { font-size:96px; }
-  .ps-ctafinal.with-qr .eyebrow { margin-bottom:24px; }
+  .ps-ctafinal.with-qr h1 { font-size:140px; margin-bottom:48px; }
+  .ps-ctafinal.with-qr.qr-lg h1 { font-size:110px; }
+  .ps-ctafinal.with-qr .eyebrow { margin-bottom:36px; }
   .ps-ctafinal.with-qr .contact { font-size:44px; }
 
   /* recursos-agrupados (list grouped by category) */
@@ -1622,10 +1662,11 @@
      auto+1fr para reservar fila al titular siempre, align-content:start ancla arriba.
      padding-top 110 garantiza aire constante con la barra de header del slide. */
   .ps-recursos { padding:110px 160px 120px; height:100%; display:grid; grid-template-rows:auto 1fr; align-content:start; row-gap:48px; }
-  .ps-recursos h2 { font-family:var(--serif); font-size:56px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:0; color:#FAFAFA; font-weight:400; }
+  .ps-recursos h2 { font-family:var(--serif); font-size:64px; line-height:1.1; letter-spacing:-0.02em; margin-bottom:0; color:#FAFAFA; font-weight:400; }
   .ps-slide.lt .ps-recursos h2, .ps-slide.yl .ps-recursos h2 { color:var(--bg); }
-  .ps-recursos .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:48px; }
-  .ps-recursos .grid.cols2 { grid-template-columns:repeat(2, 1fr); gap:56px 72px; }
+  /* Default: grid 2 columnas (pattern DS slide 35: 4 categorías en 2x2). */
+  .ps-recursos .grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:56px 96px; }
+  .ps-recursos .grid.cols3 { grid-template-columns:repeat(3, 1fr); gap:48px; }
   .ps-recursos .grid.cols4 { grid-template-columns:repeat(4, 1fr); gap:32px; }
   /* B20: con 4 columnas y 3+ items/columna (algunos a 2-3 líneas), las columnas pasaban
      de los ~750px disponibles y los últimos items se salían por abajo. Reducimos tamaños
@@ -1638,15 +1679,14 @@
   .ps-recursos .cat li a.lnk { color:inherit; text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px; text-decoration-color:rgba(255,214,0,0.5); }
   .ps-slide.lt .ps-recursos .cat li a.lnk { text-decoration-color:rgba(184,160,0,0.7); }
   .ps-slide.yl .ps-recursos .cat li a.lnk { text-decoration-color:rgba(10,10,10,0.5); }
-  .ps-recursos .cat .hd { font-family:var(--sans); font-size:40px; letter-spacing:0.12em; color:var(--yellow); text-transform:uppercase; margin-bottom:24px; padding-bottom:12px; border-bottom:1px solid rgba(255,214,0,0.3); }
-  .ps-slide.lt .ps-recursos .cat .hd, .ps-slide.yl .ps-recursos .cat .hd { color:#B8A000; border-bottom-color:rgba(184,160,0,0.35); }
-  .ps-recursos .cat ul { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:16px; }
-  .ps-recursos .cat li { font-family:var(--sans); font-size:40px; line-height:1.35; color:#FAFAFA; }
+  .ps-recursos .cat .hd { font-family:var(--sans); font-size:22px; letter-spacing:0.18em; color:var(--yellow); text-transform:uppercase; margin-bottom:24px; font-weight:600; }
+  .ps-slide.lt .ps-recursos .cat .hd, .ps-slide.yl .ps-recursos .cat .hd { color:var(--bg); }
+  .ps-recursos .cat ul { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:18px; }
+  .ps-recursos .cat li { font-family:var(--sans); font-size:22px; line-height:1.35; color:#FAFAFA; font-weight:500; }
   .ps-slide.lt .ps-recursos .cat li, .ps-slide.yl .ps-recursos .cat li { color:var(--bg); }
-  .ps-recursos .cat li b { font-weight:600; display:block; margin-bottom:2px; }
-  .ps-recursos .cat li .src { color:#B8B8B8; font-size:40px; }
-  .ps-slide.lt .ps-recursos .cat li .src { color:#666; }
-  .ps-slide.yl .ps-recursos .cat li .src { color:var(--bg); opacity:0.6; }
+  .ps-recursos .cat li b { font-weight:500; display:block; margin-bottom:4px; }
+  .ps-recursos .cat li .src { color:#999; font-size:18px; font-weight:400; display:block; }
+  .ps-slide.lt .ps-recursos .cat li .src, .ps-slide.yl .ps-recursos .cat li .src { color:rgba(10,10,10,0.55); }
 
   /* cierre (final thank you) */
   .ps-cierre { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; position:relative; }
@@ -4218,24 +4258,36 @@ function cslSurface(d) {
   return ''; // claro/hueso default
 }
 
-// PORTADA — default dark, acepta fondo: claro/amarillo
+// PORTADA — default dark, acepta fondo: claro/amarillo.
+// Overrides:
+//   header: no   → oculta eyebrow (y wordmark si está arriba)
+//   footer: no   → oculta pt-bottom (URL + Confidencial)
+//   wordmark:    → 'arriba' (default), 'abajo' (firma editorial al pie), 'oculto' (sin wordmark)
 function renderCSLPortada(g, d, pN, tot) {
+  const isOff = (v) => ['no', 'off', 'false', 'none', 'hidden', '0'].includes((v || '').toString().toLowerCase().trim());
+  const hideHeader = isOff(d.header || d.top_meta);
+  const hideFooter = isOff(d.footer || d.foot);
+  const wmPos = (d.wordmark || 'arriba').toString().toLowerCase().trim();
+  const wmHidden = wmPos === 'oculto' || wmPos === 'no' || wmPos === 'hidden';
+  const wmAbajo = wmPos === 'abajo' || wmPos === 'pie' || wmPos === 'bottom';
   const eyebrow = (d.eyebrow || g.referencia || 'CASE STUDY · CONFIDENCIAL').toUpperCase();
   const meta = (d.meta || `Cliente: ${g.cliente || '—'}\nIndustria: ${g.industria || '—'}\nFecha: ${g.fecha || '—'}`).split('\n').filter(Boolean).map(l => `<div>${l}</div>`).join('');
-  // Default dark; sobreescribe a lt/yl si fondo lo pide. Wordmark se invierte automáticamente.
   const surf = (d.fondo === 'claro' || d.fondo === 'hueso') ? 'lt' : (d.fondo === 'amarillo' ? 'yl' : '');
   const wmColor = surf ? '#0A0A0A' : '#FAFAFA';
-  return `<div class="frame a4"><div class="csl-page ${surf} csl-portada">
-    <div class="pt-wm">${wordmark(wmColor)}</div>
-    <div class="pt-eyebrow">${eyebrow}</div>
+  const wmArribaHtml = (!wmHidden && !wmAbajo && !hideHeader) ? `<div class="pt-wm">${wordmark(wmColor)}</div>` : '';
+  const wmAbajoHtml = (!wmHidden && wmAbajo) ? `<div class="pt-wm-bottom">${wordmark(wmColor)}</div>` : '';
+  return `<div class="frame a4"><div class="csl-page ${surf} csl-portada${wmAbajo ? ' wm-bottom' : ''}">
+    ${wmArribaHtml}
+    ${hideHeader ? '' : `<div class="pt-eyebrow">${eyebrow}</div>`}
     <h1>${applyHighlights(d.titular || g.titulo || 'Dossier')}</h1>
     ${d.subtitulo ? `<div class="pt-sub">${d.subtitulo}</div>` : ''}
     <div class="pt-accent"></div>
     <div class="pt-meta">${meta}</div>
-    <div class="pt-bottom">
+    ${wmAbajoHtml}
+    ${hideFooter ? '' : `<div class="pt-bottom">
       <span>${decorateIngUrl(g.url)}</span>
       <span>${(d.confidencial || 'INTERNAL · NO DISTRIBUIR').toUpperCase()}</span>
-    </div>
+    </div>`}
   </div></div>`;
 }
 
@@ -4436,9 +4488,12 @@ function renderCSLFramework(g, d, pN, tot) {
 function renderCSLCierre(g, d, pN, tot) {
   const surf = (d.fondo === 'oscuro') ? 'dk' : (d.fondo === 'claro' || d.fondo === 'hueso') ? 'lt' : 'yl';
   const showFoot = ['si', 'sí', 'yes', 'true', '1', 'on'].includes((d.footer || '').toString().toLowerCase().trim());
+  // El número de capítulo SOLO si el YAML lo declara explícitamente — antes tenía
+  // fallback hardcoded ('08') que pintaba un número fantasma cuando no se quería.
+  const numero = (d.numero === undefined || d.numero === null || d.numero === '' || d.numero === false)
+    ? null : d.numero.toString().padStart(2, '0');
   return `<div class="frame a4"><div class="csl-page ${surf} csl-cierre">
-    <div class="ci-num">${(d.numero || '08').toString().padStart(2, '0')}</div>
-    <div class="ci-line"></div>
+    ${numero ? `<div class="ci-num">${numero}</div><div class="ci-line"></div>` : ''}
     <h2>${applyHighlights(d.titular || 'El espejo')}</h2>
     ${d.deck ? `<p class="ci-deck">${applyHighlights(d.deck)}</p>` : ''}
     ${d.cta ? `<div class="ci-cta"><span>${d.cta}</span><span>→</span></div>` : ''}
@@ -4884,17 +4939,18 @@ function renderPsHero(d, g, n, tot) {
   const eyebrow = d.eyebrow || d.kicker || (g.evento_nombre ? g.evento_nombre.toUpperCase() : '');
   const author = d.autor || g.autor || '';
   const fecha = d.fecha || g.fecha || '';
-  const meta = [author, fecha].filter(Boolean).join(' · ');
-  // F3 — hilo griego: subtitular opcional debajo del título (marca de agua conceptual).
+  // F3 — hilo griego en hero: va ARRIBA del eyebrow (anchor conceptual amarillo italic),
+  // siguiendo el patrón Magnify Design System slide 1.
   const griego = d.griego || d.subtitular_griego || d.subtitular || '';
   return `<div class="frame ps"><div class="ps-slide ${surface}">
     ${psTopMeta(g, d)}
     <div class="ps-hero">
+      ${griego ? `<div class="griego">${griego}</div>` : ''}
       ${eyebrow ? `<div class="eyebrow">${eyebrow}</div>` : ''}
       <div class="title">${title}</div>
-      ${griego ? `<div class="griego">${griego}</div>` : ''}
       <div class="hairline"></div>
-      ${meta ? `<div class="author">${meta}</div>` : ''}
+      ${author ? `<div class="author">${author}</div>` : ''}
+      ${fecha ? `<div class="fecha">${fecha}</div>` : ''}
     </div>
     <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
@@ -4998,9 +5054,9 @@ function renderPsStatHero(d, g, n, tot) {
   return `<div class="frame ps"><div class="ps-slide ${surface}">
     ${psTopMeta(g, d)}
     <div class="ps-stat-hero">
+      ${d.eyebrow ? `<span class="eyebrow">${d.eyebrow}</span>` : ''}
       <div class="stat-block">${inline}</div>
       <div class="explain">
-        ${d.eyebrow ? `<span class="eyebrow">${d.eyebrow}</span>` : ''}
         <h2>${applyHighlights(d.descripcion || '')}</h2>
         ${d.fuente ? `<div class="src">${d.fuente}</div>` : ''}
       </div>
@@ -5604,14 +5660,14 @@ function richWithHighlights(text, baseOpts, bgMode) {
   let last = 0, m;
   while ((m = re.exec(text)) !== null) {
     if (m.index > last) parts.push({ text: text.slice(last, m.index), options: baseOpts });
-    // Keynote NO renderiza el atributo highlight de OOXML (.pptx). Probado v8: las
-    // palabras con highlight salen invisibles sobre fondo oscuro. Por eso en PPTX
-    // usamos color + italic (+ bold en claros para compensar la ausencia de stamp).
-    // El preview HTML sí usa stamp amarillo sólido (regla .hl). Sincronizados
-    // estéticamente, compatibles por capa.
+    // Patrón Magnify Design System: en cualquier surface el highlight es
+    // texto negro + fondo amarillo (espejo del CSS `.hl` y `.csl-page.dk .hl-c`).
+    // En PPTX se emite con `highlight` de pptxgenjs → atributo `<a:highlight val="FFD600"/>`.
+    // PowerPoint lo respeta. Keynote NO lo renderiza (bug histórico): si el deck se va a
+    // abrir desde Keynote, abrir desde PowerPoint o exportar PDF directamente desde Studio.
     let hlOpts;
     if (bgMode === 'dark') {
-      hlOpts = { ...baseOpts, color: COLOR_YELLOW, italic: true };
+      hlOpts = { ...baseOpts, color: COLOR_DARK, italic: true, highlight: COLOR_YELLOW };
     } else if (bgMode === 'yellow') {
       // Underline grueso sobre amarillo — el stamp amarillo no funciona y el bold
       // solo no se diferencia bastante. Subrayado editorial mantiene el amarillo
@@ -5909,16 +5965,19 @@ function buildPptxHero(pptx, d, g, n, tot) {
   const surf = surfaceBg(d, true);
   s.background = { color: surf.bg };
   addTopMetaPptx(s, g, surf.meta, d);
-  const eyebrow = d.eyebrow || d.kicker || (g.evento_nombre ? g.evento_nombre.toUpperCase() : '');
-  if (eyebrow) s.addText(eyebrow, { x: 0.7, y: 3.8, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: surf.meta, charSpacing: 2 });
-  s.addText(richWithHighlights(d.titular || g.titulo || 'Titulo', { fontFace: FONT_SERIF, fontSize: 72, color: surf.fg }, d.fondo === 'amarillo' ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark')),
-    { x: 0.7, y: 4.2, w: 12, h: 1.3, valign: 'top' });
-  // F3 — hilo griego opcional debajo del título: tenue, italic serif, marca de agua.
+  // Layout pattern Magnify Design System slide 1: griego ARRIBA italic amarillo,
+  // eyebrow gris uppercase, titular italic grande, hairline amarilla, autor + fecha apilados.
   const griegoHero = d.griego || d.subtitular_griego || d.subtitular || '';
-  if (griegoHero) s.addText(griegoHero, { x: 0.7, y: 5.5, w: 12, h: 0.5, fontFace: FONT_SERIF, fontSize: 28, color: surf.meta, italic: true });
-  s.addShape(pptx.ShapeType.rect, { x: 0.7, y: 6.0, w: 0.6, h: 0.02, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
-  const meta = [d.autor || g.autor, d.fecha || g.fecha].filter(Boolean).join(' · ');
-  if (meta) s.addText(meta, { x: 0.7, y: 6.2, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 22, color: surf.fg });
+  const eyebrow = d.eyebrow || d.kicker || (g.evento_nombre ? g.evento_nombre.toUpperCase() : '');
+  const griegoColor = (surf.bg === COLOR_YELLOW || d.fondo === 'claro') ? COLOR_DARK : COLOR_YELLOW;
+  const hairlineColor = (surf.bg === COLOR_YELLOW) ? COLOR_DARK : COLOR_YELLOW;
+  if (griegoHero) s.addText(griegoHero, { x: 0.7, y: 2.5, w: 12, h: 0.55, fontFace: FONT_SERIF, fontSize: 33, color: griegoColor, italic: true });
+  if (eyebrow) s.addText(eyebrow, { x: 0.7, y: 3.05, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 22, color: surf.meta, charSpacing: 2 });
+  s.addText(richWithHighlights(d.titular || g.titulo || 'Titulo', { fontFace: FONT_SERIF, fontSize: 96, color: surf.fg, italic: true }, d.fondo === 'amarillo' ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark')),
+    { x: 0.7, y: 3.5, w: 12, h: 1.4, valign: 'top' });
+  s.addShape(pptx.ShapeType.rect, { x: 0.7, y: 5.05, w: 0.6, h: 0.02, fill: { color: hairlineColor }, line: { color: hairlineColor } });
+  if (d.autor || g.autor) s.addText(d.autor || g.autor, { x: 0.7, y: 5.3, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 22, color: surf.fg });
+  if (d.fecha || g.fecha) s.addText(d.fecha || g.fecha, { x: 0.7, y: 5.65, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 22, color: surf.meta });
   surf.fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, surf.meta);
 }
@@ -5972,7 +6031,9 @@ function buildPptxManifiesto(pptx, d, g, n, tot) {
   }
   const titleY = griegoManif ? (griegoIsAnchor ? 2.5 : 1.7) : 1.2;
   const titleH = griegoManif ? (griegoIsAnchor ? 4.0 : 4.8) : 5.3;
-  s.addText(richWithHighlights((d.titular || d.frase || ''), { fontFace: FONT_SERIF, fontSize: size, color: fg, italic: true }, mode),
+  // Pattern Magnify Design System slide 29: titular serif REGULAR (no italic global). Solo el
+  // highlight `[palabra]` activa italic + fondo amarillo (lo aplica richWithHighlights).
+  s.addText(richWithHighlights((d.titular || d.frase || ''), { fontFace: FONT_SERIF, fontSize: size, color: fg }, mode),
     { x: 0.7, y: titleY, w: 11.9, h: titleH, valign: 'middle', align: 'left' });
   fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, useYellow ? '444444' : COLOR_GREY);
@@ -6014,27 +6075,28 @@ function buildPptxStatHero(pptx, d, g, n, tot) {
   const surf = surfaceBg(d, true);
   s.background = { color: surf.bg };
   addTopMetaPptx(s, g, surf.meta, d);
+  // Pattern Magnify Design System slide 18: layout VERTICAL CENTRADO horizontalmente.
+  // Eyebrow gris top → número italic amarillo gigante centro → descripción serif blanco → fuente sans gris.
   const mode = d.fondo === 'amarillo' ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark');
   const num = (d.numero || '0').toString();
   const suf = (d.sufijo || '').toString();
-  // Sufijo largo (> 3 chars o con espacios) → segunda línea. Corto (%, :1, ×) inline.
   const longSuf = suf.length > 3 || /\s/.test(suf);
   const numColor = d.fondo === 'amarillo' ? COLOR_DARK : COLOR_YELLOW;
+  if (d.eyebrow) s.addText(d.eyebrow, { x: 0.7, y: 1.5, w: PPTX_W - 1.4, h: 0.4, fontFace: FONT_SANS, fontSize: 18, color: surf.meta, charSpacing: 2, align: 'center' });
   if (longSuf) {
-    const statSize = num.length <= 3 ? 200 : 150;
-    s.addText(num, { x: 0.4, y: 1.8, w: 5.8, h: 3.0, fontFace: FONT_SERIF, fontSize: statSize, color: numColor, align: 'center', valign: 'middle' });
-    s.addText(suf, { x: 0.4, y: 4.8, w: 5.8, h: 0.6, fontFace: FONT_SANS, fontSize: 24, color: numColor, align: 'center' });
+    const statSize = num.length <= 3 ? 150 : 110;
+    s.addText(num, { x: 0.7, y: 2.3, w: PPTX_W - 1.4, h: 2.2, fontFace: FONT_SERIF, fontSize: statSize, color: numColor, italic: true, align: 'center', valign: 'middle' });
+    s.addText(suf, { x: 0.7, y: 4.5, w: PPTX_W - 1.4, h: 0.5, fontFace: FONT_SANS, fontSize: 22, color: numColor, align: 'center' });
   } else {
     const statText = num + suf;
-    const statSize = statText.length <= 3 ? 180 : statText.length <= 5 ? 140 : 110;
-    s.addText(statText, { x: 0.4, y: 1.8, w: 5.8, h: 3.8, fontFace: FONT_SERIF, fontSize: statSize, color: numColor, align: 'center', valign: 'middle' });
+    const statSize = statText.length <= 3 ? 150 : statText.length <= 5 ? 120 : 95;
+    s.addText(statText, { x: 0.7, y: 2.3, w: PPTX_W - 1.4, h: 2.5, fontFace: FONT_SERIF, fontSize: statSize, color: numColor, italic: true, align: 'center', valign: 'middle' });
   }
-  if (d.eyebrow) s.addText(d.eyebrow, { x: 6.4, y: 2, w: 6, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: surf.meta, charSpacing: 2 });
   const descLen = (d.descripcion || '').length;
-  const descSize = descLen < 80 ? 28 : descLen < 140 ? 22 : 18;
+  const descSize = descLen < 80 ? 36 : descLen < 140 ? 28 : 22;
   s.addText(richWithHighlights(d.descripcion || '', { fontFace: FONT_SERIF, fontSize: descSize, color: surf.fg }, mode),
-    { x: 6.4, y: 2.55, w: 6.3, h: 3 });
-  if (d.fuente) s.addText(d.fuente, { x: 6.4, y: 5.7, w: 6, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: surf.meta });
+    { x: 0.7, y: 5.2, w: PPTX_W - 1.4, h: 0.9, align: 'center', valign: 'top' });
+  if (d.fuente) s.addText(d.fuente, { x: 0.7, y: 6.2, w: PPTX_W - 1.4, h: 0.4, fontFace: FONT_SANS, fontSize: 18, color: surf.meta, align: 'center' });
   surf.fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, surf.meta);
 }
@@ -6068,8 +6130,10 @@ function buildPptxFramework(pptx, d, g, n, tot) {
   const surf = surfaceBg(d, true);
   s.background = { color: surf.bg };
   addTopMetaPptx(s, g, surf.meta, d);
-  s.addText(richWithHighlights(d.titular || '', { fontFace: FONT_SERIF, fontSize: 40, color: surf.fg }, d.fondo === 'amarillo' ? 'yellow' : 'dark'),
-    { x: 0.7, y: 1.3, w: 12, h: 0.9 });
+  // Pattern Magnify Design System slide 25: titular grande arriba, hairline amarilla sobre
+  // cada step, número italic amarillo grande, label uppercase BLANCO, descripción sans blanco.
+  s.addText(richWithHighlights(d.titular || '', { fontFace: FONT_SERIF, fontSize: 44, color: surf.fg }, d.fondo === 'amarillo' ? 'yellow' : 'dark'),
+    { x: 0.7, y: 1.0, w: 12, h: 0.9 });
   const steps = [];
   for (let i = 1; i <= 4; i++) {
     const lbl = d[`paso${i}_label`] || d[`paso${i}_etiqueta`] || '';
@@ -6077,14 +6141,17 @@ function buildPptxFramework(pptx, d, g, n, tot) {
     if (lbl || desc) steps.push({ i, lbl, desc });
   }
   const four = steps.length >= 4;
-  const colW = four ? 3.1 : 4.2;
-  const numSize = four ? 100 : 130;
+  const colW = four ? 2.9 : 3.9;
+  const colGap = four ? 0.2 : 0.3;
+  const numSize = four ? 72 : 96;
   const descSize = four ? 16 : 20;
+  const lineColor = d.fondo === 'amarillo' ? COLOR_DARK : COLOR_YELLOW;
   steps.forEach((st, idx) => {
-    const x = 0.7 + idx * (colW + (four ? 0.1 : 0));
-    s.addText(String(st.i).padStart(2, '0'), { x, y: 3, w: colW, h: 1.8, fontFace: FONT_SERIF, fontSize: numSize, color: COLOR_YELLOW });
-    s.addText(st.lbl, { x, y: 4.5, w: colW, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: COLOR_YELLOW, charSpacing: 2, bold: true });
-    s.addText(st.desc, { x, y: 4.95, w: colW, h: 1.5, fontFace: FONT_SANS, fontSize: descSize, color: surf.fg });
+    const x = 0.7 + idx * (colW + colGap);
+    s.addShape(pptx.ShapeType.line, { x, y: 3.0, w: colW, h: 0, line: { color: lineColor, width: 1 } });
+    s.addText(String(st.i).padStart(2, '0'), { x, y: 3.15, w: colW, h: 1.4, fontFace: FONT_SERIF, fontSize: numSize, color: lineColor, italic: true });
+    if (st.lbl) s.addText(st.lbl, { x, y: 4.55, w: colW, h: 0.3, fontFace: FONT_SANS, fontSize: 14, color: surf.fg, charSpacing: 2, bold: true });
+    s.addText(st.desc, { x, y: 4.85, w: colW, h: 1.5, fontFace: FONT_SANS, fontSize: descSize, color: surf.fg });
   });
   surf.fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, surf.meta);
@@ -6220,26 +6287,21 @@ function buildPptxImagenSplit(pptx, d, g, n, tot) {
 function buildPptxDiptych(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   s.background = { color: COLOR_DARK };
-  // Layout 70% imagen / 30% caption opaca, mismo split que el HTML preview.
-  // Antes: imagen cover en todo el frame + scrim semi-transparente → contenido de la
-  // captura se veía tras la caption (iconos Instagram, remate ChatGPT). Ahora la imagen
-  // vive en y:0..5.25 con sizing:contain (no se crope ninguna información) y la caption
-  // va en y:5.25..7.5 con fondo sólido COLOR_DARK + borde amarillo superior.
-  const imgH = 5.25;
-  const capY = 5.25;
-  const capH = 2.25;
+  // Layout pattern Magnify Design System slide 2/5: imagen ~80% top, caption ~20% bottom
+  // SIN línea amarilla separadora (el contraste de la propia imagen y caption ya los delimita).
+  // Label amarillo pequeño + title italic serif.
+  const imgH = 6.0;
+  const capY = 6.0;
+  const capH = 1.5;
   [[d.imagen_a, 0, d.label_a || 'ANTES', d.titulo_a, d.cuerpo_a], [d.imagen_b, PPTX_W / 2, d.label_b || 'DESPUÉS', d.titulo_b, d.cuerpo_b]].forEach(([img, x, lbl, t, body]) => {
     const halfW = PPTX_W / 2;
     const src = uploadedImages[img];
-    // Zona imagen: background más claro para distinguir el letterbox de contain.
     s.addShape(pptx.ShapeType.rect, { x, y: 0, w: halfW, h: imgH, fill: { color: '141414' }, line: { color: '141414' } });
     if (src) s.addImage({ data: src, x: x + 0.2, y: 0.2, w: halfW - 0.4, h: imgH - 0.4, sizing: { type: 'contain', w: halfW - 0.4, h: imgH - 0.4 } });
-    // Caption sólida.
     s.addShape(pptx.ShapeType.rect, { x, y: capY, w: halfW, h: capH, fill: { color: COLOR_DARK }, line: { color: COLOR_DARK } });
-    s.addShape(pptx.ShapeType.rect, { x, y: capY, w: halfW, h: 0.04, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
-    s.addText(lbl.toUpperCase(), { x: x + 0.5, y: capY + 0.2, w: halfW - 1, h: 0.35, fontFace: FONT_SANS, fontSize: 20, color: COLOR_YELLOW, charSpacing: 2, bold: true });
-    s.addText(richWithHighlights(t || '', { fontFace: FONT_SERIF, fontSize: 28, color: 'FFFFFF' }, 'dark'), { x: x + 0.5, y: capY + 0.6, w: halfW - 1, h: 1, valign: 'top' });
-    if (body) s.addText(body, { x: x + 0.5, y: capY + 1.55, w: halfW - 1, h: 0.5, fontFace: FONT_SANS, fontSize: 20, color: 'CCCCCC' });
+    s.addText(lbl.toUpperCase(), { x: x + 0.5, y: capY + 0.18, w: halfW - 1, h: 0.32, fontFace: FONT_SANS, fontSize: 14, color: COLOR_YELLOW, charSpacing: 2, bold: true });
+    s.addText(richWithHighlights(t || '', { fontFace: FONT_SERIF, fontSize: 24, color: 'FFFFFF', italic: true }, 'dark'), { x: x + 0.5, y: capY + 0.55, w: halfW - 1, h: 0.85, valign: 'top' });
+    if (body) s.addText(body, { x: x + 0.5, y: capY + 1.05, w: halfW - 1, h: 0.4, fontFace: FONT_SANS, fontSize: 14, color: 'CCCCCC' });
   });
   addTopMetaPptx(s, g, 'CCCCCC', d);
   addPaginator(s, n, tot, 'CCCCCC');
@@ -6248,15 +6310,19 @@ function buildPptxDiptych(pptx, d, g, n, tot) {
 function buildPptxTriptych(pptx, d, g, n, tot) {
   const s = pptx.addSlide();
   s.background = { color: COLOR_DARK };
+  // Pattern Magnify Design System slide 15: imagen top ~67% (5.0"), caption bottom ~33% (2.5")
+  // sobre banda negra opaca (sin scrim translúcido).
+  const imgH = 5.0;
+  const capY = 5.0;
   for (let i = 1; i <= 3; i++) {
     const src = uploadedImages[d[`imagen${i}`]];
     const x = (PPTX_W / 3) * (i - 1);
-    if (src) s.addImage({ data: src, x, y: 0, w: PPTX_W / 3, h: PPTX_H, sizing: { type: 'cover', w: PPTX_W / 3, h: PPTX_H } });
-    else s.addShape(pptx.ShapeType.rect, { x, y: 0, w: PPTX_W / 3, h: PPTX_H, fill: { color: '2a2a2a' }, line: { color: '2a2a2a' } });
-    s.addShape(pptx.ShapeType.rect, { x, y: 4.5, w: PPTX_W / 3, h: 3, fill: { color: '000000', transparency: 30 }, line: { color: '000000' } });
-    s.addText(d[`num${i}`] || String(i).padStart(2, '0'), { x: x + 0.3, y: 4.9, w: 3.7, h: 0.8, fontFace: FONT_SERIF, fontSize: 40, color: COLOR_YELLOW });
-    s.addText(richWithHighlights(d[`titulo${i}`] || '', { fontFace: FONT_SERIF, fontSize: 22, color: 'FFFFFF' }, 'dark'), { x: x + 0.3, y: 5.7, w: 3.7, h: 0.7 });
-    if (d[`descripcion${i}`]) s.addText(d[`descripcion${i}`], { x: x + 0.3, y: 6.4, w: 3.7, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: 'DDDDDD' });
+    if (src) s.addImage({ data: src, x, y: 0, w: PPTX_W / 3, h: imgH, sizing: { type: 'cover', w: PPTX_W / 3, h: imgH } });
+    else s.addShape(pptx.ShapeType.rect, { x, y: 0, w: PPTX_W / 3, h: imgH, fill: { color: '2a2a2a' }, line: { color: '2a2a2a' } });
+    s.addShape(pptx.ShapeType.rect, { x, y: capY, w: PPTX_W / 3, h: PPTX_H - capY, fill: { color: COLOR_DARK }, line: { color: COLOR_DARK } });
+    s.addText(d[`num${i}`] || String(i).padStart(2, '0'), { x: x + 0.4, y: capY + 0.3, w: 3.6, h: 0.7, fontFace: FONT_SERIF, fontSize: 36, color: COLOR_YELLOW, italic: true });
+    s.addText(richWithHighlights(d[`titulo${i}`] || '', { fontFace: FONT_SERIF, fontSize: 26, color: 'FFFFFF' }, 'dark'), { x: x + 0.4, y: capY + 1.05, w: 3.6, h: 0.6 });
+    if (d[`descripcion${i}`]) s.addText(d[`descripcion${i}`], { x: x + 0.4, y: capY + 1.7, w: 3.6, h: 0.7, fontFace: FONT_SANS, fontSize: 14, color: 'DDDDDD' });
   }
   addTopMetaPptx(s, g, 'CCCCCC', d);
   addPaginator(s, n, tot, 'CCCCCC');
@@ -6310,14 +6376,18 @@ function buildPptxQuoteBig(pptx, d, g, n, tot) {
   const fg = dk ? COLOR_LIGHT_TEXT : COLOR_DARK;
   s.background = { color: bg };
   addTopMetaPptx(s, g, dk ? COLOR_GREY : '666666', d);
-  // Comilla arriba-izquierda fuera del flujo del texto. Antes ambos en x:0.7 → la comilla
-  // pisaba la primera letra del cuerpo con mayúsculas altas (M, L). Ahora comilla en
-  // x:0.7 arriba, texto en x:1.6 con indent para no solaparse.
-  s.addText('"', { x: 0.7, y: 1.0, w: 1.5, h: 1.6, fontFace: FONT_SERIF, fontSize: 150, color: fg, valign: 'top' });
-  s.addText(richWithHighlights((d.cita || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 48, color: fg }, dk ? 'dark' : (yl ? 'yellow' : 'light')),
-    { x: 1.6, y: 2.4, w: 10.6, h: 3 });
-  if (d.nombre) s.addText(d.nombre, { x: 1.6, y: 5.8, w: 8, h: 0.4, fontFace: FONT_SANS, fontSize: 22, color: fg, bold: true });
-  if (d.rol) s.addText(d.rol, { x: 1.6, y: 6.2, w: 8, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: dk ? COLOR_GREY : '666666' });
+  // Pattern Magnify Design System slide 6/7: comilla AMARILLA pequeña arriba-izquierda,
+  // cita serif, atribución en una sola línea (nombre bold + rol gris).
+  const markColor = (yl) ? COLOR_DARK : COLOR_YELLOW;
+  s.addText('"', { x: 0.9, y: 2.0, w: 0.7, h: 0.7, fontFace: FONT_SERIF, fontSize: 48, color: markColor, valign: 'top' });
+  s.addText(richWithHighlights((d.cita || '').replace(/\n/g, '\n'), { fontFace: FONT_SERIF, fontSize: 44, color: fg }, dk ? 'dark' : (yl ? 'yellow' : 'light')),
+    { x: 0.9, y: 2.7, w: 11.5, h: 3 });
+  // Atribución horizontal: nombre + rol separados por gap.
+  const attrParts = [];
+  if (d.nombre) attrParts.push({ text: d.nombre, options: { fontFace: FONT_SANS, fontSize: 18, color: fg, bold: true } });
+  if (d.nombre && d.rol) attrParts.push({ text: '    ', options: { fontFace: FONT_SANS, fontSize: 18, color: fg } });
+  if (d.rol) attrParts.push({ text: d.rol, options: { fontFace: FONT_SANS, fontSize: 18, color: dk ? COLOR_GREY : '666666' } });
+  if (attrParts.length) s.addText(attrParts, { x: 0.9, y: 6.1, w: 11.5, h: 0.4, valign: 'top' });
   fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, dk ? COLOR_GREY : '666666');
 }
@@ -6474,15 +6544,19 @@ function buildPptxStatsCharla(pptx, d, g, n, tot) {
   const cellH = rows === 1 ? 4.2 : 1.8;
   const rowGap = 0.25;
   const cellW = 11.6 / cols;
-  const numSize = cols === 4 ? 68 : (cols === 3 ? 96 : 110);
+  // Pattern Magnify Design System slide 22: hairline horizontal arriba del grid + número
+  // italic amarillo + label uppercase BLANCO (no amarillo) + descripción gris.
+  s.addShape(pptx.ShapeType.line, { x: 0.7, y: gridTop - 0.15, w: 11.6, h: 0, line: { color: surf.fg === COLOR_DARK ? '333333' : 'CCCCCC', width: 0.75 } });
+  const numSize = cols === 4 ? 56 : (cols === 3 ? 80 : 96);
+  const labelColor = surf.fg;
   cells.forEach((c, i) => {
     const col = i % cols, row = Math.floor(i / cols);
     const x = 0.7 + col * cellW;
     const y = gridTop + row * (cellH + rowGap);
-    const numColor = c.hi || (surf.fg === COLOR_DARK ? '888800' : COLOR_YELLOW);
-    s.addText(c.num, { x, y, w: cellW - 0.3, h: cellH * 0.55, fontFace: FONT_SERIF, fontSize: numSize, color: numColor });
-    if (c.lbl) s.addText(c.lbl.toUpperCase(), { x, y: y + cellH * 0.6, w: cellW - 0.3, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: COLOR_YELLOW, charSpacing: 2, bold: true });
-    if (c.desc) s.addText(c.desc, { x, y: y + cellH * 0.78, w: cellW - 0.3, h: cellH * 0.22, fontFace: FONT_SANS, fontSize: 20, color: surf.fg });
+    const numColor = c.hi || (surf.fg === COLOR_DARK ? COLOR_YELLOW : COLOR_YELLOW);
+    s.addText(c.num, { x, y, w: cellW - 0.3, h: cellH * 0.55, fontFace: FONT_SERIF, fontSize: numSize, color: numColor, italic: true });
+    if (c.lbl) s.addText(c.lbl.toUpperCase(), { x, y: y + cellH * 0.62, w: cellW - 0.3, h: 0.3, fontFace: FONT_SANS, fontSize: 14, color: labelColor, charSpacing: 2, bold: true });
+    if (c.desc) s.addText(c.desc, { x, y: y + cellH * 0.78, w: cellW - 0.3, h: cellH * 0.22, fontFace: FONT_SANS, fontSize: 14, color: surf.meta });
   });
   // Fuente desplazada a la derecha del monograma (x:1.3) para no solaparse con él.
   if (d.fuente) s.addText(d.fuente, { x: 1.3, y: 6.95, w: 9, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: surf.meta });
@@ -6495,22 +6569,25 @@ function buildPptxCitasGrid(pptx, d, g, n, tot) {
   const surf = surfaceBg(d, true);
   s.background = { color: surf.bg };
   addTopMetaPptx(s, g, surf.meta, d);
-  if (d.titular) s.addText(richWithHighlights(d.titular, { fontFace: FONT_SERIF, fontSize: 32, color: surf.fg }, 'dark'),
-    { x: 0.7, y: 1.3, w: 12, h: 0.7 });
+  // Pattern Magnify Design System slide 20: titular grande arriba, grid de celdas con barra
+  // vertical del MISMO color que el texto (no amarilla), autor en uppercase letterspaced gris.
+  if (d.titular) s.addText(richWithHighlights(d.titular, { fontFace: FONT_SERIF, fontSize: 44, color: surf.fg }, 'dark'),
+    { x: 0.7, y: 1.0, w: 12, h: 0.9 });
   const cells = [];
   for (let i = 1; i <= 6; i++) if (d[`cita${i}`]) cells.push({ q: d[`cita${i}`], who: d[`autor${i}`] || '' });
   const cols = cells.length > 4 ? 3 : 2;
   const rows = Math.ceil(cells.length / cols);
   const cellW = 11.6 / cols;
   const cellH = rows === 1 ? 4 : 1.9;
-  const qSize = cols === 3 ? 18 : 22;
+  const qSize = cols === 3 ? 16 : 20;
+  const barColor = surf.fg;
   cells.forEach((c, i) => {
     const col = i % cols, row = Math.floor(i / cols);
     const x = 0.7 + col * cellW;
-    const y = 2.3 + row * (cellH + 0.25);
-    s.addShape(pptx.ShapeType.rect, { x, y, w: 0.03, h: cellH, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
-    s.addText(c.q.replace(/\n/g, '\n'), { x: x + 0.2, y, w: cellW - 0.4, h: cellH * 0.75, fontFace: FONT_SERIF, fontSize: qSize, color: surf.fg, italic: true });
-    if (c.who) s.addText('— ' + c.who, { x: x + 0.2, y: y + cellH * 0.78, w: cellW - 0.4, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: surf.meta });
+    const y = 2.5 + row * (cellH + 0.4);
+    s.addShape(pptx.ShapeType.rect, { x, y, w: 0.03, h: cellH, fill: { color: barColor }, line: { color: barColor } });
+    s.addText(c.q.replace(/\n/g, '\n'), { x: x + 0.25, y, w: cellW - 0.4, h: cellH * 0.75, fontFace: FONT_SERIF, fontSize: qSize, color: surf.fg, italic: true });
+    if (c.who) s.addText(c.who.toUpperCase(), { x: x + 0.25, y: y + cellH * 0.82, w: cellW - 0.4, h: 0.3, fontFace: FONT_SANS, fontSize: 12, color: surf.meta, charSpacing: 2, bold: true });
   });
   surf.fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, surf.meta);

@@ -154,7 +154,11 @@ eyebrow: CASE STUDY · CONFIDENCIAL
 titular: Cuando el [catálogo] cambia después del comprador.
 subtitulo: Una marca de salud y bienestar que rehace su arquitectura escuchando a sus clientes.
 confidencial: INTERNAL · NO DISTRIBUIR
+wordmark: arriba          # opcional: arriba (default) | abajo (firma editorial al pie) | oculto
+header: no                # opcional: oculta wordmark+eyebrow del top
+footer: no                # opcional: oculta el pt-bottom (URL + Confidencial)
 ```
+**`wordmark: abajo`** invierte la jerarquía editorial: el contenido manda arriba, la marca firma al pie ("Mírate. — Magnify" en lugar de "Magnify presenta: Mírate"). Para documentos editoriales serios.
 
 #### `tldr` — resumen ejecutivo, lista numerada con números amarillos
 ```yaml
