@@ -1304,23 +1304,21 @@
   .ps-imgfull .bg { position:absolute; inset:0; }
   .ps-imgfull .bg.ph { background:linear-gradient(180deg,#2a2a2a 0%,#161616 70%,#0a0a0a 100%); }
   .ps-imgfull .bg.ph::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(90deg, transparent 0 80px, rgba(255,255,255,0.02) 80px 82px); }
-  /* B15 + B16-bis: imagen real renderizada como <img>, no background-image.
-     Razón: html2canvas (motor del export PDF) tiene bug conocido con background-size:contain
-     en imágenes data:URL — siempre las pinta como cover.
-     B16-bis (Apr 2026): html2canvas ALSO ignora object-fit:contain en <img> con data:URLs
-     (la pinta a tamaño natural o estirada). Por eso .fit-contain ahora usa
-     max-width/max-height + margin:auto + position:absolute + inset:0 — CSS estándar
-     sin object-fit que html2canvas sí respeta de manera fiable.
-     cover sigue usando object-fit (funciona porque llena el frame, no requiere cálculo
-     de aspect ratio respetado). contain usa el patrón de constrain + center que
-     preserva aspect ratio sin object-fit. */
+  /* B15 + B16-final (Apr 26 2026): imagen real renderizada como <img>, no background-image.
+     html2canvas (motor del export PDF) tiene DOS bugs conocidos con data:URLs:
+       1. background-size:contain → siempre cover
+       2. object-fit:contain → ignorado, imagen a tamaño natural
+     CSS-only fallaba porque max-width:100% + margin:auto no escala IMÁGENES MENORES
+     que el frame (treemap 1600×800 en 1920×1080 quedaba con bandas laterales de 160px).
+     Solución definitiva: JS onload calcula aspect ratio y aplica width/height explícitos
+     (100%/auto o auto/100%) — html2canvas SÍ respeta width/height inline. Ver fitContainOnLoad. */
   .ps-imgfull .bg-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; }
   .ps-imgfull .bg-img.fit-contain {
-    /* override total del modo cover */
-    width:auto; height:auto;
-    max-width:100%; max-height:100%;
+    /* Defaults pre-onload: imagen visible mientras carga. Tras onload se sobrescriben
+       width/height con los valores calculados según aspect ratio. */
     inset:0; margin:auto;
     object-fit:initial;
+    max-width:100%; max-height:100%;
     background-color:#0A0A0A;
   }
   .ps-imgfull .scrim { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.75), transparent 55%); }
@@ -4929,6 +4927,25 @@ function renderPsTimelineC(d, g, n, tot) {
   </div></div>`;
 }
 
+// B16-final (Apr 26 2026): aplica dimensiones explícitas al <img> contain para que
+// html2canvas las respete. CSS object-fit es ignorado en data:URLs por html2canvas.
+// Calcula si fit width o height comparando aspect ratios y emite width:100%/height:auto
+// (o viceversa). Centrado vía margin:auto + inset:0 ya viene del CSS base.
+function fitContainOnLoad(img) {
+  const boxW = 1920, boxH = 1080;  // slide nativo 16:9
+  const ar = img.naturalWidth / img.naturalHeight;
+  const arBox = boxW / boxH;
+  if (ar > arBox) {
+    // imagen más ancha que el slide → fit width, bandas top/bottom
+    img.style.width = '100%';
+    img.style.height = 'auto';
+  } else {
+    // imagen más alta o cuadrada → fit height, bandas laterales
+    img.style.width = 'auto';
+    img.style.height = '100%';
+  }
+}
+
 // Charla — Image full-bleed with overlay
 function renderPsImagenFull(d, g, n, tot) {
   // B15: si hay imagen subida la emitimos como <img> con object-fit (no background-image)
@@ -4939,7 +4956,7 @@ function renderPsImagenFull(d, g, n, tot) {
   const ajuste = (d.imagen_ajuste || d.ajuste || 'cover').toLowerCase();
   const ajusteCls = ajuste === 'contain' ? ' fit-contain' : '';
   const bgEl = src
-    ? `<img class="bg-img${ajusteCls}" src="${src}" alt="">`
+    ? `<img class="bg-img${ajusteCls}" src="${src}" alt=""${ajuste === 'contain' ? ' onload="fitContainOnLoad(this)"' : ''}>`
     : `<div class="bg ph"></div>`;
   return `<div class="frame ps"><div class="ps-slide dk on-image">
     <div class="ps-imgfull">
