@@ -1225,9 +1225,13 @@
      añadimos peso visual para que ocupen el escenario. */
   .ps-manif.short { align-items:center; text-align:center; }
   .ps-manif.short .hero-xxl { text-align:center; }
-  /* F3 hilo griego: stamp encima del titular, tenue. */
+  /* F3 hilo griego: stamp encima del titular, tenue. Default sans para frases largas
+     (ej. "Γνῶθι σεαυτόν" en slide 30). Modificador .anchor para letras sueltas Α/Β/Γ
+     usadas como marcadores de acto — serif italic grande estilo hero. */
   .ps-manif .griego-stamp { font-family:var(--sans); font-size:40px; letter-spacing:0.2em; color:rgba(250,250,250,0.5); margin-bottom:40px; font-weight:400; }
+  .ps-manif .griego-stamp.anchor { font-family:var(--serif); font-style:italic; font-size:120px; letter-spacing:0.02em; color:rgba(250,250,250,0.4); margin-bottom:48px; font-weight:400; line-height:1; }
   .ps-slide.lt .ps-manif .griego-stamp, .ps-slide.yl .ps-manif .griego-stamp { color:rgba(10,10,10,0.55); }
+  .ps-slide.lt .ps-manif .griego-stamp.anchor, .ps-slide.yl .ps-manif .griego-stamp.anchor { color:rgba(10,10,10,0.4); }
   .ps-manif .hero-xxl { font-family:var(--serif); font-weight:400; font-style:italic; font-size:160px; line-height:1.0; letter-spacing:-0.02em; text-align:left; color:#F0F0F0; }
   .ps-manif .hero-xxl.s-md { font-size:128px; }
   .ps-manif .hero-xxl.s-sm { font-size:104px; }
@@ -4872,11 +4876,14 @@ function renderPsManifiesto(d, g, n, tot) {
   // centra horizontalmente para darles peso editorial.
   const shortCls = len <= 15 ? ' short' : '';
   // F3 — hilo griego: stamp encima del titular (p.ej. "Γνῶθι σεαυτόν" en slide 26).
-  const griego = d.griego || d.subtitular_griego || '';
+  // Letras sueltas (1-3 chars como "Α"/"Β"/"Γ") se renderizan como anchor visual grande
+  // (serif italic 120px estilo hero); frases más largas mantienen el stamp sans pequeño.
+  const griego = (d.griego || d.subtitular_griego || '').trim();
+  const griegoAnchor = griego.length > 0 && griego.length <= 3;
   return `<div class="frame ps"><div class="ps-slide ${surface}">
     ${psTopMeta(g, d)}
     <div class="ps-manif${shortCls}">
-      ${griego ? `<div class="griego-stamp">${griego}</div>` : ''}
+      ${griego ? `<div class="griego-stamp${griegoAnchor ? ' anchor' : ''}">${griego}</div>` : ''}
       <div class="hero-xxl ${sizeCls}">${applyHighlights(d.titular || d.frase || '').replace(/\n/g, '<br>')}</div>
     </div>
     <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
@@ -5890,11 +5897,23 @@ function buildPptxManifiesto(pptx, d, g, n, tot) {
   // each glyph is ~1.3× wider than intended, so we size conservatively to avoid overflow.
   const len = raw.length;
   const size = len < 30 ? 80 : len < 60 ? 64 : len < 100 ? 52 : 42;
-  // F3 hilo griego: stamp opcional encima del titular (caso slide 26 "Conócete").
-  const griegoManif = d.griego || d.subtitular_griego || '';
-  if (griegoManif) s.addText(griegoManif, { x: 0.7, y: 1.0, w: 11.9, h: 0.5, fontFace: FONT_SANS, fontSize: 20, color: useYellow ? '444444' : (d.fondo === 'claro' ? '666666' : COLOR_GREY), charSpacing: 2 });
+  // F3 hilo griego: stamp opcional encima del titular. Letras sueltas (≤3 chars) se
+  // renderizan como anchor grande serif italic estilo hero; frases largas mantienen el
+  // stamp sans pequeño que ya teníamos.
+  const griegoManif = (d.griego || d.subtitular_griego || '').trim();
+  const griegoIsAnchor = griegoManif.length > 0 && griegoManif.length <= 3;
+  const griegoColor = useYellow ? '444444' : (d.fondo === 'claro' ? '666666' : COLOR_GREY);
+  if (griegoManif) {
+    if (griegoIsAnchor) {
+      s.addText(griegoManif, { x: 0.7, y: 0.8, w: 11.9, h: 1.6, fontFace: FONT_SERIF, fontSize: 80, color: griegoColor, italic: true });
+    } else {
+      s.addText(griegoManif, { x: 0.7, y: 1.0, w: 11.9, h: 0.5, fontFace: FONT_SANS, fontSize: 20, color: griegoColor, charSpacing: 2 });
+    }
+  }
+  const titleY = griegoManif ? (griegoIsAnchor ? 2.5 : 1.7) : 1.2;
+  const titleH = griegoManif ? (griegoIsAnchor ? 4.0 : 4.8) : 5.3;
   s.addText(richWithHighlights((d.titular || d.frase || ''), { fontFace: FONT_SERIF, fontSize: size, color: fg, italic: true }, mode),
-    { x: 0.7, y: griegoManif ? 1.7 : 1.2, w: 11.9, h: griegoManif ? 4.8 : 5.3, valign: 'middle', align: 'left' });
+    { x: 0.7, y: titleY, w: 11.9, h: titleH, valign: 'middle', align: 'left' });
   fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, useYellow ? '444444' : COLOR_GREY);
 }
