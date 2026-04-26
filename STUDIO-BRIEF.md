@@ -292,6 +292,11 @@ paginacion: no       # no = sin contador, default = paginación XX/XX
 - Sin imagen → render con placeholder gradiente
 - Con imagen → `<img>` real con `object-fit:cover` (default) o `contain` (vía `imagen_ajuste: contain`)
 
+### Overrides por slide aplicables a cualquier tipo
+- `header: no` — suprime el top-meta del evento (logo + handle) en esa slide
+- `marca: no` (alias `watermark: no`) — suprime el monograma Magnify abajo a la izquierda. Útil cuando la imagen ya tiene su propia marca o cuando se quiere un slide "limpio" sin firma (portadas alternativas, capturas full-bleed con monograma propio, etc.)
+- `fondo: oscuro|claro|amarillo` — fuerza el surface en los slide-types que lo soportan
+
 ---
 
 ## 7. Voz editorial Magnify

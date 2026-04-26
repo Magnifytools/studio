@@ -4749,7 +4749,11 @@ function renderPsSiguientePaso(d) {
 // the global block. Brand icon bottom-left is always emitted.
 // ════════════════════════════════════════════
 
-function psBrandIcon(surface) {
+function psBrandIcon(surface, d) {
+  // Per-slide override: `marca: no` (alias `watermark: no`) suprime el monograma.
+  // Útil en slides donde la marca compite con la imagen (capturas full-bleed,
+  // mockups con monograma propio, etc.).
+  if (d && (d.marca === 'no' || d.watermark === 'no')) return '';
   // Uses the bare A-polygon (no surrounding box) to stay consistent with the
   // rest of the studio (sidebar, LinkedIn post footers, existing presentacion
   // slides). On dark / on-image: white A. On light / yellow: black A.
@@ -4818,7 +4822,7 @@ function renderPsHero(d, g, n, tot) {
       <div class="hairline"></div>
       ${meta ? `<div class="author">${meta}</div>` : ''}
     </div>
-    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -4838,7 +4842,7 @@ function renderPsAgenda(d, g, n, tot) {
         ${items.map((it, i) => `<li class="${i + 1 === activeIdx ? 'active' : ''}"><span class="n">${String(i + 1).padStart(2, '0')}</span><span>${it}</span></li>`).join('')}
       </ul>
     </div>
-    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -4862,7 +4866,7 @@ function renderPsManifiesto(d, g, n, tot) {
       ${griego ? `<div class="griego-stamp">${griego}</div>` : ''}
       <div class="hero-xxl ${sizeCls}">${applyHighlights(d.titular || d.frase || '').replace(/\n/g, '<br>')}</div>
     </div>
-    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -4880,7 +4884,7 @@ function renderPsDivisorC(d, g, n, tot) {
         <div class="title">${applyHighlights(d.titulo || d.titular || '')}</div>
       </div>
     </div>
-    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -4895,7 +4899,7 @@ function renderPsStandard(d, g, n, tot) {
       <div class="h1-m">${applyHighlights(d.titular || '').replace(/\n/g, '<br>')}</div>
       ${d.cuerpo ? `<div class="body-xl">${applyHighlights(d.cuerpo).replace(/\n/g, '<br>')}</div>` : ''}
     </div>
-    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -4924,7 +4928,7 @@ function renderPsStatHero(d, g, n, tot) {
         ${d.fuente ? `<div class="src">${d.fuente}</div>` : ''}
       </div>
     </div>
-    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -4947,7 +4951,7 @@ function renderPsCompare(d, g, n, tot) {
         <div class="col magnify"><span class="lbl">${d.label_b || 'MAGNIFY'}</span><ul>${b.map(x => `<li>${x}</li>`).join('')}</ul></div>
       </div>
     </div>
-    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -4980,7 +4984,7 @@ function renderPsFramework(d, g, n, tot) {
         ${steps.map(s => `<div class="step"><div class="num">${s.n}</div><div class="label">${s.label}</div><div class="desc">${s.desc}</div></div>`).join('')}
       </div>
     </div>
-    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -5006,7 +5010,7 @@ function renderPsTimelineC(d, g, n, tot) {
         ${nodes.map(nd => `<div class="node"><div class="dot"></div><div class="label">${nd.label}</div><div class="title">${nd.title}</div><div class="desc">${nd.desc}</div></div>`).join('')}
       </div></div>
     </div>
-    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -5066,7 +5070,7 @@ function renderPsImagenFull(d, g, n, tot) {
       ${bgEl}${overlayHtml}
     </div>
     ${psTopMeta(g, d)}
-    <div class="ps-wmk-bl">${psBrandIcon(surface === 'dk' ? 'img' : surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface === 'dk' ? 'img' : surface, d)}</div>
     ${psPaginator(n, tot, true)}
   </div></div>`;
 }
@@ -5094,7 +5098,7 @@ function renderPsImagenSplit(d, g, n, tot) {
       </div>
     </div>
     ${psTopMeta(g, d)}
-    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -5150,7 +5154,7 @@ function renderPsTriptych(d, g, n, tot) {
       ${tiles.map(t => `<div class="tile ${t.phCls}">${t.src ? `<img class="tile-img" src="${t.src}" alt="">` : ''}<div class="cap"><div class="num">${t.num}</div><div class="t">${applyHighlights(t.t)}</div>${t.s ? `<div class="s">${t.s}</div>` : ''}</div></div>`).join('')}
     </div>
     ${psTopMeta(g, d)}
-    <div class="ps-wmk-bl">${psBrandIcon('img')}</div>
+    <div class="ps-wmk-bl">${psBrandIcon('img', d)}</div>
     ${psPaginator(n, tot, true)}
   </div></div>`;
 }
@@ -5174,7 +5178,7 @@ function renderPsMosaic(d, g, n, tot) {
       ${cells.map(c => `<div class="cell ${c.big ? 'big' : ''} ${c.className}" style="${c.style}"><div class="cap">${c.lbl ? `<span class="lbl">${c.lbl}</span>` : ''}<div class="t">${applyHighlights(c.t).replace(/\n/g, '<br>')}</div></div></div>`).join('')}
     </div>
     ${psTopMeta(g, d)}
-    <div class="ps-wmk-bl">${psBrandIcon('img')}</div>
+    <div class="ps-wmk-bl">${psBrandIcon('img', d)}</div>
   </div></div>`;
 }
 
@@ -5192,7 +5196,7 @@ function renderPsPortrait(d, g, n, tot) {
       </div>
     </div>
     ${psTopMeta(g, d)}
-    <div class="ps-wmk-bl">${psBrandIcon('dk')}</div>
+    <div class="ps-wmk-bl">${psBrandIcon('dk', d)}</div>
     ${psPaginator(n, tot, true)}
   </div></div>`;
 }
@@ -5211,7 +5215,7 @@ function renderPsQuoteBig(d, g, n, tot) {
         <div><div class="name">${d.nombre || ''}</div>${d.rol ? `<div class="role">${d.rol}</div>` : ''}</div>
       </div>
     </div>
-    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -5240,7 +5244,7 @@ function renderPsTabla(d, g, n, tot) {
         </tbody>
       </table>
     </div>
-    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -5268,7 +5272,7 @@ function renderPsEquipo(d, g, n, tot) {
         ${members.map(m => `<div class="card"><div class="photo ${m.className}" style="${m.style}"></div><div class="name">${m.name}</div><div class="role">${m.role}</div></div>`).join('')}
       </div>
     </div>
-    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -5299,7 +5303,7 @@ function renderPsPricing(d, g, n, tot) {
         ${cols.map(c => `<div class="col ${c.hi ? 'hi' : ''}"><div class="lbl">${c.lbl}</div><div class="name">${c.name}</div><div class="price">${c.price}</div><div class="unit">${c.unit}</div><ul>${c.feats.map(f => `<li>${f}</li>`).join('')}</ul></div>`).join('')}
       </div>
     </div>
-    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -5326,7 +5330,7 @@ function renderPsCtaFinal(d, g, n, tot) {
       ${qrBox}
       ${withQr ? `<div class="txt">${inner}</div>` : inner}
     </div>
-    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -5371,7 +5375,7 @@ function renderPsStatsCharla(d, g, n, tot) {
       </div>
       ${d.fuente ? `<div class="src">${d.fuente}</div>` : ''}
     </div>
-    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -5400,7 +5404,7 @@ function renderPsCitasGrid(d, g, n, tot) {
         </div>`).join('')}
       </div>
     </div>
-    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -5443,7 +5447,7 @@ function renderPsRecursos(d, g, n, tot) {
         </div>`).join('')}
       </div>
     </div>
-    <div class="ps-wmk-bl">${psBrandIcon(surface)}</div>
+    <div class="ps-wmk-bl">${psBrandIcon(surface, d)}</div>
     ${psPaginator(n, tot)}
   </div></div>`;
 }
@@ -5792,13 +5796,14 @@ function addTopMetaPptx(slide, g, onColor, d) {
 // Brand icon placement: kept tucked into the lower-left corner and smaller than
 // before so it doesn't collide with caption bodies. Call sites pass `skip:true`
 // when the slide content (image panes, grids) already fills that zone.
-function addBrandIcon(slide, opts) {
-  if (opts && opts.skip) return;
+function addBrandIcon(slide, d) {
+  // Per-slide override: `marca: no` (alias `watermark: no`) suprime el monograma.
+  if (d && (d.marca === 'no' || d.watermark === 'no')) return;
   slide.addImage({ data: iconDataUri('#FAFAFA'), x: 0.55, y: 6.95, w: 0.32, h: 0.37 });
 }
 
-function addBrandIconLt(slide, opts) {
-  if (opts && opts.skip) return;
+function addBrandIconLt(slide, d) {
+  if (d && (d.marca === 'no' || d.watermark === 'no')) return;
   slide.addImage({ data: iconDataUri('#0A0A0A'), x: 0.55, y: 6.95, w: 0.32, h: 0.37 });
 }
 
@@ -5834,7 +5839,7 @@ function buildPptxHero(pptx, d, g, n, tot) {
   s.addShape(pptx.ShapeType.rect, { x: 0.7, y: 6.0, w: 0.6, h: 0.02, fill: { color: COLOR_YELLOW }, line: { color: COLOR_YELLOW } });
   const meta = [d.autor || g.autor, d.fecha || g.fecha].filter(Boolean).join(' · ');
   if (meta) s.addText(meta, { x: 0.7, y: 6.2, w: 12, h: 0.4, fontFace: FONT_SANS, fontSize: 22, color: surf.fg });
-  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  surf.fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, surf.meta);
 }
 
@@ -5855,7 +5860,7 @@ function buildPptxAgenda(pptx, d, g, n, tot) {
     s.addText(String(i + 1).padStart(2, '0'), { x: 0.7, y, w: 1, h: 0.5, fontFace: FONT_SERIF, fontSize: 28, color: numColor });
     s.addText(it, { x: 1.8, y, w: 10, h: 0.5, fontFace: FONT_SANS, fontSize: 24, color: surf.fg });
   });
-  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  surf.fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, surf.meta);
 }
 
@@ -5877,7 +5882,7 @@ function buildPptxManifiesto(pptx, d, g, n, tot) {
   if (griegoManif) s.addText(griegoManif, { x: 0.7, y: 1.0, w: 11.9, h: 0.5, fontFace: FONT_SANS, fontSize: 20, color: useYellow ? '444444' : (d.fondo === 'claro' ? '666666' : COLOR_GREY), charSpacing: 2 });
   s.addText(richWithHighlights((d.titular || d.frase || ''), { fontFace: FONT_SERIF, fontSize: size, color: fg, italic: true }, mode),
     { x: 0.7, y: griegoManif ? 1.7 : 1.2, w: 11.9, h: griegoManif ? 4.8 : 5.3, valign: 'middle', align: 'left' });
-  fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, useYellow ? '444444' : COLOR_GREY);
 }
 
@@ -5893,7 +5898,7 @@ function buildPptxDivisorC(pptx, d, g, n, tot) {
   s.addText((d.eyebrow || 'ACTO').toUpperCase(), { x: 7, y: 3, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: fg, charSpacing: 2 });
   s.addText(richWithHighlights(d.titulo || d.titular || '', { fontFace: FONT_SERIF, fontSize: 60, color: fg }, useYellow ? 'yellow' : (d.fondo === 'claro' ? 'light' : 'dark')),
     { x: 7, y: 3.6, w: 5.5, h: 2 });
-  fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, useYellow ? '444444' : COLOR_GREY);
 }
 
@@ -5908,7 +5913,7 @@ function buildPptxStandard(pptx, d, g, n, tot) {
     { x: 0.7, y: 2.1, w: 12, h: 2.2, valign: 'top' });
   if (d.cuerpo) s.addText(richWithHighlights(d.cuerpo.replace(/\n/g, '\n'), { fontFace: FONT_SANS, fontSize: 22, color: surf.fg }, mode),
     { x: 0.7, y: 4.6, w: 11, h: 1.8 });
-  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  surf.fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, surf.meta);
 }
 
@@ -5938,7 +5943,7 @@ function buildPptxStatHero(pptx, d, g, n, tot) {
   s.addText(richWithHighlights(d.descripcion || '', { fontFace: FONT_SERIF, fontSize: descSize, color: surf.fg }, mode),
     { x: 6.4, y: 2.55, w: 6.3, h: 3 });
   if (d.fuente) s.addText(d.fuente, { x: 6.4, y: 5.7, w: 6, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: surf.meta });
-  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  surf.fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, surf.meta);
 }
 
@@ -5962,7 +5967,7 @@ function buildPptxCompare(pptx, d, g, n, tot) {
   s.addShape(pptx.ShapeType.rect, { x: 6.65, y: 3, w: 0.02, h: Math.max(a.length, b.length) * rowH + 0.2, fill: { color: surf.meta, transparency: 70 }, line: { color: surf.meta } });
   a.forEach((t, i) => s.addText(t, { x: 0.9, y: topList + i * rowH, w: 5.5, h: rowH - 0.1, fontFace: FONT_SANS, fontSize: itemSize, color: surf.fg, valign: 'top' }));
   b.forEach((t, i) => s.addText(t, { x: 7, y: topList + i * rowH, w: 5.5, h: rowH - 0.1, fontFace: FONT_SANS, fontSize: itemSize, color: surf.fg, valign: 'top' }));
-  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  surf.fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, surf.meta);
 }
 
@@ -5989,7 +5994,7 @@ function buildPptxFramework(pptx, d, g, n, tot) {
     s.addText(st.lbl, { x, y: 4.5, w: colW, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: COLOR_YELLOW, charSpacing: 2, bold: true });
     s.addText(st.desc, { x, y: 4.95, w: colW, h: 1.5, fontFace: FONT_SANS, fontSize: descSize, color: surf.fg });
   });
-  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  surf.fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, surf.meta);
 }
 
@@ -6012,7 +6017,7 @@ function buildPptxTimelineC(pptx, d, g, n, tot) {
     s.addText(title, { x, y: 3.95, w: 2.8, h: 0.6, fontFace: FONT_SERIF, fontSize: 26, color: surf.fg });
     s.addText(desc, { x, y: 4.6, w: 2.8, h: 1.4, fontFace: FONT_SANS, fontSize: 20, color: surf.fg });
   }
-  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  surf.fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, surf.meta);
 }
 
@@ -6052,7 +6057,7 @@ function buildPptxImagenFull(pptx, d, g, n, tot) {
     if (src) s.addImage({ data: src, x: 0, y: 0, w: PPTX_W, h: PPTX_H, sizing: { type: fit, w: PPTX_W, h: PPTX_H } });
     else s.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: PPTX_W, h: PPTX_H, fill: { color: '1a1a1a' }, line: { color: '1a1a1a' } });
     addTopMetaPptx(s, g, surf.meta, d);
-    surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+    surf.fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
     addPaginator(s, n, tot, surf.meta);
     return;
   }
@@ -6065,7 +6070,7 @@ function buildPptxImagenFull(pptx, d, g, n, tot) {
       { x: 0.7, y: 0.85, w: 12, h: 0.9 });
     if (src) s.addImage({ data: src, x: 0.4, y: 1.9, w: PPTX_W - 0.8, h: 5.2, sizing: { type: 'contain', w: PPTX_W - 0.8, h: 5.2 } });
     addTopMetaPptx(s, g, surf.meta, d);
-    surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+    surf.fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
     addPaginator(s, n, tot, surf.meta);
     return;
   }
@@ -6116,7 +6121,7 @@ function buildPptxImagenSplit(pptx, d, g, n, tot) {
   const griegoSplit = d.griego || d.subtitular_griego || '';
   if (griegoSplit) s.addText(griegoSplit, { x: txtX, y: 5.9, w: 5.5, h: 0.5, fontFace: FONT_SERIF, fontSize: 20, color: surf.meta, italic: true });
   addTopMetaPptx(s, g, surf.meta, d);
-  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  surf.fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, surf.meta);
 }
 
@@ -6186,7 +6191,7 @@ function buildPptxMosaic(pptx, d, g, n, tot) {
     if (d[`titulo${c.i}`]) s.addText(richWithHighlights(d[`titulo${c.i}`], { fontFace: FONT_SERIF, fontSize: c.big ? 28 : 18, color: 'FFFFFF' }, 'dark'), { x: c.x + 0.2, y: c.y + c.h - 0.7, w: c.w - 0.4, h: 0.6 });
   });
   addTopMetaPptx(s, g, 'CCCCCC', d);
-  addBrandIcon(s);
+  addBrandIcon(s, d);
 }
 
 function buildPptxPortrait(pptx, d, g, n, tot) {
@@ -6201,7 +6206,7 @@ function buildPptxPortrait(pptx, d, g, n, tot) {
   if (d.nombre) s.addText(d.nombre, { x: 7, y: 6.3, w: 5.5, h: 0.4, fontFace: FONT_SANS, fontSize: 22, color: 'FFFFFF', bold: true });
   if (d.rol) s.addText(d.rol, { x: 7, y: 6.65, w: 5.5, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: COLOR_GREY });
   addTopMetaPptx(s, g, COLOR_GREY, d);
-  addBrandIcon(s);
+  addBrandIcon(s, d);
   addPaginator(s, n, tot, COLOR_GREY);
 }
 
@@ -6221,7 +6226,7 @@ function buildPptxQuoteBig(pptx, d, g, n, tot) {
     { x: 1.6, y: 2.4, w: 10.6, h: 3 });
   if (d.nombre) s.addText(d.nombre, { x: 1.6, y: 5.8, w: 8, h: 0.4, fontFace: FONT_SANS, fontSize: 22, color: fg, bold: true });
   if (d.rol) s.addText(d.rol, { x: 1.6, y: 6.2, w: 8, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: dk ? COLOR_GREY : '666666' });
-  fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, dk ? COLOR_GREY : '666666');
 }
 
@@ -6247,7 +6252,7 @@ function buildPptxTabla(pptx, d, g, n, tot) {
       parts.forEach((p, j) => s.addText(p, { x: 0.7 + colW * j + 0.1, y, w: colW - 0.2, h: 0.4, fontFace: FONT_SANS, fontSize: 20, color: COLOR_DARK, align: j === 0 ? 'left' : 'center' }));
     }
   }
-  addBrandIconLt(s);
+  addBrandIconLt(s, d);
   addPaginator(s, n, tot, '666666');
 }
 
@@ -6271,7 +6276,7 @@ function buildPptxEquipo(pptx, d, g, n, tot) {
     s.addText(m.name, { x, y: y + cardW - 0.25, w: cardW - 0.3, h: 0.35, fontFace: FONT_SANS, fontSize: 22, color: surf.fg, bold: true });
     s.addText(m.role, { x, y: y + cardW + 0.1, w: cardW - 0.3, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: surf.meta });
   });
-  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  surf.fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, surf.meta);
 }
 
@@ -6304,7 +6309,7 @@ function buildPptxPricing(pptx, d, g, n, tot) {
     s.addText(c.unit, { x: x + 0.3, y: 5.05, w: colW - 0.7, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: colMeta });
     c.feats.forEach((f, k) => s.addText(f, { x: x + 0.3, y: 5.4 + k * 0.28, w: colW - 0.7, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: colFg }));
   });
-  fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, dk ? COLOR_GREY : '666666');
 }
 
@@ -6338,7 +6343,7 @@ function buildPptxCtaFinal(pptx, d, g, n, tot) {
       { x: 0.7, y: 2.7, w: 12, h: 2.8, align: 'center', valign: 'middle' });
     if (d.contacto) s.addText(d.contacto.replace(/\n/g, '\n'), { x: 0.7, y: 5.8, w: 12, h: 0.8, fontFace: FONT_SANS, fontSize: 20, color: fg, align: 'center' });
   }
-  fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, useYellow ? '444444' : COLOR_GREY);
 }
 
@@ -6389,7 +6394,7 @@ function buildPptxStatsCharla(pptx, d, g, n, tot) {
   });
   // Fuente desplazada a la derecha del monograma (x:1.3) para no solaparse con él.
   if (d.fuente) s.addText(d.fuente, { x: 1.3, y: 6.95, w: 9, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: surf.meta });
-  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  surf.fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, surf.meta);
 }
 
@@ -6415,7 +6420,7 @@ function buildPptxCitasGrid(pptx, d, g, n, tot) {
     s.addText(c.q.replace(/\n/g, '\n'), { x: x + 0.2, y, w: cellW - 0.4, h: cellH * 0.75, fontFace: FONT_SERIF, fontSize: qSize, color: surf.fg, italic: true });
     if (c.who) s.addText('— ' + c.who, { x: x + 0.2, y: y + cellH * 0.78, w: cellW - 0.4, h: 0.3, fontFace: FONT_SANS, fontSize: 20, color: surf.meta });
   });
-  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  surf.fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, surf.meta);
 }
 
@@ -6464,7 +6469,7 @@ function buildPptxRecursos(pptx, d, g, n, tot) {
     });
     s.addText(rich, { x, y: 3.1, w: colW - 0.3, h: 3.6, valign: 'top' });
   });
-  surf.fg === COLOR_DARK ? addBrandIconLt(s) : addBrandIcon(s);
+  surf.fg === COLOR_DARK ? addBrandIconLt(s, d) : addBrandIcon(s, d);
   addPaginator(s, n, tot, surf.meta);
 }
 
