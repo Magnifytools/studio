@@ -797,14 +797,26 @@
   /* PORTADA — dossier hero, dark, large serif title */
   .csl-portada { background:var(--bg); color:#FAFAFA; padding:84px 64px; display:flex; flex-direction:column; height:100%; position:relative; }
   .csl-portada .pt-wm { height:24px; margin-bottom:auto; }
+  /* Forzar tamaño del SVG dentro de .pt-wm — había reglas globales `.logo-svg.wm { height:40-96px }`
+     que sobreescribían el tamaño del contenedor y el wordmark salía gigante en la portada del dossier. */
+  .csl-portada .pt-wm svg.logo-svg.wm { height:24px !important; width:auto; display:block; }
   /* wordmark: abajo — pattern editorial maduro (contenido manda, marca firma).
      El wordmark grande va al pie, encima del pt-bottom (URL + Confidencial). */
   .csl-portada .pt-wm-bottom { height:32px; margin-top:auto; margin-bottom:32px; }
   .csl-portada .pt-wm-bottom svg { height:100%; width:auto; display:block; }
   .csl-portada.wm-bottom { padding-top:64px; }
   .csl-portada .pt-eyebrow { font-family:var(--mono,monospace); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--yellow); margin-bottom:24px; font-weight:600; }
-  .csl-portada h1 { font-family:var(--serif); font-size:64px; font-weight:400; line-height:1.04; letter-spacing:-1.4px; color:#FAFAFA; max-width:660px; margin:0; }
-  .csl-portada .pt-sub { font-size:20px; line-height:1.45; color:#D0D0D0; margin-top:30px; max-width:600px; font-weight:400; }
+  /* Tamaño del titular escalado por longitud (clases las aplica renderCSLPortada).
+     short = ≤30 chars (ej. "Mírate.") · medium = 30-70 · long = >70. */
+  .csl-portada h1 { font-family:var(--serif); font-weight:400; line-height:1.02; letter-spacing:-2px; color:#FAFAFA; max-width:680px; margin:0; font-size:80px; }
+  .csl-portada h1.t-short { font-size:120px; letter-spacing:-3px; max-width:720px; }
+  .csl-portada h1.t-medium { font-size:88px; letter-spacing:-2.2px; }
+  .csl-portada h1.t-long { font-size:64px; letter-spacing:-1.4px; line-height:1.05; max-width:660px; }
+  .csl-portada.csl-page.lt h1 { color:var(--bg); }
+  .csl-portada.csl-page.yl h1 { color:var(--bg); }
+  .csl-portada .pt-sub { font-size:22px; line-height:1.4; color:#D0D0D0; margin-top:36px; max-width:640px; font-weight:400; }
+  .csl-portada.csl-page.lt .pt-sub { color:#444; }
+  .csl-portada.csl-page.yl .pt-sub { color:rgba(10,10,10,0.7); }
   .csl-portada .pt-accent { width:44px; height:3px; background:var(--yellow); margin:36px 0 28px; }
   .csl-portada .pt-meta { font-family:var(--mono,monospace); font-size:11px; line-height:2.0; color:rgba(255,255,255,0.5); letter-spacing:0.08em; }
   .csl-portada .pt-meta strong { color:#FAFAFA; font-weight:600; }
@@ -840,10 +852,13 @@
   .csl-page.dk .csl-section .sec-eyebrow { color:rgba(250,250,250,0.55); }
   .csl-section h2 { font-family:var(--serif); font-size:36px; font-weight:400; line-height:1.1; letter-spacing:-0.6px; color:inherit; margin:0 0 28px; max-width:620px; }
   /* Sección minimal: solo eyebrow + titular sin cuerpo/pull/visual. Centra contenido vertical
-     y aumenta el titular para que la página tenga peso editorial (no quede vacía). */
-  .csl-section.is-minimal .csl-body { justify-content:center; }
-  .csl-section.is-minimal h2 { font-size:52px; line-height:1.05; letter-spacing:-1px; max-width:720px; margin-bottom:0; }
-  .csl-section.is-minimal .sec-eyebrow { margin-bottom:24px; }
+     y trata el titular como manifiesto interno (peso editorial alto) — antes el titular pequeño
+     quedaba flotando en medio de la página vacía con look desértico. */
+  .csl-section.is-minimal .csl-body { justify-content:center; padding-top:56px; padding-bottom:84px; }
+  .csl-section.is-minimal .sec-eyebrow { margin-bottom:32px; font-size:11px; letter-spacing:0.22em; }
+  .csl-section.is-minimal h2 { font-size:80px; line-height:1.02; letter-spacing:-2px; max-width:680px; margin:0 0 32px; font-weight:400; }
+  /* Accent line bajo el titular para "anclar" la página y romper el aire muerto. */
+  .csl-section.is-minimal h2::after { content:""; display:block; width:48px; height:2px; background:var(--yellow); margin-top:36px; }
   .csl-section .sec-body { font-size:14px; line-height:1.75; color:inherit; margin-bottom:18px; max-width:580px; }
   .csl-page.dk .csl-section .sec-body { color:rgba(250,250,250,0.85); }
   .csl-section .sec-body p { margin:0 0 14px; }
@@ -852,11 +867,25 @@
 
   /* VISUAL slot — placeholder for SVG/PNG with editorial caption */
   .csl-visual { background:#fff; border:1px solid rgba(0,0,0,0.08); padding:28px; display:flex; flex-direction:column; gap:18px; margin:18px 0; }
+  /* Visual protagonista (renderCSLVisual): la caja se expande al alto del body para que
+     no queden 30% de aire arriba y abajo. v-slot abandona aspect-ratio:16/9 fijo y crece
+     con flex; la imagen mantiene proporción con object-fit:contain. */
+  .csl-visual-fill { flex:1; min-height:0; margin:18px 0 0; }
+  .csl-visual-fill .v-slot { aspect-ratio:auto; flex:1; min-height:0; }
+  .csl-visual-fill .v-slot.has-img img { width:100%; height:100%; object-fit:contain; }
+  /* layout: protagonista — sin caja, sin borde, sin v-id; el visual ocupa la columna útil
+     y el eyebrow+titular de la página actúan como título único (evita doble titulación
+     cuando el SVG ya lleva su propio H1 interno). */
+  .csl-visual-protag { background:transparent !important; border:none !important; padding:0 !important; }
+  .csl-visual-protag .v-slot { border:none !important; background:transparent !important; }
   .csl-page.dk .csl-visual { background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.1); }
-  .csl-visual .v-slot { aspect-ratio:16/9; background:repeating-linear-gradient(45deg,#F0F0F0 0 12px,#FAFAFA 12px 24px); display:flex; align-items:center; justify-content:center; font-family:var(--mono,monospace); font-size:11px; letter-spacing:0.2em; color:#999; text-transform:uppercase; }
-  .csl-visual .v-slot.has-img { background:none; padding:0; }
+  /* Placeholder editorial: el slot vacío muestra el ID en serif italic amarillo, no un rayado
+     tan tenue que parecía página en blanco. Aspect ratio se mantiene para anclar el layout. */
+  .csl-visual .v-slot { aspect-ratio:16/9; background:transparent; border:1px solid rgba(255,214,0,0.25); display:flex; align-items:center; justify-content:center; font-family:var(--serif); font-style:italic; font-size:48px; color:rgba(255,214,0,0.55); }
+  .csl-visual .v-slot.has-img { background:none; padding:0; border:none; }
   .csl-visual .v-slot.has-img img { width:100%; height:100%; object-fit:contain; display:block; }
-  .csl-page.dk .csl-visual .v-slot { background:repeating-linear-gradient(45deg,#1a1a1a 0 12px,#222 12px 24px); color:#666; }
+  .csl-page.dk .csl-visual .v-slot { border-color:rgba(255,214,0,0.2); color:rgba(255,214,0,0.45); }
+  .csl-page.yl .csl-visual .v-slot { border-color:rgba(10,10,10,0.2); color:rgba(10,10,10,0.4); }
   .csl-visual .v-cap { font-family:var(--sans); font-size:11.5px; line-height:1.6; color:#444; max-width:600px; }
   .csl-page.dk .csl-visual .v-cap { color:#B8B8B8; }
   .csl-visual .v-cap strong { font-weight:600; color:var(--bg); }
@@ -869,10 +898,14 @@
   .csl-seccion-visual .sv-eyebrow { font-family:var(--mono,monospace); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:#666; font-weight:600; }
   .csl-page.dk .csl-seccion-visual .sv-eyebrow { color:rgba(250,250,250,0.55); }
   .csl-page.yl .csl-seccion-visual .sv-eyebrow { color:rgba(10,10,10,0.6); }
-  .csl-seccion-visual .sv-slot { flex:1; min-height:0; display:flex; align-items:center; justify-content:center; background:repeating-linear-gradient(45deg,#F0F0F0 0 12px,#FAFAFA 12px 24px); font-family:var(--mono,monospace); font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#999; }
-  .csl-page.dk .csl-seccion-visual .sv-slot { background:repeating-linear-gradient(45deg,#1a1a1a 0 12px,#222 12px 24px); color:#666; }
-  .csl-page.yl .csl-seccion-visual .sv-slot { background:repeating-linear-gradient(45deg,rgba(10,10,10,0.06) 0 12px,rgba(10,10,10,0.02) 12px 24px); color:rgba(10,10,10,0.55); }
-  .csl-seccion-visual .sv-slot.has-img { background:none; padding:0; }
+  /* Placeholder editorial cuando no hay imagen subida: caja con borde sutil + label tipográfico
+     amarillo italic grande en el centro. Antes era un patrón rayado tan tenue que parecía blanco
+     vacío con el label flotando. Ahora cuando una página requiere imagen pero no la tiene, el
+     placeholder lo deja claro al lector y al usuario que falta subirla. */
+  .csl-seccion-visual .sv-slot { flex:1; min-height:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:14px; border:1px solid rgba(255,214,0,0.25); font-family:var(--serif); font-style:italic; font-size:64px; color:rgba(255,214,0,0.5); }
+  .csl-page.dk .csl-seccion-visual .sv-slot { border-color:rgba(255,214,0,0.2); color:rgba(255,214,0,0.45); }
+  .csl-page.yl .csl-seccion-visual .sv-slot { border-color:rgba(10,10,10,0.2); color:rgba(10,10,10,0.4); }
+  .csl-seccion-visual .sv-slot.has-img { background:none; padding:0; border:none; }
   /* La imagen ocupa el ancho útil completo de la página (no se queda chica si es panorámica
      o si tiene aspect ratio extremo). object-fit:contain limita la altura al slot disponible. */
   .csl-seccion-visual .sv-slot.has-img img { width:100%; height:auto; max-height:100%; object-fit:contain; display:block; margin:auto; }
@@ -917,11 +950,17 @@
   .csl-page.dk .csl-framework .fr-step .desc { color:rgba(250,250,250,0.78); }
 
   /* CIERRE — divisor amarillo crescendo */
-  .csl-cierre { background:var(--yellow); color:var(--bg); padding:120px 76px; display:flex; flex-direction:column; justify-content:center; height:100%; position:relative; }
+  .csl-cierre { background:var(--yellow); color:var(--bg); padding:120px 76px; display:flex; flex-direction:column; justify-content:flex-start; height:100%; position:relative; }
+  /* Alineación vertical configurable (default arriba). */
+  .csl-cierre.v-center { justify-content:center; }
+  .csl-cierre.v-bottom { justify-content:flex-end; padding-bottom:140px; }
   .csl-cierre .ci-num { font-family:var(--serif); font-size:200px; font-weight:400; line-height:0.85; letter-spacing:-7px; color:var(--bg); margin:0 0 24px; }
   .csl-cierre .ci-line { width:80px; height:3px; background:var(--bg); margin-bottom:36px; }
   .csl-cierre h2 { font-family:var(--serif); font-size:60px; font-weight:400; line-height:1.05; letter-spacing:-1.2px; color:var(--bg); margin:0 0 24px; max-width:600px; font-style:italic; }
   .csl-cierre .ci-deck { font-family:var(--serif); font-size:20px; line-height:1.45; color:var(--bg); margin:0; max-width:560px; opacity:0.85; }
+  /* CTA tamaños: default pequeño · ci-cta-md · ci-cta-lg (proporcional al titular grande). */
+  .csl-cierre .ci-cta.ci-cta-md { padding:22px 32px; font-size:14px; gap:16px; margin-top:12px; }
+  .csl-cierre .ci-cta.ci-cta-lg { padding:28px 40px; font-size:16px; gap:20px; margin-top:18px; }
   .csl-cierre .ci-cta { display:inline-flex; align-items:center; gap:12px; padding:16px 22px; background:var(--bg); color:var(--yellow); font-family:var(--mono,monospace); font-size:12px; letter-spacing:0.18em; text-transform:uppercase; font-weight:600; margin-top:48px; align-self:flex-start; }
 
   /* FOOTER-ANONIMIZACION — pie legal-editorial en última página */
@@ -4269,9 +4308,11 @@ function cslSurface(d) {
 
 // PORTADA — default dark, acepta fondo: claro/amarillo.
 // Overrides:
-//   header: no   → oculta eyebrow (y wordmark si está arriba)
-//   footer: no   → oculta pt-bottom (URL + Confidencial)
+//   header: no   → oculta SOLO el eyebrow (no afecta al wordmark)
+//   footer: no   → oculta pt-bottom (URL del footer)
 //   wordmark:    → 'arriba' (default), 'abajo' (firma editorial al pie), 'oculto' (sin wordmark)
+//   confidencial: → texto explícito al pie. Se respeta aunque footer: no esté activo.
+//   cliente/industria/fecha: si vienen como string vacío, no se renderizan (usar '' en lugar de borrar campo).
 function renderCSLPortada(g, d, pN, tot) {
   const isOff = (v) => ['no', 'off', 'false', 'none', 'hidden', '0'].includes((v || '').toString().toLowerCase().trim());
   const hideHeader = isOff(d.header || d.top_meta);
@@ -4280,23 +4321,52 @@ function renderCSLPortada(g, d, pN, tot) {
   const wmHidden = wmPos === 'oculto' || wmPos === 'no' || wmPos === 'hidden';
   const wmAbajo = wmPos === 'abajo' || wmPos === 'pie' || wmPos === 'bottom';
   const eyebrow = (d.eyebrow || g.referencia || 'CASE STUDY · CONFIDENCIAL').toUpperCase();
-  const meta = (d.meta || `Cliente: ${g.cliente || '—'}\nIndustria: ${g.industria || '—'}\nFecha: ${g.fecha || '—'}`).split('\n').filter(Boolean).map(l => `<div>${l}</div>`).join('');
+  // Meta: respetar strings vacíos del YAML (`cliente: ""` → no renderiza esa línea).
+  // Si `d.meta` está declarado, usarlo tal cual. Si no, construir desde g pero solo con
+  // los campos NO vacíos (sin '—' fallback que el usuario no pidió).
+  let metaLines;
+  if (d.meta) {
+    metaLines = d.meta.split('\n').filter(Boolean);
+  } else {
+    metaLines = [];
+    if (g.cliente !== undefined && g.cliente !== '') metaLines.push(`Cliente: ${g.cliente}`);
+    if (g.industria !== undefined && g.industria !== '') metaLines.push(`Industria: ${g.industria}`);
+    if (g.fecha !== undefined && g.fecha !== '') metaLines.push(`Fecha: ${g.fecha}`);
+    // Si TODOS están en blanco, no renderizar el bloque ni la línea amarilla.
+    if (metaLines.length === 0 && (g.cliente === undefined && g.industria === undefined && g.fecha === undefined)) {
+      // Sin overrides explícitos: mantener el formato Cliente/Industria/Fecha con —. Compatibilidad.
+      metaLines = [`Cliente: —`, `Industria: —`, `Fecha: —`];
+    }
+  }
+  const hasMeta = metaLines.length > 0;
+  const meta = metaLines.map(l => `<div>${l}</div>`).join('');
+  // Confidencial: si está explícitamente declarado, se muestra al pie aunque footer:no oculte la URL.
+  const confDeclared = d.confidencial !== undefined && d.confidencial !== '';
+  const confText = confDeclared ? d.confidencial : 'INTERNAL · NO DISTRIBUIR';
   const surf = (d.fondo === 'claro' || d.fondo === 'hueso') ? 'lt' : (d.fondo === 'amarillo' ? 'yl' : '');
   const wmColor = surf ? '#0A0A0A' : '#FAFAFA';
-  const wmArribaHtml = (!wmHidden && !wmAbajo && !hideHeader) ? `<div class="pt-wm">${wordmark(wmColor)}</div>` : '';
+  const wmArribaHtml = (!wmHidden && !wmAbajo) ? `<div class="pt-wm">${wordmark(wmColor)}</div>` : '';
   const wmAbajoHtml = (!wmHidden && wmAbajo) ? `<div class="pt-wm-bottom">${wordmark(wmColor)}</div>` : '';
+  // pt-bottom: si footer:no Y confidencial declarado, mostrar solo confidencial (sin URL).
+  // Si footer:no y sin confidencial, ocultar todo.
+  let bottomHtml = '';
+  if (hideFooter) {
+    if (confDeclared) bottomHtml = `<div class="pt-bottom"><span></span><span>${confText}</span></div>`;
+  } else {
+    bottomHtml = `<div class="pt-bottom"><span>${decorateIngUrl(g.url)}</span><span>${confText.toUpperCase ? confText : confText}</span></div>`;
+  }
+  const titular = d.titular || g.titulo || 'Dossier';
+  const titularLen = titular.replace(/\[|\]/g, '').length;
+  const tCls = titularLen <= 30 ? 't-short' : titularLen <= 70 ? 't-medium' : 't-long';
   return `<div class="frame a4"><div class="csl-page ${surf} csl-portada${wmAbajo ? ' wm-bottom' : ''}">
     ${wmArribaHtml}
     ${hideHeader ? '' : `<div class="pt-eyebrow">${eyebrow}</div>`}
-    <h1>${applyHighlights(d.titular || g.titulo || 'Dossier')}</h1>
+    <h1 class="${tCls}">${applyHighlights(titular)}</h1>
     ${d.subtitulo ? `<div class="pt-sub">${d.subtitulo}</div>` : ''}
-    <div class="pt-accent"></div>
-    <div class="pt-meta">${meta}</div>
+    ${hasMeta ? '<div class="pt-accent"></div>' : ''}
+    ${hasMeta ? `<div class="pt-meta">${meta}</div>` : ''}
     ${wmAbajoHtml}
-    ${hideFooter ? '' : `<div class="pt-bottom">
-      <span>${decorateIngUrl(g.url)}</span>
-      <span>${(d.confidencial || 'INTERNAL · NO DISTRIBUIR').toUpperCase()}</span>
-    </div>`}
+    ${bottomHtml}
   </div></div>`;
 }
 
@@ -4371,24 +4441,30 @@ function renderCSLSeccion(g, d, pN, tot) {
   </div></div>`;
 }
 
-// VISUAL — página entera para un visual destacado con caption editorial
+// VISUAL — página entera para un visual destacado con caption editorial.
+// `layout: subordinado` (default) renderiza el visual dentro de una caja con borde y label
+// VISUAL_0X — sirve cuando el visual ACOMPAÑA texto y necesita su propia titulación.
+// `layout: protagonista` quita caja, label y borde — el visual es la pieza central de la
+// página y el `eyebrow + titular` actúan como título único (sin doble titulación).
 function renderCSLVisual(g, d, pN, tot) {
   const surf = cslSurface(d);
-  // Mismo patrón que renderCSLSeccion: visual_id sirve como ref a imagen si matcheaa
-  // imgN, o como etiqueta humana en otro caso.
   const visualIdRaw = (d.visual_id || d.id || '').trim();
   const visualIdIsImageRef = /^img\d+$/i.test(visualIdRaw);
   const imgRef = ((d.visual || d.imagen || '').trim()) || (visualIdIsImageRef ? visualIdRaw : '');
   const label = visualIdIsImageRef ? '' : (visualIdRaw || 'VISUAL_XX');
   const imgSrc = uploadedImages[imgRef];
+  const layout = (d.layout || 'subordinado').toString().toLowerCase().trim();
+  const isProtag = layout === 'protagonista' || layout === 'protag' || layout === 'fill';
+  const slotInner = imgSrc ? `<img src="${imgSrc}" alt="${label || imgRef}">` : (label || 'VISUAL_XX');
+  const showLabel = !isProtag && label;
   return `<div class="frame a4"><div class="csl-page ${surf} csl-section">
     ${cslHead(g, d)}
     <div class="csl-body">
       ${d.eyebrow ? `<div class="sec-eyebrow">${d.eyebrow.toUpperCase()}</div>` : ''}
       ${d.titular ? `<h2>${applyHighlights(d.titular)}</h2>` : ''}
-      <div class="csl-visual">
-        ${label ? `<div class="v-id">${label}</div>` : ''}
-        <div class="v-slot ${imgSrc ? 'has-img' : ''}">${imgSrc ? `<img src="${imgSrc}" alt="${label || imgRef}">` : `[ ${label || 'VISUAL_XX'} ]`}</div>
+      <div class="csl-visual csl-visual-fill${isProtag ? ' csl-visual-protag' : ''}">
+        ${showLabel ? `<div class="v-id">${label}</div>` : ''}
+        <div class="v-slot ${imgSrc ? 'has-img' : ''}">${slotInner}</div>
         ${d.caption || d.visual_caption ? `<div class="v-cap">${applyHighlights(d.caption || d.visual_caption)}</div>` : ''}
       </div>
     </div>
@@ -4496,19 +4572,25 @@ function renderCSLFramework(g, d, pN, tot) {
 
 // CIERRE — default amarillo crescendo, acepta fondo: oscuro/claro.
 // Sin header ni footer por defecto: es página de cierre puro (paginación interrumpe la cadencia).
-// Para reactivar paginación: `footer: si` en el YAML de la sección.
+// Overrides:
+//   footer: si    → reactiva paginación (default no)
+//   numero:       → si declarado, pinta el número arriba; si vacío/no, no reserva slot
+//   alineacion_vertical: arriba (default) | centro | abajo
+//   cta_size:     pequeño (default) | medio | grande
 function renderCSLCierre(g, d, pN, tot) {
   const surf = (d.fondo === 'oscuro') ? 'dk' : (d.fondo === 'claro' || d.fondo === 'hueso') ? 'lt' : 'yl';
   const showFoot = ['si', 'sí', 'yes', 'true', '1', 'on'].includes((d.footer || '').toString().toLowerCase().trim());
-  // El número de capítulo SOLO si el YAML lo declara explícitamente — antes tenía
-  // fallback hardcoded ('08') que pintaba un número fantasma cuando no se quería.
   const numero = (d.numero === undefined || d.numero === null || d.numero === '' || d.numero === false)
     ? null : d.numero.toString().padStart(2, '0');
-  return `<div class="frame a4"><div class="csl-page ${surf} csl-cierre">
+  const alineV = (d.alineacion_vertical || d.valign || 'arriba').toString().toLowerCase().trim();
+  const valignCls = alineV === 'centro' || alineV === 'center' ? 'v-center' : (alineV === 'abajo' || alineV === 'bottom' ? 'v-bottom' : '');
+  const ctaSize = (d.cta_size || '').toString().toLowerCase().trim();
+  const ctaCls = ctaSize === 'grande' || ctaSize === 'big' ? 'ci-cta-lg' : (ctaSize === 'medio' || ctaSize === 'medium' ? 'ci-cta-md' : '');
+  return `<div class="frame a4"><div class="csl-page ${surf} csl-cierre ${valignCls}">
     ${numero ? `<div class="ci-num">${numero}</div><div class="ci-line"></div>` : ''}
     <h2>${applyHighlights(d.titular || 'El espejo')}</h2>
     ${d.deck ? `<p class="ci-deck">${applyHighlights(d.deck)}</p>` : ''}
-    ${d.cta ? `<div class="ci-cta"><span>${d.cta}</span><span>→</span></div>` : ''}
+    ${d.cta ? `<div class="ci-cta ${ctaCls}"><span>${d.cta}</span><span>→</span></div>` : ''}
     ${showFoot ? cslFoot(g, pN, tot, d) : ''}
   </div></div>`;
 }
