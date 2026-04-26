@@ -1901,6 +1901,7 @@ cuerpo: \u00bfTu marca necesita un diagn\u00f3stico similar? Agenda una llamada 
     title: 'Dossier (longform)',
     desc: 'Case study editorial multi-página (16-20 pp.) con divisores, TL;DR y visuals',
     exportLabel: 'Descargar PDF',
+    supportsImages: true,
     hint: `<strong>Formato:</strong> bloque global + secciones separadas por <code>---</code>. Cada sección usa <code>seccion: tipo</code>.<br><br>
 <code>tipo: case-study-longform</code> + <code>cliente</code>, <code>industria</code>, <code>fecha</code>, <code>documento</code>, <code>referencia</code>.<br><br>
 <strong>Tipos de sección:</strong><br>
@@ -4237,14 +4238,21 @@ function renderCSLSeccion(g, d, pN, tot) {
   // Acepta cuerpo plano o con visuals intercalados ([VISUAL_01] como marker que renderiza placeholder).
   const cuerpoHtml = (d.cuerpo || '').replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
   const pull = d.pull ? `<div class="sec-pull">${applyHighlights(d.pull)}</div>` : '';
-  // Visual opcional con id, slot, caption.
+  // Visual opcional con id, slot, caption. Si visual_id parece referencia a imagen
+  // subida (`img1`, `img2`...) se usa también como source y la etiqueta queda vacía
+  // — patrón común cuando el YAML lista directamente `visual_id: img1` sin un campo
+  // `visual:` separado. Si visual_id es una etiqueta humana ("VISUAL_01") se mantiene
+  // como label y la imagen viene de `visual:` o `imagen:`.
   let visualHtml = '';
-  if (d.visual_id || d.visual_caption) {
-    const id = d.visual_id || 'VISUAL_XX';
-    const imgSrc = uploadedImages[(d.visual || '').trim()];
-    const slotInner = imgSrc ? `<img src="${imgSrc}" alt="${id}">` : `[ ${id} ]`;
+  if (d.visual || d.imagen || d.visual_id || d.visual_caption) {
+    const visualIdRaw = (d.visual_id || '').trim();
+    const visualIdIsImageRef = /^img\d+$/i.test(visualIdRaw);
+    const imgRef = ((d.visual || d.imagen || '').trim()) || (visualIdIsImageRef ? visualIdRaw : '');
+    const label = visualIdIsImageRef ? '' : (visualIdRaw || 'VISUAL_XX');
+    const imgSrc = uploadedImages[imgRef];
+    const slotInner = imgSrc ? `<img src="${imgSrc}" alt="${label || imgRef}">` : `[ ${label || 'VISUAL_XX'} ]`;
     visualHtml = `<div class="csl-visual">
-      <div class="v-id">${id}</div>
+      ${label ? `<div class="v-id">${label}</div>` : ''}
       <div class="v-slot ${imgSrc ? 'has-img' : ''}">${slotInner}</div>
       ${d.visual_caption ? `<div class="v-cap">${applyHighlights(d.visual_caption)}</div>` : ''}
     </div>`;
@@ -4265,16 +4273,21 @@ function renderCSLSeccion(g, d, pN, tot) {
 // VISUAL — página entera para un visual destacado con caption editorial
 function renderCSLVisual(g, d, pN, tot) {
   const surf = cslSurface(d);
-  const id = d.visual_id || d.id || 'VISUAL_XX';
-  const imgSrc = uploadedImages[(d.visual || d.imagen || '').trim()];
+  // Mismo patrón que renderCSLSeccion: visual_id sirve como ref a imagen si matcheaa
+  // imgN, o como etiqueta humana en otro caso.
+  const visualIdRaw = (d.visual_id || d.id || '').trim();
+  const visualIdIsImageRef = /^img\d+$/i.test(visualIdRaw);
+  const imgRef = ((d.visual || d.imagen || '').trim()) || (visualIdIsImageRef ? visualIdRaw : '');
+  const label = visualIdIsImageRef ? '' : (visualIdRaw || 'VISUAL_XX');
+  const imgSrc = uploadedImages[imgRef];
   return `<div class="frame a4"><div class="csl-page ${surf} csl-section">
     ${cslHead(g, d)}
     <div class="csl-body">
       ${d.eyebrow ? `<div class="sec-eyebrow">${d.eyebrow.toUpperCase()}</div>` : ''}
       ${d.titular ? `<h2>${applyHighlights(d.titular)}</h2>` : ''}
       <div class="csl-visual">
-        <div class="v-id">${id}</div>
-        <div class="v-slot ${imgSrc ? 'has-img' : ''}">${imgSrc ? `<img src="${imgSrc}" alt="${id}">` : `[ ${id} ]`}</div>
+        ${label ? `<div class="v-id">${label}</div>` : ''}
+        <div class="v-slot ${imgSrc ? 'has-img' : ''}">${imgSrc ? `<img src="${imgSrc}" alt="${label || imgRef}">` : `[ ${label || 'VISUAL_XX'} ]`}</div>
         ${d.caption || d.visual_caption ? `<div class="v-cap">${applyHighlights(d.caption || d.visual_caption)}</div>` : ''}
       </div>
     </div>
