@@ -263,6 +263,68 @@ meta: Magnify Digital SL · CIF B-XXXXXXXX · Edición abril 2026
 
 ---
 
+## 5.bis Normas para infografías y visuales del dossier
+
+Cuando subes un PNG/JPG/SVG como `img1`, `img2`... y lo referencias desde una sección del dossier, Studio lo encaja en el área útil de la página manteniendo proporción. Para que el resultado sea editorialmente coherente, sigue estas normas al producir el visual.
+
+### Slots por tipo de sección
+
+| Sección | Slot disponible (A4 794×1123 px) | Ratio nativo |
+|---|---|---|
+| `seccion: visual` (default subordinado) | caja con `aspect-ratio: 16/9` dentro del body | **16:9** ideal |
+| `seccion: visual` con `layout: protagonista` | todo el body (ancho 666 × alto restante ~860) sin caja ni borde | **3:4** (vertical) o cualquiera |
+| `seccion-visual` | mismo que protagonista — todo el body, sin titular ni caption | **3:4** o cualquiera |
+| `seccion-cuerpo` con `visual_id` embebido | caja 16:9 abajo del cuerpo | **16:9** ideal |
+
+El padding estándar del body es `56px arriba, 64px laterales, 84px abajo`. Eso deja un **ancho útil de 666 px** y un alto que depende del contenido restante. La imagen se ajusta con `object-fit:contain` — no se recorta nunca, siempre cabe.
+
+### Dimensiones recomendadas
+
+- **Para `aspect-ratio:16/9`** (visuales subordinados): cualquier resolución 16:9. Ej. `1920×1080`, `1600×900`, `1280×720`.
+- **Para protagonista vertical**: ratio entre **3:4 y 4:5** (más alto que ancho). Ej. `1400×1700`, `1200×1500`. Si la imagen es panorámica (16:9) en un slot vertical, queda con bandas blancas arriba y abajo — sigue funcionando pero desperdicia espacio.
+- **Resolución mínima**: `1400 px` en el lado largo, para que al escalar a A4 (~666 px utilizables) no se pixele.
+
+### Tipografía interna del visual
+
+Si el visual lleva texto incrustado (gráficos, infografías, mockups con anotaciones), usa las mismas fuentes y tamaños que Studio:
+
+| Elemento del visual | Fuente | Tamaño aproximado | Color |
+|---|---|---|---|
+| Título interno (si hace falta) | DM Serif Display | 36-48 px | `#0A0A0A` o `#FAFAFA` |
+| Eyebrow técnico | PP Neue Montreal Medium | 14-16 px, letter-spacing 0.2em | `#666` o `rgba(255,255,255,0.55)` |
+| Etiquetas / labels | PP Neue Montreal Medium | 12-14 px | `#444` o `#999` |
+| Cuerpo / nota | PP Neue Montreal | 14-16 px | `#333` o `rgba(255,255,255,0.78)` |
+| Mono (URLs, códigos) | JetBrains Mono | 11-13 px | mismo que el surface |
+
+**Importante**: si Studio ya pone eyebrow + titular en la página (porque la sección los lleva), **NO repitas título ni eyebrow dentro del visual** — produce doble titulación. Para eso existe `layout: protagonista`: tu visual va sin título interno y los `eyebrow + titular` de la sección actúan como título único.
+
+### Paleta admitida
+
+Cualquier visual debe usar exclusivamente:
+
+- **Surfaces**: `#0A0A0A` (oscuro), `#FAFAFA` (hueso), `#FFD600` (amarillo)
+- **Acentos**: el amarillo `#FFD600` para destacar (no usar otros colores como rojo, verde, azul de "data viz")
+- **Grises**: rangos de neutros entre `#1A1A1A` y `#F0F0F0`
+- **Texto sobre oscuro**: blanco hueso `#FAFAFA` con alphas (`rgba(250,250,250,0.78)` para cuerpo)
+
+Si necesitas codificar variables múltiples en un gráfico, usa **escala de grises + amarillo como destacado**, no paleta cromática. Pattern Magnify Design System.
+
+### Margen interno del visual
+
+Cuando produces un SVG/PNG con su propio "lienzo", deja **8-10% de padding interior** en blanco/oscuro al borde de la imagen. Esto evita que el contenido toque los límites del slot cuando Studio lo coloca. Ej. en una imagen de 1400×1700, deja 100-140 px de margen por dentro.
+
+### Checklist antes de subir
+
+- [ ] Resolución ≥ 1400 px en el lado largo
+- [ ] Aspect ratio coincide con el slot del tipo de sección
+- [ ] Tipografía interna usa DM Serif Display + PP Neue Montreal
+- [ ] Paleta solo `#0A0A0A` / `#FAFAFA` / `#FFD600` + grises
+- [ ] No replica eyebrow ni titular de la sección
+- [ ] 8-10% de padding interior en el borde
+- [ ] Nombre del archivo: `visual_NN_descripcion.png` (ej. `visual_01_distribucion_landings.png`)
+
+---
+
 ## 6. Schema YAML — Presentación (Charla / Keynote)
 
 16:9, exportable a PPTX. La variante "Charla" añade prefijo `ps-` en el render y soporta logo + handle del evento.

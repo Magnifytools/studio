@@ -70,6 +70,9 @@
   .sidebar-item:hover { background:rgba(255,255,255,0.05); color:#DDD; }
   .sidebar-item.on { color:var(--yellow); background:rgba(255,214,0,0.08); }
   .sidebar-item.on .ic { opacity:1; }
+  /* Brief: link de descarga separado de los tipos de output, abajo del sidebar. */
+  .sidebar-brief { margin-top:auto; border-top:1px solid rgba(255,255,255,0.08); padding-top:14px; padding-bottom:14px; color:#666; text-decoration:none; font-size:13px; }
+  .sidebar-brief:hover { color:var(--yellow); background:transparent; }
   .sidebar-item.on::before {
     content:''; position:absolute; left:-12px; top:10px; bottom:10px;
     width:3px; background:var(--yellow); border-radius:0 3px 3px 0;
@@ -910,9 +913,12 @@
   .csl-page.dk .csl-seccion-visual .sv-slot { border-color:rgba(255,214,0,0.2); color:rgba(255,214,0,0.45); }
   .csl-page.yl .csl-seccion-visual .sv-slot { border-color:rgba(10,10,10,0.2); color:rgba(10,10,10,0.4); }
   .csl-seccion-visual .sv-slot.has-img { background:none; padding:0; border:none; }
-  /* La imagen ocupa el ancho útil completo de la página (no se queda chica si es panorámica
-     o si tiene aspect ratio extremo). object-fit:contain limita la altura al slot disponible. */
-  .csl-seccion-visual .sv-slot.has-img img { width:100%; height:auto; max-height:100%; object-fit:contain; display:block; margin:auto; }
+  /* La imagen rellena el slot (que es flex:1 dentro del csl-body con padding 56/64/84 estándar)
+     manteniendo proporción con object-fit:contain. Si el ratio de la imagen vs el slot:
+       - imagen más ancha que el slot → se limita por ancho; quedan bandas arriba y abajo
+       - imagen más alta que el slot → se limita por alto; quedan bandas a los lados
+     Ningún caso desborda los márgenes laterales o el footer. */
+  .csl-seccion-visual .sv-slot.has-img img { width:100%; height:100%; object-fit:contain; display:block; }
 
   /* CITAS-CLIENTES — grid 2x3 sobre hueso */
   .csl-citas { background:#F5F1EA; }
@@ -1824,6 +1830,13 @@
       <span class="ic">&#9993;</span>
       <span>Firma Email</span>
     </button>
+    <!-- Brief técnico — descarga directa del STUDIO-BRIEF.md servido junto al HTML.
+         Útil para pasar a IA como contexto antes de pedir YAML. Se actualiza solo:
+         siempre devuelve la versión que está en el repositorio en este momento. -->
+    <a class="sidebar-item sidebar-brief" href="STUDIO-BRIEF.md" download="STUDIO-BRIEF.md" title="Descarga el brief técnico del Studio (formatos, schema, normas tipográficas y de visuales)">
+      <span class="ic">&#9776;</span>
+      <span>Descargar brief</span>
+    </a>
   </div>
 
   <!-- CENTER PANEL -->
