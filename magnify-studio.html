@@ -293,7 +293,7 @@
   /* Replica el tratamiento editorial de magnify.ing (.hero_title .highlight + <em>):
      fondo amarillo sólido, texto negro itálica del serif, padding horizontal generoso.
      Antes era gradient-size 92% + bold; ahora es el stamp amarillo real de la web. */
-  .hl { background:var(--yellow); color:var(--bg); font-style:italic; padding:0.02em 0.3em; display:inline; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
+  .hl { background:var(--yellow); color:var(--bg); font-style:italic; padding:0 0.18em; display:inline; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
   /* Sobre fondo amarillo el stamp amarillo sería invisible. Alternativa editorial:
      texto negro italic con underline grueso del mismo color (subrayado manuscrito),
      sin fondo de color. Funciona con la tipografía serif sin romper el amarillo
@@ -787,8 +787,9 @@
      anywhere` la parte limpio sin guion ni carácter custom. Pattern Magnify Design System. */
   .csl-page h1, .csl-page h2, .csl-page h3 { hyphens:none; -webkit-hyphens:none; word-break:keep-all; overflow-wrap:anywhere; }
   /* Highlight uniforme en TODOS los surfaces (lt, dk): fondo amarillo + texto negro italic.
-     Pattern Magnify Design System (slide 13: <a:highlight FFD600 + color 0A0A0A>). */
-  .csl-page .hl-c { background:var(--yellow); color:var(--bg); font-style:italic; padding:0.02em 0.3em; text-decoration:none; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
+     Pattern Magnify Design System (slide 13: <a:highlight FFD600 + color 0A0A0A>).
+     Padding ajustado para que el recuadro abrace la palabra sin halo lateral. */
+  .csl-page .hl-c { background:var(--yellow); color:var(--bg); font-style:italic; padding:0 0.18em; text-decoration:none; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
   /* Surface amarillo: el highlight con fondo amarillo se confundiría con el fondo de la página.
      Mantenemos solo el italic editorial (mismo color que el resto del titular). */
   .csl-page.yl .hl-c { background:transparent; color:inherit; padding:0; font-weight:500; }
@@ -814,7 +815,7 @@
   .csl-portada h1.t-long { font-size:64px; letter-spacing:-1.4px; line-height:1.05; max-width:660px; }
   .csl-portada.csl-page.lt h1 { color:var(--bg); }
   .csl-portada.csl-page.yl h1 { color:var(--bg); }
-  .csl-portada .pt-sub { font-size:22px; line-height:1.4; color:#D0D0D0; margin-top:36px; max-width:640px; font-weight:400; }
+  .csl-portada .pt-sub { font-size:30px; line-height:1.35; color:#D0D0D0; margin-top:40px; max-width:680px; font-weight:400; }
   .csl-portada.csl-page.lt .pt-sub { color:#444; }
   .csl-portada.csl-page.yl .pt-sub { color:rgba(10,10,10,0.7); }
   .csl-portada .pt-accent { width:44px; height:3px; background:var(--yellow); margin:36px 0 28px; }
@@ -848,18 +849,19 @@
   .csl-divisor .deck { font-family:var(--serif); font-style:italic; font-size:18px; line-height:1.55; margin-top:24px; max-width:520px; opacity:0.8; }
 
   /* SECCION-CUERPO — texto editorial denso con visuals */
-  .csl-section .sec-eyebrow { font-family:var(--mono,monospace); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:#666; font-weight:600; margin-bottom:12px; }
+  .csl-section .sec-eyebrow { font-family:var(--mono,monospace); font-size:15px; letter-spacing:0.2em; text-transform:uppercase; color:#666; font-weight:600; margin-bottom:18px; }
   .csl-page.dk .csl-section .sec-eyebrow { color:rgba(250,250,250,0.55); }
   .csl-section h2 { font-family:var(--serif); font-size:36px; font-weight:400; line-height:1.1; letter-spacing:-0.6px; color:inherit; margin:0 0 28px; max-width:620px; }
   /* Sección minimal: solo eyebrow + titular sin cuerpo/pull/visual. Centra contenido vertical
-     y trata el titular como manifiesto interno (peso editorial alto) — antes el titular pequeño
-     quedaba flotando en medio de la página vacía con look desértico. */
+     con titular escalado por longitud (similar a portada): titulares cortos pueden ser tipo
+     manifiesto, titulares largos quedan más legibles a tamaño moderado. */
   .csl-section.is-minimal .csl-body { justify-content:center; padding-top:56px; padding-bottom:84px; }
-  .csl-section.is-minimal .sec-eyebrow { margin-bottom:32px; font-size:11px; letter-spacing:0.22em; }
-  .csl-section.is-minimal h2 { font-size:80px; line-height:1.02; letter-spacing:-2px; max-width:680px; margin:0 0 32px; font-weight:400; }
+  .csl-section.is-minimal .sec-eyebrow { margin-bottom:28px; font-size:15px; }
+  .csl-section.is-minimal h2 { font-size:56px; line-height:1.05; letter-spacing:-1.4px; max-width:680px; margin:0 0 24px; font-weight:400; }
   /* Accent line bajo el titular para "anclar" la página y romper el aire muerto. */
-  .csl-section.is-minimal h2::after { content:""; display:block; width:48px; height:2px; background:var(--yellow); margin-top:36px; }
-  .csl-section .sec-body { font-size:14px; line-height:1.75; color:inherit; margin-bottom:18px; max-width:580px; }
+  .csl-section.is-minimal h2::after { content:""; display:block; width:48px; height:2px; background:var(--yellow); margin-top:32px; }
+  .csl-section .sec-body { font-size:17px; line-height:1.6; color:inherit; margin-bottom:18px; max-width:600px; }
+  .csl-section .sec-body strong { font-weight:600; color:inherit; }
   .csl-page.dk .csl-section .sec-body { color:rgba(250,250,250,0.85); }
   .csl-section .sec-body p { margin:0 0 14px; }
   .csl-section .sec-pull { font-family:var(--serif); font-style:italic; font-size:20px; line-height:1.45; color:var(--bg); border-left:3px solid var(--yellow); padding:6px 0 6px 22px; margin:24px 0 24px; max-width:560px; }
@@ -886,7 +888,7 @@
   .csl-visual .v-slot.has-img img { width:100%; height:100%; object-fit:contain; display:block; }
   .csl-page.dk .csl-visual .v-slot { border-color:rgba(255,214,0,0.2); color:rgba(255,214,0,0.45); }
   .csl-page.yl .csl-visual .v-slot { border-color:rgba(10,10,10,0.2); color:rgba(10,10,10,0.4); }
-  .csl-visual .v-cap { font-family:var(--sans); font-size:11.5px; line-height:1.6; color:#444; max-width:600px; }
+  .csl-visual .v-cap { font-family:var(--sans); font-size:15px; line-height:1.55; color:#444; max-width:620px; }
   .csl-page.dk .csl-visual .v-cap { color:#B8B8B8; }
   .csl-visual .v-cap strong { font-weight:600; color:var(--bg); }
   .csl-page.dk .csl-visual .v-cap strong { color:#FAFAFA; }
@@ -936,17 +938,18 @@
 
   /* FRAMEWORK-EXTENDIDO — pasos con párrafo largo */
   .csl-framework .csl-body { padding:72px 64px 96px; }
-  .csl-framework .fr-eyebrow { font-family:var(--mono,monospace); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--yellow); font-weight:600; margin-bottom:14px; }
+  .csl-framework .fr-eyebrow { font-family:var(--mono,monospace); font-size:15px; letter-spacing:0.2em; text-transform:uppercase; color:var(--yellow); font-weight:600; margin-bottom:18px; }
   .csl-framework h2 { font-family:var(--serif); font-size:38px; font-weight:400; line-height:1.1; letter-spacing:-0.7px; margin:0 0 32px; max-width:580px; color:inherit; }
   .csl-framework .fr-step { display:grid; grid-template-columns:48px 1fr; gap:20px; padding:20px 0; border-top:1px solid rgba(0,0,0,0.1); }
   .csl-framework .fr-step:last-child { border-bottom:1px solid rgba(0,0,0,0.1); }
   .csl-page.dk .csl-framework .fr-step { border-top-color:rgba(250,250,250,0.12); }
   .csl-page.dk .csl-framework .fr-step:last-child { border-bottom-color:rgba(250,250,250,0.12); }
-  .csl-framework .fr-step .n { font-family:var(--serif); font-size:30px; line-height:1; letter-spacing:-1px; color:var(--yellow); }
-  .csl-framework .fr-step h3 { font-family:var(--sans); font-size:18px; font-weight:600; letter-spacing:-0.2px; color:inherit; margin:0 0 4px; }
-  .csl-framework .fr-step .sub { font-family:var(--serif); font-style:italic; font-size:14px; color:#666; margin:0 0 10px; }
+  .csl-framework .fr-step .n { font-family:var(--serif); font-size:36px; line-height:1; letter-spacing:-1px; color:var(--yellow); }
+  .csl-framework .fr-step h3 { font-family:var(--sans); font-size:22px; font-weight:600; letter-spacing:-0.3px; color:inherit; margin:0 0 6px; }
+  .csl-framework .fr-step .sub { font-family:var(--serif); font-style:italic; font-size:17px; color:#666; margin:0 0 12px; }
   .csl-page.dk .csl-framework .fr-step .sub { color:rgba(250,250,250,0.7); }
-  .csl-framework .fr-step .desc { font-size:13px; line-height:1.65; color:#333; margin:0; max-width:520px; }
+  .csl-framework .fr-step .desc { font-size:17px; line-height:1.55; color:#333; margin:0; max-width:560px; }
+  .csl-framework .fr-step .desc strong { font-weight:600; }
   .csl-page.dk .csl-framework .fr-step .desc { color:rgba(250,250,250,0.78); }
 
   /* CIERRE — divisor amarillo crescendo */
@@ -3282,12 +3285,16 @@ function icon(color) { return `<svg class="logo-svg ic" viewBox="65 52 155 178" 
 
 function applyHighlights(text) {
   // Include trailing punctuation (.,;:!?) INSIDE the yellow highlight so "[realidades]." reads as one visual unit.
-  // The previous behavior left punctuation outside, which — combined with the 0.22em side-padding on .hl — produced
-  // a visible gap ("realidades ."). Pulling punctuation inside both removes the gap and reads as a single editorial beat.
   // Inner-trailing punctuation ([word.]) is kept inside too (same rule).
-  return text.replace(/\[([^\]]+)\]([.,;:!?]*)/g, (_, inner, trailing) => {
+  // También procesa negritas markdown `**texto**` → <strong>texto</strong> para énfasis editorial
+  // en cuerpos largos, decks y descripciones del framework.
+  let out = text.replace(/\[([^\]]+)\]([.,;:!?]*)/g, (_, inner, trailing) => {
     return `<span class="hl">${inner}${trailing}</span>`;
   });
+  // Markdown bold (lazy match, no anidado). Ya se hacía implícitamente en algunos sitios; aquí
+  // lo aplicamos uniformemente a cualquier campo que pase por applyHighlights.
+  out = out.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+  return out;
 }
 
 // B13: envuelve dominios y URLs en <span class="nowrap"> para que el browser no los parta
