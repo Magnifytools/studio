@@ -950,6 +950,15 @@
   .csl-page.dk .csl-framework .fr-step .sub { color:rgba(250,250,250,0.7); }
   .csl-framework .fr-step .desc { font-size:17px; line-height:1.55; color:#333; margin:0; max-width:560px; }
   .csl-framework .fr-step .desc strong { font-weight:600; }
+  /* Auto-escala para frameworks de 5-6 pasos: si no, el último paso se solapa con el footer.
+     Pattern: titular más compacto + pasos con padding reducido + tamaños bajados ~20%. */
+  .csl-framework.is-dense h2 { font-size:32px; margin-bottom:24px; }
+  .csl-framework.is-dense .fr-eyebrow { margin-bottom:14px; }
+  .csl-framework.is-dense .fr-step { padding:13px 0; gap:18px; grid-template-columns:42px 1fr; }
+  .csl-framework.is-dense .fr-step .n { font-size:30px; }
+  .csl-framework.is-dense .fr-step h3 { font-size:18px; margin-bottom:3px; }
+  .csl-framework.is-dense .fr-step .sub { font-size:14px; margin-bottom:6px; }
+  .csl-framework.is-dense .fr-step .desc { font-size:14px; line-height:1.45; }
   .csl-page.dk .csl-framework .fr-step .desc { color:rgba(250,250,250,0.78); }
 
   /* CIERRE — divisor amarillo crescendo */
@@ -4545,7 +4554,9 @@ function renderCSLStats6(g, d, pN, tot) {
   </div></div>`;
 }
 
-// FRAMEWORK-EXTENDIDO — pasos con título, subtítulo italic y párrafo
+// FRAMEWORK-EXTENDIDO — pasos con título, subtítulo italic y párrafo.
+// Auto-escala tipográfica: 5+ pasos activan `.is-dense` (tamaños reducidos) para que el
+// último paso no se solape con el footer. 4 o menos pasos: tamaños normales.
 function renderCSLFramework(g, d, pN, tot) {
   const surf = cslSurface(d);
   const steps = [];
@@ -4559,7 +4570,8 @@ function renderCSLFramework(g, d, pN, tot) {
       });
     }
   }
-  return `<div class="frame a4"><div class="csl-page ${surf} csl-framework">
+  const denseCls = steps.length >= 5 ? ' is-dense' : '';
+  return `<div class="frame a4"><div class="csl-page ${surf} csl-framework${denseCls}">
     ${cslHead(g, d)}
     <div class="csl-body">
       ${d.eyebrow ? `<div class="fr-eyebrow">${d.eyebrow.toUpperCase()}</div>` : ''}
