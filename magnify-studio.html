@@ -791,8 +791,10 @@
      Padding ajustado para que el recuadro abrace la palabra sin halo lateral. */
   .csl-page .hl-c { background:var(--yellow); color:var(--bg); font-style:italic; padding:0 0.18em; text-decoration:none; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
   /* Surface amarillo: el highlight con fondo amarillo se confundiría con el fondo de la página.
-     Mantenemos solo el italic editorial (mismo color que el resto del titular). */
-  .csl-page.yl .hl-c { background:transparent; color:inherit; padding:0; font-weight:500; }
+     Mantenemos solo el italic editorial (mismo color que el resto del titular).
+     Aplica a ambos selectores `.hl` y `.hl-c` porque applyHighlights genera `.hl` y otros
+     renderers usan `.hl-c`. Sin esta regla quedaba un espacio fantasma por el padding lateral. */
+  .csl-page.yl .hl-c, .csl-page.yl .hl { background:transparent; color:inherit; padding:0; font-weight:500; }
   .csl-page.yl .hl-c { color:var(--bg); text-decoration:underline; text-decoration-thickness:0.1em; text-decoration-color:var(--bg); font-style:italic; }
 
   /* PORTADA — dossier hero, dark, large serif title */
