@@ -5532,9 +5532,9 @@ const postRenderers = {
 // ════════════════════════════════════════════
 
 function renderCarouselCover(d) {
-  // Title-case the eyebrow (first letter of each word capitalized, rest lowercase) — serif italic reads better cased than shouted in caps.
-  const eyebrowRaw = d.eyebrow || 'Gu\u00eda';
-  const eyebrow = eyebrowRaw.toLowerCase().replace(/(^|\s)(\p{L})/gu, (_, sp, c) => sp + c.toUpperCase());
+  // Respeta el casing del usuario. Antes auto-Title-Case\u00e1bamos ("AI MODE" \u2192 "Ai Mode")
+  // pero eso destrozaba acr\u00f3nimos. El user controla el casing.
+  const eyebrow = d.eyebrow || 'Gu\u00eda';
   return `<div class="frame cr dk"><div class="t8">
     <div class="t8-brand">${wordmark('#FAFAFA')}</div>
     <div class="t8-top">
@@ -10274,8 +10274,23 @@ function generatePost(raw, preview, renderC) {
 }
 
 function generateCarousel(raw, preview, renderC) {
-  const blocks = raw.split(/^---$/m).map(b => b.trim()).filter(Boolean);
+  let blocks = raw.split(/^---$/m).map(b => b.trim()).filter(Boolean);
   if (blocks.length === 0) { toast('Separa cada slide con ---'); return; }
+
+  // Si el primer bloque es solo metadata (tipo / marca / proyecto sin campos de slide),
+  // se trata como header global y se descarta — patrón consistente con case-study,
+  // propuesta, presentacion, dossier. Sin esto, un YAML que arranca con `tipo: linkedin-carousel`
+  // genera una slide cover vacía con defaults ("Guía / Tu carousel").
+  if (blocks.length > 1) {
+    const first = parseBlock(blocks[0]);
+    const slideKeys = [
+      'eyebrow', 'titular', 'titulo', 'subtitulo', 'cuerpo', 'plantilla', 'slide',
+      'imagen', 'image', 'foto', 'cita', 'autor', 'stat', 'numero', 'stat_label',
+      'cta', 'url', 'pregunta', 'descripcion',
+    ];
+    const onlyMetadata = !slideKeys.some(k => first[k]);
+    if (onlyMetadata) blocks = blocks.slice(1);
+  }
 
   const totalContent = blocks.length;
   const slides = [];
