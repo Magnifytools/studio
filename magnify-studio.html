@@ -82,7 +82,132 @@
     -webkit-font-smoothing: antialiased; height:100vh; overflow:hidden;
   }
 
-  /* ── LAYOUT ── */
+  /* ── SCREEN STATE MACHINE ──
+     La shell tiene tres pantallas (launcher, wizard, editor) controladas por clase en body.
+     Solo una está visible a la vez. Default: launcher al cargar la app. */
+  .screen { display:none; }
+  body.screen-launcher .screen-launcher,
+  body.screen-wizard .screen-wizard,
+  body.screen-editor .screen-editor { display:flex; }
+
+  /* ── LAYOUT (editor) ── */
+  .screen-editor { display:flex; height:100vh; }
+
+  /* ── LAUNCHER ── */
+  .screen-launcher {
+    flex-direction:column; height:100vh; padding:48px 64px 32px;
+    background:var(--bg); color:var(--h2); overflow-y:auto;
+  }
+  .launcher-head {
+    display:flex; justify-content:space-between; align-items:flex-start;
+    padding-bottom:48px; border-bottom:1px solid var(--border-dk);
+  }
+  .launcher-hero { display:flex; flex-direction:column; gap:8px; }
+  .launcher-wordmark { display:flex; align-items:baseline; gap:14px; }
+  .launcher-wordmark .wm { display:inline-flex; }
+  .launcher-wordmark .wm svg { height:32px; width:auto; }
+  .launcher-wordmark .studio {
+    font-family:var(--serif); font-size:38px; font-style:italic; font-weight:400;
+    color:var(--h1); letter-spacing:-0.01em;
+  }
+  .launcher-sub {
+    font-family:var(--sans); font-size:14px; color:var(--body-dk);
+    letter-spacing:0.01em; max-width:42ch;
+  }
+  .brand-pill {
+    font-family:var(--mono); font-size:11px; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--body-dk);
+    background:transparent; border:1px solid var(--border-dk);
+    padding:8px 14px; border-radius:999px; cursor:pointer;
+    transition:border-color 0.15s, color 0.15s;
+  }
+  .brand-pill:hover { border-color:#444; color:var(--h2); }
+  .brand-pill .brand-pill-name { color:var(--h2); margin-left:6px; }
+
+  .launcher-body {
+    display:grid; grid-template-columns:minmax(0, 1.5fr) minmax(0, 1fr);
+    gap:64px; flex:1; padding-top:48px;
+  }
+  .launcher-pieces { display:flex; flex-direction:column; min-height:0; }
+  .launcher-pieces h2,
+  .launcher-cta h2 {
+    font-family:var(--mono); font-size:11px; letter-spacing:0.18em; text-transform:uppercase;
+    color:var(--body-dk); font-weight:500; margin:0 0 24px;
+  }
+  .pieces-list { display:flex; flex-direction:column; }
+  .pieces-list .piece-row {
+    display:grid; grid-template-columns:140px 1fr auto;
+    gap:24px; align-items:baseline;
+    padding:18px 0; border-top:1px solid var(--border-dk);
+    cursor:pointer; transition:background 0.1s;
+  }
+  .pieces-list .piece-row:last-child { border-bottom:1px solid var(--border-dk); }
+  .pieces-list .piece-row:hover,
+  .pieces-list .piece-row.focused { background:rgba(255,255,255,0.02); }
+  .piece-row .piece-meta {
+    font-family:var(--mono); font-size:11px; letter-spacing:0.06em;
+    color:var(--body-dk); text-transform:lowercase;
+  }
+  .piece-row .piece-title {
+    font-family:var(--serif); font-size:20px; line-height:1.25; color:var(--h1);
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .piece-row .piece-when {
+    font-family:var(--sans); font-size:12px; color:var(--body-dk);
+  }
+  .piece-row .piece-delete {
+    background:none; border:none; color:transparent; cursor:pointer; padding:4px 8px;
+    font-family:var(--mono); font-size:12px; transition:color 0.15s;
+  }
+  .piece-row:hover .piece-delete { color:var(--body-dk); }
+  .piece-row .piece-delete:hover { color:var(--yellow); }
+
+  .pieces-empty {
+    padding:40px 0; max-width:42ch;
+  }
+  .pieces-empty .quote {
+    font-family:var(--serif); font-size:28px; font-style:italic; line-height:1.3;
+    color:var(--h2);
+  }
+  .pieces-empty .quote-sub {
+    font-family:var(--sans); font-size:13px; color:var(--body-dk); margin-top:14px;
+  }
+
+  .launcher-cta { display:flex; flex-direction:column; }
+  .btn-empezar {
+    width:100%; padding:32px 24px; background:var(--yellow); color:var(--bg);
+    border:none; border-radius:0; cursor:pointer;
+    font-family:var(--serif); font-size:32px; font-style:italic; font-weight:400;
+    letter-spacing:-0.01em; transition:background 0.15s;
+    text-align:left; line-height:1;
+  }
+  .btn-empezar:hover { background:#ffe640; }
+  .btn-empezar .arrow {
+    float:right; font-style:normal; font-family:var(--sans); font-size:24px;
+    transition:transform 0.15s;
+  }
+  .btn-empezar:hover .arrow { transform:translateX(4px); }
+  .launcher-shortcuts {
+    list-style:none; padding:0; margin:24px 0 0; display:flex; flex-direction:column; gap:2px;
+  }
+  .launcher-shortcuts li button,
+  .launcher-shortcuts li a {
+    display:flex; justify-content:space-between; align-items:center;
+    width:100%; padding:14px 0; background:none; border:none; cursor:pointer;
+    border-bottom:1px solid var(--border-dk);
+    font-family:var(--sans); font-size:13px; color:var(--h2);
+    text-align:left; text-decoration:none;
+    transition:color 0.15s, padding-left 0.15s;
+  }
+  .launcher-shortcuts li button:hover,
+  .launcher-shortcuts li a:hover {
+    color:var(--yellow); padding-left:8px;
+  }
+  .launcher-shortcuts .kbd {
+    font-family:var(--mono); font-size:10px; color:var(--body-dk); letter-spacing:0.06em;
+  }
+
+  /* ── LAYOUT (editor original) ── */
   .layout { display:flex; height:100vh; }
 
   /* ── SIDEBAR ── */
@@ -2316,8 +2441,46 @@
   }
 </style>
 </head>
-<body>
+<body class="screen-launcher">
 
+<!-- LAUNCHER (home) — pantalla de inicio. Lista de piezas guardadas + CTA "Empezar".
+     Visible cuando body.screen-launcher (default al cargar la app). -->
+<div class="screen screen-launcher">
+  <header class="launcher-head">
+    <div class="launcher-hero">
+      <div class="launcher-wordmark">
+        <span class="wm" id="launcher-wm"></span>
+        <span class="studio">Studio</span>
+      </div>
+      <p class="launcher-sub">Genera piezas editoriales desde texto.</p>
+    </div>
+    <button class="brand-pill" id="launcher-brand-pill" onclick="cycleBrand()" title="Cambiar marca activa">
+      <span>Marca</span><span class="brand-pill-name" id="launcher-brand-name">Magnify</span>
+    </button>
+  </header>
+  <main class="launcher-body">
+    <section class="launcher-pieces">
+      <h2>Tus piezas</h2>
+      <div id="pieces-list" class="pieces-list"></div>
+    </section>
+    <aside class="launcher-cta">
+      <h2>Nueva</h2>
+      <button class="btn-empezar" onclick="newPiece()">
+        Empezar<span class="arrow">→</span>
+      </button>
+      <ul class="launcher-shortcuts">
+        <li><button type="button" onclick="toast('Plantillas externas: próximamente')">desde plantilla externa<span class="kbd">pronto</span></button></li>
+        <li><button type="button" onclick="triggerImportZip()">importar .zip<span class="kbd">⌘O</span></button></li>
+        <li><button type="button" onclick="newPiece(true)">abrir YAML pegado<span class="kbd">⌘V</span></button></li>
+        <li><a href="STUDIO-BRIEF.md" download="STUDIO-BRIEF.md">ver brief técnico<span class="kbd">.md</span></a></li>
+      </ul>
+      <input type="file" id="launcher-import-input" accept=".zip" style="display:none" onchange="handleImportZip(event)">
+    </aside>
+  </main>
+</div>
+
+<!-- EDITOR — la shell que existía hasta hoy. Visible cuando body.screen-editor. -->
+<div class="screen screen-editor">
 <div class="layout">
   <!-- SIDEBAR -->
   <div class="sidebar">
@@ -2431,6 +2594,8 @@
     </div>
   </div>
 </div>
+</div>
+<!-- /screen-editor -->
 
 <!-- Hidden render container -->
 <div id="render-container" style="position:fixed; left:-9999px; top:0;"></div>
@@ -2712,18 +2877,173 @@ function markPieceDirty() {
   }, 30000);
 }
 
-// Wire-up: input listener en el textarea y atajo ⌘/Ctrl+S. Llamado en INIT.
+// Wire-up: input listener en el textarea y atajos globales. Llamado en INIT.
 function wirePieceEditor() {
   const ta = document.getElementById('content');
   if (ta) ta.addEventListener('input', markPieceDirty);
   document.addEventListener('keydown', (e) => {
     const mod = e.metaKey || e.ctrlKey;
-    if (!mod) return;
-    if (e.key === 's' || e.key === 'S') {
+    // ⌘/Ctrl + S → guardar pieza (siempre disponible)
+    if (mod && (e.key === 's' || e.key === 'S')) {
       e.preventDefault();
       savePieceNow();
+      return;
+    }
+    // ⌘/Ctrl + N → nueva pieza desde launcher (no en editor para evitar perder cambios sin querer)
+    if (mod && (e.key === 'n' || e.key === 'N')) {
+      e.preventDefault();
+      newPiece();
+      return;
+    }
+    // Esc → en editor vuelve al launcher (con confirmación si hay cambios sin guardar)
+    if (e.key === 'Escape' && document.body.classList.contains('screen-editor')) {
+      const dirty = document.getElementById('save-status').classList.contains('dirty');
+      if (dirty && !confirm('Tienes cambios sin guardar. ¿Volver al inicio igualmente?')) return;
+      showScreen('launcher');
     }
   });
+}
+
+// ── SCREEN STATE ──
+// Conmuta entre launcher / wizard / editor. La lógica de wiring por pantalla vive en cada
+// función específica (renderLauncher, etc.). showScreen NO toca contenido, solo la clase del body.
+function showScreen(name) {
+  document.body.classList.remove('screen-launcher', 'screen-wizard', 'screen-editor');
+  document.body.classList.add('screen-' + name);
+  if (name === 'launcher') renderLauncher();
+}
+
+// ── LAUNCHER ──
+// Pinta wordmark de la marca activa, pill con nombre, y lista de piezas guardadas.
+async function renderLauncher() {
+  const wm = document.getElementById('launcher-wm');
+  if (wm) wm.innerHTML = (BRANDS[currentBrand] && BRANDS[currentBrand].logo) ? BRANDS[currentBrand].logo() : '';
+  const pillName = document.getElementById('launcher-brand-name');
+  if (pillName) pillName.textContent = (currentBrand === 'outpost') ? 'Outpost' : 'Magnify';
+  const list = document.getElementById('pieces-list');
+  if (!list) return;
+  let pieces = [];
+  try { pieces = await Pieces.list(); } catch (e) { console.error('[studio] error listando piezas:', e); }
+  if (!pieces.length) {
+    list.innerHTML = `
+      <div class="pieces-empty">
+        <p class="quote">"Empieza por escribir."</p>
+        <p class="quote-sub">Las piezas que guardes aparecerán aquí. Viven en este navegador — exporta el .zip si quieres llevártelas.</p>
+      </div>`;
+    return;
+  }
+  list.innerHTML = pieces.map(p => {
+    const meta = p.template ? `${p.type} · ${p.template}` : p.type;
+    const when = formatRelTime(p.updatedAt);
+    const brand = p.brand && p.brand !== 'magnify' ? ` · ${p.brand}` : '';
+    return `
+      <div class="piece-row" data-id="${escapeHtml(p.id)}" tabindex="0">
+        <span class="piece-meta">${escapeHtml(meta)}</span>
+        <span class="piece-title">${escapeHtml(p.title || 'Sin título')}</span>
+        <span class="piece-when">${when}${brand}</span>
+        <button class="piece-delete" onclick="event.stopPropagation(); deletePiece('${escapeHtml(p.id)}')" title="Borrar pieza">borrar</button>
+      </div>`;
+  }).join('');
+  list.querySelectorAll('.piece-row').forEach(row => {
+    row.addEventListener('click', () => openPiece(row.dataset.id));
+    row.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') openPiece(row.dataset.id);
+    });
+  });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+function formatRelTime(iso) {
+  if (!iso) return '';
+  const diff = Math.max(0, Date.now() - new Date(iso).getTime());
+  const m = Math.round(diff / 60000);
+  if (m < 1) return 'ahora';
+  if (m < 60) return `hace ${m}m`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `hace ${h}h`;
+  const d = Math.round(h / 24);
+  if (d < 30) return `hace ${d}d`;
+  return new Date(iso).toISOString().slice(0, 10);
+}
+
+async function openPiece(id) {
+  const p = await Pieces.get(id);
+  if (!p) return;
+  currentPieceId = p.id;
+  uploadedImages = { ...(p.assets || {}) };
+  // Aplicar marca de la pieza si difiere de la activa
+  if (p.brand && BRANDS[p.brand] && p.brand !== currentBrand) setActiveBrand(p.brand);
+  // Aplicar tipo de la pieza
+  if (p.type && p.type !== currentType) selectType(p.type);
+  // Cargar YAML
+  const ta = document.getElementById('content');
+  if (ta) ta.value = p.yaml || '';
+  // Refrescar uploads UI si hay helper
+  if (typeof renderImageThumbs === 'function') renderImageThumbs();
+  showScreen('editor');
+  setSaveStatus('saved', 'guardado · ' + formatRelTime(p.updatedAt));
+  _lastSavedAt = new Date(p.updatedAt).getTime();
+}
+
+async function deletePiece(id) {
+  if (!confirm('¿Borrar esta pieza? No se puede deshacer.')) return;
+  await Pieces.delete(id);
+  renderLauncher();
+}
+
+// Nueva pieza: limpia editor y muestra screen-editor. En S5 esto irá al wizard primero.
+// Si openClipboard=true, intenta pegar del clipboard automáticamente al abrir.
+async function newPiece(openClipboard) {
+  currentPieceId = null;
+  uploadedImages = {};
+  const ta = document.getElementById('content');
+  if (ta) {
+    ta.value = '';
+    if (openClipboard) {
+      try {
+        const txt = await navigator.clipboard.readText();
+        if (txt && txt.trim().length > 0) ta.value = txt;
+      } catch (_) { /* permission denied o no clipboard API */ }
+    }
+  }
+  if (typeof renderImageThumbs === 'function') renderImageThumbs();
+  setSaveStatus('', '');
+  _lastSavedAt = null;
+  showScreen('editor');
+  if (ta) ta.focus();
+}
+
+// Cycla la marca activa (Magnify ↔ Outpost) desde el launcher pill.
+function cycleBrand() {
+  const order = Object.keys(BRANDS);
+  const idx = order.indexOf(currentBrand);
+  const next = order[(idx + 1) % order.length] || 'magnify';
+  setActiveBrand(next);
+  renderLauncher();
+}
+
+// Trigger del input file oculto para importar zip.
+function triggerImportZip() {
+  const input = document.getElementById('launcher-import-input');
+  if (input) input.click();
+}
+
+async function handleImportZip(ev) {
+  const file = ev.target.files && ev.target.files[0];
+  if (!file) return;
+  ev.target.value = ''; // permite re-importar el mismo archivo después
+  try {
+    const piece = await Pieces.importZip(file);
+    const saved = await Pieces.save(piece);
+    await openPiece(saved.id);
+    toast('✓ Pieza importada');
+  } catch (e) {
+    console.error('[studio] error importando zip:', e);
+    toast('Error importando .zip');
+  }
 }
 
 // ── TYPE DEFINITIONS ──
@@ -9769,6 +10089,10 @@ wireUploadZone();
 selectType('linkedin-post');
 checkBrandFonts();
 wirePieceEditor();
+// Arranca en el launcher por defecto. La clase ya está en <body>; renderLauncher()
+// pinta wordmark + lista de piezas. Si en el futuro queremos "deep-link" a una pieza
+// concreta, este es el sitio para mirar location.hash y saltar al editor.
+renderLauncher();
 </script>
 </body>
 </html>
