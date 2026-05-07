@@ -424,6 +424,137 @@ q4_tag: -> NECESITAS COHERENCIA
 
 ---
 
+## 3.ter Schema YAML — Plantillas de `linkedin-carousel` (vertical 1080×1350)
+
+Carousel vertical para LinkedIn Document Posts. Cada slide va separado por `---` en línea propia. Frame: **1080×1350** (4:5). Export: PDF multi-página + ZIP con PNGs individuales.
+
+### Bloque común
+
+| Campo | Tipo | Descripción |
+|---|---|---|
+| `slide` | opcional | Número informativo (1, 2, 3…). El renderer no lo usa — la posición del bloque manda. Útil como ayuda visual al editar. |
+| `plantilla` | opcional | Una de las 5 plantillas: `cover` (alias `portada`), `interior` (default), `imagen` (alias `image`/`foto`), `stat`, `cta`. Si se omite, slide 0 → `cover`, resto → `interior`. |
+
+> Reglas de plantilla:
+> - **Slide 0 siempre se renderiza como `cover`**, declares lo que declares (es la portada).
+> - Si declaras `stat:` o `numero:` en un slide sin `plantilla:`, se infiere `stat`.
+> - Si solo hay `cta:` sin `titular`/`cuerpo`, se infiere `cta`.
+
+Brackets `[palabra]` aplican highlight editorial en `titular`, `subtitulo`, `cuerpo`. Bold `**markdown**` también.
+
+Marca activa controla colores. La paleta de cada plantilla está fijada (no admite `color: dark|light|yellow` como `linkedin-post`).
+
+### `cover` — Portada (slide 0)
+
+Surface oscura. Wordmark abajo, flecha "→" indicando que el carousel sigue.
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `eyebrow` | recomendado | Auto-Title-Case ("guía práctica" → "Guía Práctica"). Default `Guía`. ≤8 palabras (regla del eyebrow). |
+| `titular` | requerido | Headline editorial. Brackets `[…]` activan highlight amarillo. Default `Tu carousel`. |
+| `subtitulo` | opcional | Línea de apoyo bajo el titular. |
+
+```yaml
+slide: 1
+plantilla: cover
+eyebrow: GUÍA PRÁCTICA
+titular: 5 señales de que tu marca necesita un [diagnóstico]
+subtitulo: Descubre si tu marca está construida sobre una base sólida.
+```
+
+### `interior` — Slide narrativa (default)
+
+Surface clara, número grande "01", "02"… arriba a la derecha, dots de progreso abajo. Auto-numera en función de la posición del bloque.
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `eyebrow` | recomendado | "PRINCIPIO 01", "SEÑAL #1", etc. Mono uppercase letter-spaced. |
+| `titular` | requerido | Headline. Highlights `[…]` y bold `**…**`. |
+| `cuerpo` | opcional | Párrafo corto bajo el titular. Saltos de línea `\n` → `<br>`. |
+
+```yaml
+slide: 2
+plantilla: interior
+eyebrow: SEÑAL #1
+titular: Tu equipo no sabe explicar qué os hace [diferentes]
+cuerpo: Si preguntas a 5 personas "¿qué nos diferencia?", obtienes 5 respuestas distintas.
+```
+
+### `stat` — Stat dominante con contexto
+
+Surface oscura. Stat enorme arriba, label debajo, headline + cuerpo abajo. Sufijos (`%`, `x`, `+`) automáticamente se elevan a `<sup>`.
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `eyebrow` | recomendado | Eyebrow uppercase amarillo. |
+| `stat` | requerido | El número (`73%`, `2.4x`, `+250`). Acepta también el alias `numero`. |
+| `stat_label` | requerido | Etiqueta corta bajo la stat. Acepta el alias `etiqueta`. |
+| `titular` | requerido | Headline editorial. Acepta el alias `pregunta`. |
+| `cuerpo` | opcional | Párrafo corto. |
+
+```yaml
+slide: 3
+plantilla: stat
+eyebrow: EL RETO
+stat: 73%
+stat_label: de inconsistencia entre canales
+titular: El equipo comercial iba en paralelo al de marketing
+cuerpo: Mensaje cambiaba en cada canal. 15 competidores indiferenciados.
+```
+
+### `imagen` — Slide con foto fullbleed
+
+Foto cubre el frame completo, gradiente inferior + caption editorial. Si la imagen no resuelve, placeholder visible con guía.
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `imagen` | requerido | ID de imagen subida (`img1`, `img2` o nombre del archivo sin extensión). Acepta el alias `image`. |
+| `eyebrow` | opcional | Etiqueta sobre el headline. |
+| `titular` | requerido | Caption editorial. Highlights aplican. |
+
+```yaml
+slide: 4
+plantilla: imagen
+imagen: img1
+eyebrow: EJEMPLO
+titular: Lo que el mercado [realmente] percibe
+```
+
+### `cta` — Cierre / call to action
+
+Surface amarilla. Mensaje serif arriba, wordmark Magnify, URL al pie con `.ing` auto-resaltada.
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `titular` | requerido | Mensaje principal o pregunta. Default `¿Hablamos?`. |
+| `url` | opcional | URL del footer. Default `magnify.ing`. El `.ing` se highlightea automáticamente. |
+| `cta` | legacy | Si parece URL (contiene `.ing`/`.com`/`.co`/`.es`/`/`), se trata como `url`; si no, como `titular`. Mejor usar campos modernos. |
+
+```yaml
+slide: 5
+plantilla: cta
+titular: ¿Tu marca está construida para crecer o para [sobrevivir?]
+url: magnify.ing
+```
+
+### Plantillas de gallery preconfiguradas (Studio editor)
+
+El editor de Studio expone 3 ejemplos pre-rellenos cuando seleccionas `linkedin-carousel`:
+- **`manifiesto`** — lista de principios/valores (cover + interiores + cta).
+- **`guia-practica`** — guía educativa por señales/pasos (cover + interiores + cta).
+- **`caso-estudio-carousel`** — narrativa de resultado cliente (cover + stat + interior + stat + cta).
+
+### Reglas de composición
+
+- **3-7 slides recomendado** (LinkedIn engagement empieza a caer >7).
+- **Slide 0 siempre cover**, slide final típicamente `cta`.
+- **Mezclar plantillas** evita monotonía: alternar `interior` con `stat` o `imagen`.
+- **Eyebrows ≤8 palabras** (regla general de Studio — más rompe a 2 líneas).
+- **Cuerpo en `interior` ≤180 caracteres** o el bloque se siente cargado en 1080×1350.
+- **Stats con sufijo** (`73%`, `2.4x`, `+250`) renderan mejor que números desnudos.
+
+---
+
 ## 4. Schema YAML — Caso de Estudio (`case-study`)
 
 > ### ⚠️ El parser de Studio NO es YAML real
