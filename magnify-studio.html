@@ -426,6 +426,12 @@
     background:none; border:none; transition:color 0.12s;
   }
   .variant-back:hover { color:var(--yellow); }
+  .variant-skip {
+    background:none; border:none; padding:0; cursor:pointer;
+    font-family:var(--mono); font-size:10px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--yellow); transition:color 0.12s;
+  }
+  .variant-skip:hover { color:#ffe640; }
 
   /* Buttons */
   .actions { padding:16px 24px; border-top:1px solid var(--border-dk); display:flex; flex-direction:column; gap:8px; }
@@ -4910,9 +4916,13 @@ function selectType(type) {
 }
 
 function renderVariantGallery(type, variants) {
+  // html-deck no acepta YAML, no muestra el atajo
+  const skipLink = (type === 'html-deck')
+    ? ''
+    : ` · <button type="button" class="variant-skip" onclick="skipVariantGallery('${escapeHtml(type)}')">o pega tu YAML directamente →</button>`;
   const introText = type === 'html-deck'
     ? `<strong>${variants.length}</strong> · plantillas curadas · <strong>elige una</strong>`
-    : `${variants.length} <strong>plantillas</strong> · elige una para empezar`;
+    : `${variants.length} <strong>plantillas</strong> · elige una para empezar${skipLink}`;
   const cards = variants.map(v => {
     if (v.external && v.thumb) {
       const moods = v.moods ? `<span class="vmoods">${escapeHtml(v.moods)}</span>` : '';
@@ -4934,6 +4944,17 @@ function renderVariantGallery(type, variants) {
   }).join('');
   return `<p class="variant-intro">${introText}</p>
     <div class="variant-grid">${cards}</div>`;
+}
+
+// Skipea la galería de variantes y muestra el textarea vacío con foco — útil cuando el
+// usuario tiene un YAML completo listo para pegar y no necesita arrancar de plantilla.
+function skipVariantGallery(type) {
+  const meta = TYPE_META[type];
+  const contentEl = document.getElementById('content');
+  contentEl.parentElement.style.display = '';
+  contentEl.value = '';
+  document.getElementById('hint').innerHTML = `<button class="variant-back" type="button" onclick="selectType('${escapeHtml(type)}')">← ver plantillas</button>${meta.hint || ''}`;
+  contentEl.focus();
 }
 
 function selectVariant(type, variantId) {
@@ -10143,8 +10164,9 @@ function generate() {
 
   // Auto-detect type from YAML frontmatter: si el usuario pegó un YAML que declara
   // `tipo: <X>` en el primer bloque (antes del primer ---) y X es un tipo válido distinto
-  // al activo, cambiamos el editor a ese tipo antes de renderizar. Sin esto, pegar un
-  // carousel con el editor en linkedin-post fallaba silenciosamente.
+  // al activo, cambiamos el editor a ese tipo SIN pasar por selectType (que mostraría la
+  // galería de variantes y ocultaría el textarea — innecesario porque el usuario ya pegó
+  // contenido completo). Hacemos el cambio mínimo: currentType + sidebar + panel head.
   if (currentType !== 'documento') {
     const head = raw.split(/^---\s*$/m)[0] || '';
     const m = head.match(/^\s*tipo\s*:\s*([\w\-]+)\s*$/im);
@@ -10152,16 +10174,27 @@ function generate() {
       const declared = m[1].toLowerCase();
       if (TYPE_META[declared] && declared !== currentType) {
         toast(`Detectado tipo: ${declared} → cambiando editor`);
-        // Preserva el textarea (el contenido pegado) antes de selectType
+        // Salir limpio si veníamos de html-deck
+        if (currentType === 'html-deck' && declared !== 'html-deck') exitHtmlDeckMode();
+        currentType = declared;
+        // Sincroniza sidebar (sin dispatch a selectType para evitar el variant-gallery dance)
+        document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('on'));
+        const sidebarBtn = document.querySelector(`[data-type="${declared}"]`);
+        if (sidebarBtn) sidebarBtn.classList.add('on');
+        // Panel head + botones
+        const newMeta = TYPE_META[declared];
+        document.getElementById('panel-title').textContent = newMeta.title;
+        document.getElementById('panel-desc').textContent = newMeta.desc;
+        document.getElementById('btn-export').textContent = newMeta.exportLabel;
+        const pdfBtn = document.getElementById('btn-export-pdf');
+        pdfBtn.style.display = (declared === 'presentacion') ? '' : 'none';
+        // Mostrar zona de uploads si el tipo nuevo soporta imágenes
+        document.getElementById('uploads').classList.toggle('on', !!newMeta.supportsImages);
+        // El textarea ya tiene el contenido pegado — asegurar que está visible y limpiar hint
         const ta = document.getElementById('content');
-        const preserved = ta ? ta.value : '';
-        selectType(declared);
-        // selectType puede haber metido el example de la galería de variantes — restauramos
-        // el contenido del usuario y aseguramos que el textarea esté visible.
-        if (ta) {
-          ta.value = preserved;
-          ta.parentElement.style.display = '';
-        }
+        if (ta) ta.parentElement.style.display = '';
+        document.getElementById('hint').innerHTML = newMeta.hint || '';
+        renderColorBar(null);
       }
     }
   }
