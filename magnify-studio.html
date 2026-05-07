@@ -207,6 +207,96 @@
     font-family:var(--mono); font-size:10px; color:var(--body-dk); letter-spacing:0.06em;
   }
 
+  /* ── WIZARD ── */
+  .screen-wizard {
+    flex-direction:column; height:100vh; padding:48px 64px 32px;
+    background:var(--bg); color:var(--h2); overflow-y:auto;
+  }
+  .wizard-head {
+    display:flex; justify-content:space-between; align-items:center;
+    padding-bottom:24px; border-bottom:1px solid var(--border-dk);
+  }
+  .wizard-progress {
+    font-family:var(--mono); font-size:11px; letter-spacing:0.18em;
+    text-transform:uppercase; color:var(--body-dk);
+  }
+  .wizard-progress strong { color:var(--h2); font-weight:500; }
+  .wizard-back, .wizard-cancel {
+    background:none; border:none; cursor:pointer;
+    font-family:var(--sans); font-size:12px; color:var(--body-dk);
+    padding:8px 0; transition:color 0.15s;
+  }
+  .wizard-back:hover, .wizard-cancel:hover { color:var(--h2); }
+  .wizard-back:disabled { opacity:0.3; cursor:not-allowed; }
+
+  .wizard-body { flex:1; padding:48px 0 24px; min-height:0; }
+  .wizard-group { margin-bottom:48px; }
+  .wizard-group-title {
+    font-family:var(--mono); font-size:10px; letter-spacing:0.22em; text-transform:uppercase;
+    color:var(--body-dk); margin-bottom:18px; font-weight:500;
+  }
+  .wizard-grid {
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+    gap:14px;
+  }
+  .wizard-card {
+    display:flex; flex-direction:column; gap:8px;
+    padding:24px 22px; border:1px solid var(--border-dk); background:transparent;
+    cursor:pointer; text-align:left; color:var(--h2);
+    font-family:var(--sans); transition:border-color 0.15s, background 0.15s;
+    position:relative; min-height:108px;
+  }
+  .wizard-card:hover { border-color:#444; background:rgba(255,255,255,0.02); }
+  .wizard-card.selected { border-color:var(--yellow); background:rgba(255,214,0,0.04); }
+  .wizard-card .card-num {
+    position:absolute; top:12px; right:14px;
+    font-family:var(--mono); font-size:10px; color:var(--body-dk); letter-spacing:0.06em;
+  }
+  .wizard-card .card-name {
+    font-family:var(--serif); font-size:22px; line-height:1.15; color:var(--h1);
+    font-style:italic; letter-spacing:-0.005em;
+  }
+  .wizard-card.selected .card-name { color:var(--yellow); }
+  .wizard-card .card-desc {
+    font-family:var(--sans); font-size:12px; color:var(--body-dk); line-height:1.4;
+  }
+  .wizard-card .card-export {
+    font-family:var(--mono); font-size:9px; letter-spacing:0.18em; text-transform:uppercase;
+    color:var(--body-dk); margin-top:auto;
+  }
+  /* Brand cards: misma base pero con muestra de paleta */
+  .wizard-card.brand-card { padding:20px; }
+  .wizard-card.brand-card .palette {
+    display:flex; gap:0; height:24px; margin-top:8px;
+    border:1px solid var(--border-dk);
+  }
+  .wizard-card.brand-card .palette span { flex:1; }
+  .wizard-card.brand-card[data-brand="magnify"] .palette span:nth-child(1) { background:#0A0A0A; }
+  .wizard-card.brand-card[data-brand="magnify"] .palette span:nth-child(2) { background:#FAFAFA; }
+  .wizard-card.brand-card[data-brand="magnify"] .palette span:nth-child(3) { background:#FFD600; }
+  .wizard-card.brand-card[data-brand="outpost"] .palette span:nth-child(1) { background:#0A0A0A; }
+  .wizard-card.brand-card[data-brand="outpost"] .palette span:nth-child(2) { background:#F5F5F0; }
+  .wizard-card.brand-card[data-brand="outpost"] .palette span:nth-child(3) { background:#FFD600; }
+  .wizard-card.brand-card.placeholder {
+    border-style:dashed; opacity:0.4; cursor:not-allowed;
+  }
+
+  .wizard-foot {
+    display:flex; justify-content:flex-end; gap:12px;
+    padding-top:24px; border-top:1px solid var(--border-dk);
+  }
+  .btn-cont {
+    padding:14px 32px; background:var(--yellow); color:var(--bg);
+    border:none; border-radius:0; cursor:pointer;
+    font-family:var(--serif); font-size:18px; font-style:italic; letter-spacing:-0.005em;
+    transition:background 0.15s, opacity 0.15s;
+  }
+  .btn-cont:hover { background:#ffe640; }
+  .btn-cont:disabled {
+    background:#1a1a1a; color:#444; cursor:not-allowed;
+  }
+  .btn-cont .arrow { font-style:normal; font-family:var(--sans); margin-left:8px; }
+
   /* ── LAYOUT (editor original) ── */
   .layout { display:flex; height:100vh; }
 
@@ -2479,6 +2569,22 @@
   </main>
 </div>
 
+<!-- WIZARD — pantalla intermedia entre launcher y editor. Una decisión por paso.
+     Step 1: tipo de pieza · Step 2: marca. (Step de plantilla pendiente para S6.) -->
+<div class="screen screen-wizard">
+  <header class="wizard-head">
+    <button class="wizard-back" id="wizard-back" onclick="wizardBack()">← atrás</button>
+    <span class="wizard-progress" id="wizard-progress">1 de 2 · <strong>Elige tipo</strong></span>
+    <button class="wizard-cancel" onclick="wizardCancel()">cancelar</button>
+  </header>
+  <main class="wizard-body" id="wizard-body"></main>
+  <footer class="wizard-foot">
+    <button class="btn-cont" id="wizard-continue" onclick="wizardContinue()" disabled>
+      Continuar<span class="arrow">→</span>
+    </button>
+  </footer>
+</div>
+
 <!-- EDITOR — la shell que existía hasta hoy. Visible cuando body.screen-editor. -->
 <div class="screen screen-editor">
 <div class="layout">
@@ -2895,11 +3001,28 @@ function wirePieceEditor() {
       newPiece();
       return;
     }
-    // Esc → en editor vuelve al launcher (con confirmación si hay cambios sin guardar)
-    if (e.key === 'Escape' && document.body.classList.contains('screen-editor')) {
-      const dirty = document.getElementById('save-status').classList.contains('dirty');
-      if (dirty && !confirm('Tienes cambios sin guardar. ¿Volver al inicio igualmente?')) return;
-      showScreen('launcher');
+    // Esc → en editor vuelve al launcher (con confirm si dirty); en wizard retrocede paso o cancela
+    if (e.key === 'Escape') {
+      if (document.body.classList.contains('screen-editor')) {
+        const dirty = document.getElementById('save-status').classList.contains('dirty');
+        if (dirty && !confirm('Tienes cambios sin guardar. ¿Volver al inicio igualmente?')) return;
+        showScreen('launcher');
+      } else if (document.body.classList.contains('screen-wizard')) {
+        if (wizardState.step > 1) wizardBack();
+        else wizardCancel();
+      }
+      return;
+    }
+    // En wizard: 1-9 selecciona la card N (1-indexed) del paso actual; Enter continúa.
+    if (document.body.classList.contains('screen-wizard')) {
+      if (/^[1-9]$/.test(e.key)) {
+        const cards = document.querySelectorAll('.wizard-card:not(.placeholder)');
+        const idx = parseInt(e.key, 10) - 1;
+        if (cards[idx]) { e.preventDefault(); cards[idx].click(); }
+      } else if (e.key === 'Enter') {
+        const cont = document.getElementById('wizard-continue');
+        if (cont && !cont.disabled) { e.preventDefault(); cont.click(); }
+      }
     }
   });
 }
@@ -2994,26 +3117,28 @@ async function deletePiece(id) {
   renderLauncher();
 }
 
-// Nueva pieza: limpia editor y muestra screen-editor. En S5 esto irá al wizard primero.
-// Si openClipboard=true, intenta pegar del clipboard automáticamente al abrir.
+// Nueva pieza: lanza el wizard. Si openClipboard=true, va directo al editor con
+// el contenido del clipboard pegado (atajo "abrir YAML pegado" del launcher).
 async function newPiece(openClipboard) {
-  currentPieceId = null;
-  uploadedImages = {};
-  const ta = document.getElementById('content');
-  if (ta) {
-    ta.value = '';
-    if (openClipboard) {
+  if (openClipboard) {
+    currentPieceId = null;
+    uploadedImages = {};
+    const ta = document.getElementById('content');
+    if (ta) {
+      ta.value = '';
       try {
         const txt = await navigator.clipboard.readText();
         if (txt && txt.trim().length > 0) ta.value = txt;
       } catch (_) { /* permission denied o no clipboard API */ }
     }
+    if (typeof renderImageThumbs === 'function') renderImageThumbs();
+    setSaveStatus('', '');
+    _lastSavedAt = null;
+    showScreen('editor');
+    if (ta) ta.focus();
+    return;
   }
-  if (typeof renderImageThumbs === 'function') renderImageThumbs();
-  setSaveStatus('', '');
-  _lastSavedAt = null;
-  showScreen('editor');
-  if (ta) ta.focus();
+  wizardStart();
 }
 
 // Cycla la marca activa (Magnify ↔ Outpost) desde el launcher pill.
@@ -3044,6 +3169,156 @@ async function handleImportZip(ev) {
     console.error('[studio] error importando zip:', e);
     toast('Error importando .zip');
   }
+}
+
+// ── WIZARD ──
+// State machine de 2 pasos por ahora (tipo · marca). Plantilla irá como paso intermedio
+// cuando S6 introduzca tipos con sub-variantes seleccionables (html-deck con 32 templates).
+//
+// Flujo: newPiece() → wizard step 1 → step 2 → applyWizardSelection() → showScreen('editor').
+
+const WIZARD_TYPE_GROUPS = [
+  { label: 'Social', types: ['linkedin-post', 'linkedin-carousel', 'thumbnail', 'banner'] },
+  { label: 'Editorial', types: ['case-study', 'case-study-longform', 'documento', 'report-cover'] },
+  { label: 'Comercial', types: ['propuesta'] },
+  { label: 'Deck', types: ['presentacion'] },
+  { label: 'Otros', types: ['email-sig'] },
+];
+
+const WIZARD_TYPE_DESC = {
+  'linkedin-post': 'Tarjeta cuadrada para feed.',
+  'linkedin-carousel': 'Slides verticales conectadas (1080×1350).',
+  'banner': 'OG image, perfil, logo varios tamaños.',
+  'thumbnail': 'YouTube 1280×720 + Podcast 1500×1500.',
+  'case-study': 'Doc A4 multi-página single-layout.',
+  'case-study-longform': 'Editorial A4 16-20pp con divisores.',
+  'propuesta': 'Propuesta comercial A4 multi-página.',
+  'report-cover': 'Cover A4 standalone.',
+  'presentacion': 'Slides 16:9. 3 sub-variantes nativas.',
+  'documento': 'Markdown formateado a A4 editorial.',
+  'email-sig': 'Firma HTML para email.',
+};
+
+const WIZARD_TYPE_EXPORT = {
+  'linkedin-post': 'PNG', 'linkedin-carousel': 'PPTX/PDF/ZIP', 'banner': 'PNG',
+  'thumbnail': 'PNG', 'case-study': 'PDF', 'case-study-longform': 'PDF',
+  'propuesta': 'PDF', 'report-cover': 'PNG', 'presentacion': 'PPTX',
+  'documento': 'PDF', 'email-sig': 'HTML',
+};
+
+let wizardState = { step: 1, type: null, brand: null, totalSteps: 2 };
+
+function wizardStart() {
+  wizardState = { step: 1, type: null, brand: currentBrand, totalSteps: 2 };
+  showScreen('wizard');
+  renderWizardStep();
+}
+
+function renderWizardStep() {
+  const body = document.getElementById('wizard-body');
+  const back = document.getElementById('wizard-back');
+  const cont = document.getElementById('wizard-continue');
+  const prog = document.getElementById('wizard-progress');
+  if (!body || !cont || !prog) return;
+  back.disabled = wizardState.step === 1;
+
+  const stepLabels = { 1: 'Elige tipo', 2: 'Elige marca' };
+  prog.innerHTML = `${wizardState.step} de ${wizardState.totalSteps} · <strong>${stepLabels[wizardState.step]}</strong>`;
+
+  if (wizardState.step === 1) {
+    body.innerHTML = WIZARD_TYPE_GROUPS.map(grp => `
+      <div class="wizard-group">
+        <div class="wizard-group-title">${grp.label}</div>
+        <div class="wizard-grid">
+          ${grp.types.map(t => {
+            const meta = TYPE_META[t] || {};
+            const selected = wizardState.type === t ? 'selected' : '';
+            return `
+              <button class="wizard-card ${selected}" data-type="${escapeHtml(t)}" onclick="wizardSelectType('${escapeHtml(t)}')">
+                <span class="card-name">${escapeHtml(meta.title || t)}</span>
+                <span class="card-desc">${escapeHtml(WIZARD_TYPE_DESC[t] || '')}</span>
+                <span class="card-export">${escapeHtml(WIZARD_TYPE_EXPORT[t] || '')}</span>
+              </button>`;
+          }).join('')}
+        </div>
+      </div>
+    `).join('');
+    cont.disabled = !wizardState.type;
+    cont.innerHTML = (wizardState.step === wizardState.totalSteps ? 'Empezar' : 'Continuar') + '<span class="arrow">→</span>';
+  } else if (wizardState.step === 2) {
+    body.innerHTML = `
+      <div class="wizard-group">
+        <div class="wizard-group-title">Marca</div>
+        <div class="wizard-grid">
+          ${Object.keys(BRANDS).map(b => {
+            const selected = wizardState.brand === b ? 'selected' : '';
+            const name = b === 'outpost' ? 'Outpost' : 'Magnify';
+            const desc = b === 'outpost'
+              ? 'Canal editorial. Inter + DM Serif. Surface clara.'
+              : 'Sistema base. NM + PP Editorial. Surface oscura.';
+            return `
+              <button class="wizard-card brand-card ${selected}" data-brand="${escapeHtml(b)}" onclick="wizardSelectBrand('${escapeHtml(b)}')">
+                <span class="card-name">${escapeHtml(name)}</span>
+                <span class="card-desc">${escapeHtml(desc)}</span>
+                <div class="palette"><span></span><span></span><span></span></div>
+              </button>`;
+          }).join('')}
+          <button class="wizard-card brand-card placeholder" disabled title="Próximamente">
+            <span class="card-name" style="color:var(--body-dk)">+ Nueva marca</span>
+            <span class="card-desc">Crea una marca propia con tu paleta y tipografías.</span>
+          </button>
+        </div>
+      </div>
+    `;
+    cont.disabled = !wizardState.brand;
+    cont.innerHTML = 'Empezar<span class="arrow">→</span>';
+  }
+}
+
+function wizardSelectType(t) {
+  wizardState.type = t;
+  renderWizardStep();
+}
+
+function wizardSelectBrand(b) {
+  wizardState.brand = b;
+  renderWizardStep();
+}
+
+function wizardContinue() {
+  if (wizardState.step < wizardState.totalSteps) {
+    wizardState.step++;
+    renderWizardStep();
+    return;
+  }
+  applyWizardSelection();
+}
+
+function wizardBack() {
+  if (wizardState.step > 1) {
+    wizardState.step--;
+    renderWizardStep();
+  }
+}
+
+function wizardCancel() {
+  showScreen('launcher');
+}
+
+function applyWizardSelection() {
+  const { type, brand } = wizardState;
+  if (brand && BRANDS[brand] && brand !== currentBrand) setActiveBrand(brand);
+  if (type && type !== currentType) selectType(type);
+  // Limpia editor y deja al usuario escribir
+  currentPieceId = null;
+  uploadedImages = {};
+  const ta = document.getElementById('content');
+  if (ta) ta.value = '';
+  if (typeof renderImageThumbs === 'function') renderImageThumbs();
+  setSaveStatus('', '');
+  _lastSavedAt = null;
+  showScreen('editor');
+  if (ta) ta.focus();
 }
 
 // ── TYPE DEFINITIONS ──
