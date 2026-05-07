@@ -37,10 +37,10 @@
   /* ── PROJECT OVERRIDE: OUTPOST ──
      Outpost es un canal editorial de Magnify con voz visual propia. Solo cambia tokens
      (colores neutros + sans). Layout, simetría, espaciados y reglas se quedan intactos.
-     Activación: body.project-outpost (lo añade setActiveProject). Las fuentes (Inter +
-     DM Serif Display unicode-range extendido) las carga loadProjectFontsCss() bajo demanda
+     Activación: body.brand-outpost (lo añade setActiveBrand). Las fuentes (Inter +
+     DM Serif Display unicode-range extendido) las carga loadBrandFontsCss() bajo demanda
      desde projects/outpost/fonts/fonts.css. */
-  body.project-outpost {
+  body.brand-outpost {
     --h1: #F5F5F0;
     --h2: #F5F5F0;
     --surface: #F5F5F0;
@@ -54,7 +54,7 @@
   /* OUTPOST · partícula técnica [BRACKETS_MAYÚSCULAS] — chip render
      Se aplica a inner uppercase dentro de corchetes (eyebrow, footer técnico, taxonomía).
      Diferenciada del .hl heredado (que es highlight editorial para minúsculas). */
-  body.project-outpost .tx-chip {
+  body.brand-outpost .tx-chip {
     display:inline-block; padding:0.18em 0.55em; margin:0 0.05em;
     background:#0A0A0A; color:#F5F5F0;
     font-family:var(--sans); font-weight:600;
@@ -63,15 +63,15 @@
     vertical-align:0.06em;
   }
   /* Sobre fondos claros: chip negro con texto papel — buen contraste sin perder peso técnico. */
-  body.project-outpost .lt .tx-chip,
-  body.project-outpost .csl-page.lt .tx-chip,
-  body.project-outpost .ps-slide.lt .tx-chip {
+  body.brand-outpost .lt .tx-chip,
+  body.brand-outpost .csl-page.lt .tx-chip,
+  body.brand-outpost .ps-slide.lt .tx-chip {
     background:#0A0A0A; color:#F5F5F0;
   }
   /* Sobre fondo amarillo: chip negro con texto amarillo (mantener el accent visible). */
-  body.project-outpost .yl .tx-chip,
-  body.project-outpost .csl-page.yl .tx-chip,
-  body.project-outpost .ps-slide.yl .tx-chip {
+  body.brand-outpost .yl .tx-chip,
+  body.brand-outpost .csl-page.yl .tx-chip,
+  body.brand-outpost .ps-slide.yl .tx-chip {
     background:#0A0A0A; color:var(--yellow);
   }
 
@@ -99,24 +99,25 @@
   }
   .sidebar-logo img, .sidebar-logo .logo-svg.ic { height:24px; width:auto; }
 
-  /* Project switcher: toggle compacto en el sidebar para alternar Magnify / Outpost.
-     El YAML con `proyecto:` en frontmatter siempre tiene prioridad sobre esta selección
-     (override puntual al pulsar Generar). Esta selección solo determina la "vibe" base. */
-  .project-switch {
+  /* Brand switcher: toggle compacto en el sidebar para alternar Magnify / Outpost.
+     El YAML con `marca:` (alias deprecado: `proyecto:`) en frontmatter siempre tiene prioridad
+     sobre esta selección (override puntual al pulsar Generar). Esta selección solo determina
+     la "vibe" base. */
+  .brand-switch {
     display:flex; gap:4px; padding:4px;
     background:rgba(255,255,255,0.04);
     border:1px solid rgba(255,255,255,0.08);
     border-radius:8px;
     margin:0 6px 16px;
   }
-  .project-switch button {
+  .brand-switch button {
     flex:1; padding:6px 10px; border:none; background:transparent;
     color:#888; cursor:pointer; border-radius:5px;
     font-family:var(--sans); font-size:12px; font-weight:600; letter-spacing:0.04em;
     transition:background 0.15s, color 0.15s;
   }
-  .project-switch button:hover { color:#DDD; }
-  .project-switch button.on { background:rgba(255,214,0,0.12); color:var(--yellow); }
+  .brand-switch button:hover { color:#DDD; }
+  .brand-switch button.on { background:rgba(255,214,0,0.12); color:var(--yellow); }
   .sidebar-item {
     width:100%; min-height:44px; padding:10px 14px;
     display:flex; align-items:center; gap:14px;
@@ -2310,11 +2311,12 @@
   <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="sidebar-logo" id="sidebar-logo"></div>
-    <!-- Project switcher: alterna sistema visual base. El YAML con `proyecto:` en frontmatter
-         siempre gana sobre esta selección al pulsar Generar (override puntual). -->
-    <div class="project-switch" role="radiogroup" aria-label="Proyecto activo">
-      <button type="button" data-project="magnify" class="on" onclick="setActiveProject('magnify')" title="Sistema visual Magnify (default)">Magnify</button>
-      <button type="button" data-project="outpost" onclick="setActiveProject('outpost')" title="Sistema visual Outpost (videopodcast)">Outpost</button>
+    <!-- Brand switcher: alterna sistema visual base. El YAML con `marca:` en frontmatter
+         (alias deprecado: `proyecto:`) siempre gana sobre esta selección al pulsar Generar
+         (override puntual). -->
+    <div class="brand-switch" role="radiogroup" aria-label="Marca activa">
+      <button type="button" data-brand="magnify" class="on" onclick="setActiveBrand('magnify')" title="Sistema visual Magnify (default)">Magnify</button>
+      <button type="button" data-brand="outpost" onclick="setActiveBrand('outpost')" title="Sistema visual Outpost (videopodcast)">Outpost</button>
     </div>
     <button class="sidebar-item on" onclick="selectType('linkedin-post')" data-type="linkedin-post">
       <span class="ic" style="font-family:var(--serif)">in</span>
@@ -2532,7 +2534,7 @@ plantilla: icon`
 <code>data</code> — cifra hero del episodio (número + sufijo + contexto)<br><br>
 <strong>Series:</strong> <code>serie: STANDARD</code> renderiza chip <code>[STANDARD]</code> en el header. Combina con <code>episodio: 12</code> para meta clásica.<br><br>
 <strong>Surface:</strong> <code>fondo: oscuro|claro|amarillo</code> (default oscuro — los thumbnails captan mirada en feed dark-first).<br><br>
-<strong>Tip Outpost:</strong> declara <code>proyecto: outpost</code> en el frontmatter para activar el sistema visual del canal en este render (Inter + paleta crítica).`,
+<strong>Tip Outpost:</strong> declara <code>marca: outpost</code> en el frontmatter para activar el sistema visual del canal en este render (Inter + paleta crítica). El alias <code>proyecto:</code> sigue funcionando.`,
     example: `formato: youtube
 plantilla: episode
 serie: STANDARD
@@ -3948,13 +3950,13 @@ function parseBlock(text) {
 // Inline SVG logos — html2canvas renders inline SVG reliably, but not external SVG <img>.
 const WORDMARK_PATH = 'M772.2,645.1l-44,147h-26.6l62.8-166.8h7.8h7.8l62.8,166.8h-26.6L772.2,645.1z M1741.7,625.2h32.4v167.1h-32.4V625.2z M353.7,625.2v167.1h29.7V659.1l47.9,133.2h23.9l47.9-133.2v133.2h29.7V625.2c-15.1,0-30.3,0-45.4,0l-44.1,113.6l-44.1-113.6C384,625.2,368.8,625.2,353.7,625.2z M1376.2,625.2v167.1h30.1V666.5l72.6,125.8h34.2V625.2h-30.1v127.1l-72.6-127.1H1376.2zM1999.6,625.2v167.1h31.1v-73h66v-25.9h-66v-41.3h76v-27H1999.6z M2337.3,625.2l54.1,97.3v69.8h33.2v-69.8l54.1-97.3h-34l-36.7,70l-36.7-70H2337.3z M1077.2,703.4v24.2h43.6v27.8l-1.2,0.9c-9.3,6.8-20.2,11.1-31.6,12.6c-10.9,1.4-22.1,0.3-32.3-3.8c-10.3-4-19.1-10.8-25.3-20c-7.2-10.5-10.2-22.9-10.2-35.5c0-16,5.6-31.6,16.5-43.4c10.8-11.6,25.4-18.1,41.3-18.1c17.6,0,33.6,8.4,44.4,22.1h31c-11.4-30.9-43.9-47.7-75.8-47.7c-23.8,0-46.5,8.7-63.5,25.5c-16.5,16.3-25.5,38.4-25.5,61.6c0,31.2,14.5,59.3,42.4,74.2c9.5,5.1,20.2,8.3,30.9,9.9c11.4,1.7,23.1,1.7,34.4,0.1c21.4-3.1,43.2-12.2,57.4-29v-61.4H1077.2z';
 const ICON_POINTS = '141.7,77.7 97.6,224.7 71,224.7 133.9,57.9 141.7,57.9 149.5,57.9 212.3,224.7 185.7,224.7';
-// SVGs raw del sistema Magnify. Las versiones públicas wordmark()/icon() son project-aware:
-// despachan a Outpost cuando currentProject === 'outpost'. Si necesitas el SVG Magnify forzado
+// SVGs raw del sistema Magnify. Las versiones públicas wordmark()/icon() son brand-aware:
+// despachan a Outpost cuando currentBrand === 'outpost'. Si necesitas el SVG Magnify forzado
 // (caso raro: render comparativo, design tools), usa magnifyWordmark/magnifyIcon directamente.
 function magnifyWordmark(color) { return `<svg class="logo-svg wm" viewBox="348 620 2140 178" xmlns="http://www.w3.org/2000/svg"><path fill="${color}" d="${WORDMARK_PATH}"/></svg>`; }
 function magnifyIcon(color) { return `<svg class="logo-svg ic" viewBox="65 52 155 178" xmlns="http://www.w3.org/2000/svg"><polygon fill="${color}" points="${ICON_POINTS}"/></svg>`; }
-function wordmark(color) { return currentProject === 'outpost' ? outpostWordmark(color) : magnifyWordmark(color); }
-function icon(color) { return currentProject === 'outpost' ? outpostIcon(color) : magnifyIcon(color); }
+function wordmark(color) { return currentBrand === 'outpost' ? outpostWordmark(color) : magnifyWordmark(color); }
+function icon(color) { return currentBrand === 'outpost' ? outpostIcon(color) : magnifyIcon(color); }
 
 // ── OUTPOST LOGOS — inline SVG (mismo motivo que Magnify: html2canvas necesita inline) ──
 // Geometría canónica: tres aros casi concéntricos r=50/48/46 + punto amarillo r=16 en cuadrante
@@ -3979,33 +3981,34 @@ function outpostWordmark(color) {
   </svg>`;
 }
 
-// ── PROJECT SYSTEM ──
-// Override de marca por proyecto. Solo cambia tokens (colores/fuentes/logo); layout y reglas
-// de simetría se mantienen porque viven en CSS estático con var(--token).
+// ── BRAND SYSTEM ──
+// Override de marca per-renderizado. Solo cambia tokens (colores/fuentes/logo); layout y
+// reglas de simetría se mantienen porque viven en CSS estático con var(--token).
 //
 // Activación:
-//   1. setActiveProject(name) — cambia clase en body, reasigna FONT_SERIF/FONT_SANS para PPTX,
+//   1. setActiveBrand(name) — cambia clase en body, reasigna FONT_SERIF/FONT_SANS para PPTX,
 //      swap del logo en sidebar, persiste en localStorage.
-//   2. En generate(): si el YAML declara `proyecto: outpost` en el frontmatter (bloque global,
-//      antes del primer ---), se invoca setActiveProject('outpost') antes del render.
+//   2. En generate(): si el YAML declara `marca: outpost` (o el alias deprecado `proyecto: outpost`)
+//      en el frontmatter (bloque global, antes del primer ---), se invoca setActiveBrand('outpost')
+//      antes del render.
 //
 // Inline OUTPOST_TOKENS: fallback offline. La fuente de verdad es projects/outpost/tokens.json
 // y projects/outpost/outpost-brief.md. Si en el futuro hay drift, sincronizar con tokens.json.
-const PROJECTS = {
+const BRANDS = {
   magnify: {
     name: 'Magnify',
     bodyClass: '',  // default :root
     fontsCss: null, // ya cargada en <head> via Google Fonts + @font-face local NM
     pptx: { serif: 'DM Serif Display', sans: 'PP Neue Montreal' },
     // Usamos magnifyIcon directo (no icon()) para evitar recursión: icon() ya despacha por
-    // currentProject, pero el switcher del sidebar quiere SIEMPRE el icon de Magnify cuando
+    // currentBrand, pero el switcher del sidebar quiere SIEMPRE el icon de Magnify cuando
     // se está mostrando "Magnify" como opción seleccionada.
     logo: (color) => magnifyIcon(color || '#FAFAFA'),
     url: 'magnify.<span class="ing-ap">ing</span>'
   },
   outpost: {
     name: 'Outpost',
-    bodyClass: 'project-outpost',
+    bodyClass: 'brand-outpost',
     fontsCss: 'projects/outpost/fonts/fonts.css',
     pptx: { serif: 'DM Serif Display', sans: 'Inter' },
     logo: (color) => outpostIcon(color || '#F5F5F0'),
@@ -4014,15 +4017,15 @@ const PROJECTS = {
     url: 'outpost.magnify.<span class="ing-ap">ing</span>'
   }
 };
-const PROJECT_STORAGE_KEY = 'studio:activeProject';
-let currentProject = 'magnify';
+const BRAND_STORAGE_KEY = 'studio:activeBrand';
+let currentBrand = 'magnify';
 
-// Carga lazy del CSS de fuentes del proyecto. Solo lo inyecta una vez por proyecto, ignora
+// Carga lazy del CSS de fuentes de la marca. Solo lo inyecta una vez por marca, ignora
 // llamadas duplicadas. Se usa relative path desde el HTML — funciona en file:// y servido.
-function loadProjectFontsCss(projectName) {
-  const cfg = PROJECTS[projectName];
+function loadBrandFontsCss(brandName) {
+  const cfg = BRANDS[brandName];
   if (!cfg || !cfg.fontsCss) return;
-  const id = 'project-fonts-' + projectName;
+  const id = 'brand-fonts-' + brandName;
   if (document.getElementById(id)) return;
   const link = document.createElement('link');
   link.id = id;
@@ -4031,61 +4034,70 @@ function loadProjectFontsCss(projectName) {
   document.head.appendChild(link);
 }
 
-// Aplica visualmente un proyecto: clase body, fuentes, logo. NO persiste, NO sincroniza
-// el switcher UI. Es la primitiva compartida entre setActiveProject (acción del usuario,
-// persiste) y applyYamlProjectOverride (override puntual desde YAML, no persiste).
-function _applyProjectVisuals(name) {
-  if (!PROJECTS[name]) name = 'magnify';
-  currentProject = name;
-  Object.values(PROJECTS).forEach(p => p.bodyClass && document.body.classList.remove(p.bodyClass));
-  if (PROJECTS[name].bodyClass) document.body.classList.add(PROJECTS[name].bodyClass);
-  loadProjectFontsCss(name);
+// Aplica visualmente una marca: clase body, fuentes, logo. NO persiste, NO sincroniza
+// el switcher UI. Es la primitiva compartida entre setActiveBrand (acción del usuario,
+// persiste) y applyYamlBrandOverride (override puntual desde YAML, no persiste).
+function _applyBrandVisuals(name) {
+  if (!BRANDS[name]) name = 'magnify';
+  currentBrand = name;
+  Object.values(BRANDS).forEach(p => p.bodyClass && document.body.classList.remove(p.bodyClass));
+  if (BRANDS[name].bodyClass) document.body.classList.add(BRANDS[name].bodyClass);
+  loadBrandFontsCss(name);
   // Reasignar fuentes para PPTX (los builders leen FONT_SERIF/FONT_SANS en cada call)
-  FONT_SERIF = PROJECTS[name].pptx.serif;
-  FONT_SANS = PROJECTS[name].pptx.sans;
+  FONT_SERIF = BRANDS[name].pptx.serif;
+  FONT_SANS = BRANDS[name].pptx.sans;
   const slot = document.getElementById('sidebar-logo');
-  if (slot) slot.innerHTML = PROJECTS[name].logo();
+  if (slot) slot.innerHTML = BRANDS[name].logo();
 }
 
 // Acción explícita del usuario en el switcher del sidebar: aplica visuales + sincroniza UI
 // del switcher + persiste en localStorage.
-function setActiveProject(name) {
-  if (!PROJECTS[name]) name = 'magnify';
-  _applyProjectVisuals(name);
-  document.querySelectorAll('[data-project]').forEach(el => {
-    el.classList.toggle('on', el.dataset.project === name);
+function setActiveBrand(name) {
+  if (!BRANDS[name]) name = 'magnify';
+  _applyBrandVisuals(name);
+  document.querySelectorAll('[data-brand]').forEach(el => {
+    el.classList.toggle('on', el.dataset.brand === name);
   });
-  try { localStorage.setItem(PROJECT_STORAGE_KEY, name); } catch (_) { /* private mode */ }
+  try { localStorage.setItem(BRAND_STORAGE_KEY, name); } catch (_) { /* private mode */ }
 }
 
-// HTML de la URL del proyecto activo. Se usa en footers de slides, dossiers, banners, signatures.
+// HTML de la URL de la marca activa. Se usa en footers de slides, dossiers, banners, signatures.
 // Magnify: "magnify.ing" con .ing-ap. Outpost: "outpost.magnify.ing" con .ing-ap.
 function brandUrlHtml() {
-  return PROJECTS[currentProject] ? PROJECTS[currentProject].url : PROJECTS.magnify.url;
+  return BRANDS[currentBrand] ? BRANDS[currentBrand].url : BRANDS.magnify.url;
 }
 
-// Resuelve qué proyecto aplicar para este render. Prioridad: (1) YAML proyecto: gana,
-// (2) selección persistida del switcher, (3) magnify por defecto. Aplica visuales sin
-// persistir ni sincronizar el switcher (el switcher refleja la selección persistida del
-// usuario, no la del YAML). Devuelve el nombre del proyecto que quedó activo.
-function applyYamlProjectOverride(raw) {
-  // Punto base: lo que el switcher tiene persistido. Si el YAML no declara proyecto:,
+// Resuelve qué marca aplicar para este render. Prioridad: (1) YAML `marca:` (o alias
+// deprecado `proyecto:`) gana, (2) selección persistida del switcher, (3) magnify por
+// defecto. Aplica visuales sin persistir ni sincronizar el switcher (el switcher refleja
+// la selección persistida del usuario, no la del YAML). Devuelve el nombre que quedó activo.
+function applyYamlBrandOverride(raw) {
+  // Punto base: lo que el switcher tiene persistido. Si el YAML no declara marca:,
   // esto restaura el render al "modo por defecto" del usuario aunque la sesión venga
   // de un render previo con override.
   let persisted = 'magnify';
-  try { persisted = localStorage.getItem(PROJECT_STORAGE_KEY) || 'magnify'; } catch (_) {}
-  let target = PROJECTS[persisted] ? persisted : 'magnify';
+  try { persisted = localStorage.getItem(BRAND_STORAGE_KEY) || 'magnify'; } catch (_) {}
+  let target = BRANDS[persisted] ? persisted : 'magnify';
 
   if (raw) {
     const head = raw.split(/^---\s*$/m)[0] || '';
-    const match = head.match(/^\s*proyecto\s*:\s*(\S+)\s*$/im);
+    // Acepta `marca:` (preferido) y `proyecto:` (alias deprecado, mantenido por back-compat).
+    // Si ambos están presentes, gana `marca:`.
+    let match = head.match(/^\s*marca\s*:\s*(\S+)\s*$/im);
+    if (!match) {
+      match = head.match(/^\s*proyecto\s*:\s*(\S+)\s*$/im);
+      if (match && !window.__brandAliasWarned) {
+        window.__brandAliasWarned = true;
+        console.warn('[studio] Frontmatter `proyecto:` está deprecado; usa `marca:` en su lugar. Sigue funcionando por compatibilidad.');
+      }
+    }
     if (match) {
       const declared = match[1].toLowerCase();
-      if (PROJECTS[declared]) target = declared;
+      if (BRANDS[declared]) target = declared;
     }
   }
 
-  if (target !== currentProject) _applyProjectVisuals(target);
+  if (target !== currentBrand) _applyBrandVisuals(target);
   return target;
 }
 
@@ -4097,10 +4109,10 @@ function applyHighlights(text) {
   // OUTPOST: dos sistemas de corchetes coexisten (brief sec.3):
   //   - [palabra minúscula] → highlight editorial (heredado de Magnify, mismo render)
   //   - [BRACKETS_MAYÚSCULAS] → chip técnico para taxonomía/eyebrow/footer (.tx-chip)
-  // Heurística: inner sin lowercase + al menos una uppercase + project outpost activo → chip.
+  // Heurística: inner sin lowercase + al menos una uppercase + brand outpost activa → chip.
   // En Magnify todos los brackets son highlights (no hay drift de comportamiento).
   let out = text.replace(/\[([^\]]+)\]([.,;:!?]*)/g, (_, inner, trailing) => {
-    if (currentProject === 'outpost' && /[A-Z]/.test(inner) && !/[a-z]/.test(inner)) {
+    if (currentBrand === 'outpost' && /[A-Z]/.test(inner) && !/[a-z]/.test(inner)) {
       return `<span class="tx-chip">${inner}${trailing}</span>`;
     }
     return `<span class="hl">${inner}${trailing}</span>`;
@@ -7146,7 +7158,7 @@ const PS_RENDERERS = {
 const PPTX_W = 13.33, PPTX_H = 7.5;
 const COLOR_DARK = '0A0A0A', COLOR_YELLOW = 'FFD600', COLOR_WHITE = 'FFFFFF';
 const COLOR_LIGHT_TEXT = 'F0F0F0', COLOR_GREY = '999999', COLOR_GREY_DK = '444444';
-// Fuentes del proyecto activo. Se reasignan en setActiveProject() según el proyecto:
+// Fuentes de la marca activa. Se reasignan en setActiveBrand() según la marca:
 // - magnify (default): serif DM Serif Display, sans PP Neue Montreal
 // - outpost: serif DM Serif Display, sans Inter
 // PowerPoint sustituye por fuente del sistema si no las tiene, pero los nombres del XML
@@ -9053,9 +9065,10 @@ function generate() {
     if (shapeErr) { showError('<strong>Formato no reconocido.</strong> ' + shapeErr); return; }
   }
 
-  // Project override: si el YAML declara `proyecto: outpost` en el frontmatter, activamos
-  // ese sistema visual antes del render. Si no, se queda con la selección del sidebar.
-  applyYamlProjectOverride(raw);
+  // Brand override: si el YAML declara `marca: outpost` (alias deprecado: `proyecto:`) en
+  // el frontmatter, activamos ese sistema visual antes del render. Si no, se queda con la
+  // selección del sidebar.
+  applyYamlBrandOverride(raw);
 
   const preview = document.getElementById('preview');
   const renderC = document.getElementById('render-container');
@@ -9449,11 +9462,25 @@ async function _exportAllInner() {
 }
 
 // ── INIT ──
-// Activa proyecto persistido en localStorage (fallback magnify). setActiveProject pinta
+// Activa marca persistida en localStorage (fallback magnify). setActiveBrand pinta
 // el logo del sidebar, aplica clase al body, sincroniza el switcher y reasigna fuentes PPTX.
-let _persistedProject = 'magnify';
-try { _persistedProject = localStorage.getItem(PROJECT_STORAGE_KEY) || 'magnify'; } catch (_) {}
-setActiveProject(_persistedProject);
+// Migración silenciosa: si existe la clave vieja `studio:activeProject` y no la nueva,
+// se copia y se borra la antigua. Una sola vez por navegador.
+let _persistedBrand = 'magnify';
+try {
+  const newKey = localStorage.getItem(BRAND_STORAGE_KEY);
+  if (newKey) {
+    _persistedBrand = newKey;
+  } else {
+    const legacy = localStorage.getItem('studio:activeProject');
+    if (legacy) {
+      _persistedBrand = legacy;
+      localStorage.setItem(BRAND_STORAGE_KEY, legacy);
+      localStorage.removeItem('studio:activeProject');
+    }
+  }
+} catch (_) { /* private mode */ }
+setActiveBrand(_persistedBrand);
 wireUploadZone();
 selectType('linkedin-post');
 checkBrandFonts();
