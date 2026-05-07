@@ -264,6 +264,19 @@
     font-family:var(--mono); font-size:9px; letter-spacing:0.18em; text-transform:uppercase;
     color:var(--body-dk); margin-top:auto;
   }
+  /* Template cards (html-deck): thumbnail grande + nombre + tagline corto */
+  .wizard-grid.template-grid { grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:18px; }
+  .wizard-card.template-card { padding:0; min-height:auto; overflow:hidden; gap:0; }
+  .wizard-card.template-card .template-thumb {
+    width:100%; aspect-ratio:16/10; object-fit:cover; display:block;
+    background:#1a1a1a;
+  }
+  .wizard-card.template-card .template-name {
+    font-size:18px; padding:14px 18px 4px;
+  }
+  .wizard-card.template-card .card-desc { padding:0 18px 8px; font-size:11px; }
+  .wizard-card.template-card .card-export { padding:0 18px 14px; font-size:9px; }
+
   /* Brand cards: misma base pero con muestra de paleta */
   .wizard-card.brand-card { padding:20px; }
   .wizard-card.brand-card .palette {
@@ -2935,10 +2948,11 @@ function buildPieceSnapshot() {
   const type = currentType;
   const brand = currentBrand;
   const title = derivePieceTitle(yaml, type);
-  // Plantilla: por ahora null; se rellenará cuando el wizard la fije (S5).
   return {
     id: currentPieceId,
-    title, type, template: null, brand,
+    title, type,
+    template: selectedTemplate || null,
+    brand,
     yaml,
     assets: { ...uploadedImages },
   };
@@ -3097,6 +3111,7 @@ async function openPiece(id) {
   if (!p) return;
   currentPieceId = p.id;
   uploadedImages = { ...(p.assets || {}) };
+  selectedTemplate = p.template || null;
   // Aplicar marca de la pieza si difiere de la activa
   if (p.brand && BRANDS[p.brand] && p.brand !== currentBrand) setActiveBrand(p.brand);
   // Aplicar tipo de la pieza
@@ -3181,7 +3196,7 @@ const WIZARD_TYPE_GROUPS = [
   { label: 'Social', types: ['linkedin-post', 'linkedin-carousel', 'thumbnail', 'banner'] },
   { label: 'Editorial', types: ['case-study', 'case-study-longform', 'documento', 'report-cover'] },
   { label: 'Comercial', types: ['propuesta'] },
-  { label: 'Deck', types: ['presentacion'] },
+  { label: 'Deck', types: ['presentacion', 'html-deck'] },
   { label: 'Otros', types: ['email-sig'] },
 ];
 
@@ -3195,6 +3210,7 @@ const WIZARD_TYPE_DESC = {
   'propuesta': 'Propuesta comercial A4 multi-página.',
   'report-cover': 'Cover A4 standalone.',
   'presentacion': 'Slides 16:9. 3 sub-variantes nativas.',
+  'html-deck': '32 plantillas HTML curadas. Elegir y customizar.',
   'documento': 'Markdown formateado a A4 editorial.',
   'email-sig': 'Firma HTML para email.',
 };
@@ -3203,18 +3219,50 @@ const WIZARD_TYPE_EXPORT = {
   'linkedin-post': 'PNG', 'linkedin-carousel': 'PPTX/PDF/ZIP', 'banner': 'PNG',
   'thumbnail': 'PNG', 'case-study': 'PDF', 'case-study-longform': 'PDF',
   'propuesta': 'PDF', 'report-cover': 'PNG', 'presentacion': 'PPTX',
-  'documento': 'PDF', 'email-sig': 'HTML',
+  'html-deck': 'HTML', 'documento': 'PDF', 'email-sig': 'HTML',
 };
 
-let wizardState = { step: 1, type: null, brand: null, totalSteps: 2 };
+// Tipos que tienen step intermedio "plantilla" en el wizard. Cuando el usuario los elige
+// en step 1, el wizard inserta un step 2 antes de la marca.
+const TYPES_WITH_TEMPLATE_STEP = new Set(['html-deck']);
+
+let wizardState = { step: 1, type: null, template: null, brand: null, totalSteps: 2 };
+
+// Cache del index.json de external-templates. Lazy-load cuando html-deck entra en juego.
+let _externalTemplatesIndex = null;
+async function loadExternalTemplatesIndex() {
+  if (_externalTemplatesIndex) return _externalTemplatesIndex;
+  try {
+    const res = await fetch('external-templates/index.json');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    _externalTemplatesIndex = await res.json();
+  } catch (e) {
+    console.error('[studio] no se pudo cargar external-templates/index.json:', e);
+    _externalTemplatesIndex = { templates: [] };
+  }
+  return _externalTemplatesIndex;
+}
 
 function wizardStart() {
-  wizardState = { step: 1, type: null, brand: currentBrand, totalSteps: 2 };
+  wizardState = { step: 1, type: null, template: null, brand: currentBrand, totalSteps: 2 };
   showScreen('wizard');
   renderWizardStep();
 }
 
-function renderWizardStep() {
+// Recalcula totalSteps y resuelve el label del paso actual. Pasos posibles:
+// 1=tipo, 2(condicional)=plantilla si type∈TYPES_WITH_TEMPLATE_STEP, último=marca.
+function wizardComputeSteps() {
+  const hasTemplate = wizardState.type && TYPES_WITH_TEMPLATE_STEP.has(wizardState.type);
+  wizardState.totalSteps = hasTemplate ? 3 : 2;
+}
+function wizardCurrentStepName() {
+  if (wizardState.step === 1) return 'type';
+  if (wizardState.totalSteps === 3 && wizardState.step === 2) return 'template';
+  return 'brand';
+}
+
+async function renderWizardStep() {
+  wizardComputeSteps();
   const body = document.getElementById('wizard-body');
   const back = document.getElementById('wizard-back');
   const cont = document.getElementById('wizard-continue');
@@ -3222,10 +3270,13 @@ function renderWizardStep() {
   if (!body || !cont || !prog) return;
   back.disabled = wizardState.step === 1;
 
-  const stepLabels = { 1: 'Elige tipo', 2: 'Elige marca' };
-  prog.innerHTML = `${wizardState.step} de ${wizardState.totalSteps} · <strong>${stepLabels[wizardState.step]}</strong>`;
+  const stepName = wizardCurrentStepName();
+  const labels = { type: 'Elige tipo', template: 'Elige plantilla', brand: 'Elige marca' };
+  prog.innerHTML = `${wizardState.step} de ${wizardState.totalSteps} · <strong>${labels[stepName]}</strong>`;
+  const isLast = wizardState.step === wizardState.totalSteps;
+  cont.innerHTML = (isLast ? 'Empezar' : 'Continuar') + '<span class="arrow">→</span>';
 
-  if (wizardState.step === 1) {
+  if (stepName === 'type') {
     body.innerHTML = WIZARD_TYPE_GROUPS.map(grp => `
       <div class="wizard-group">
         <div class="wizard-group-title">${grp.label}</div>
@@ -3244,8 +3295,36 @@ function renderWizardStep() {
       </div>
     `).join('');
     cont.disabled = !wizardState.type;
-    cont.innerHTML = (wizardState.step === wizardState.totalSteps ? 'Empezar' : 'Continuar') + '<span class="arrow">→</span>';
-  } else if (wizardState.step === 2) {
+    return;
+  }
+
+  if (stepName === 'template') {
+    body.innerHTML = '<div class="wizard-group"><div class="wizard-group-title">Cargando plantillas…</div></div>';
+    const idx = await loadExternalTemplatesIndex();
+    const tpls = idx.templates || [];
+    body.innerHTML = `
+      <div class="wizard-group">
+        <div class="wizard-group-title">${tpls.length} plantillas curadas · zarazhangrui/beautiful-html-templates</div>
+        <div class="wizard-grid template-grid">
+          ${tpls.map(t => {
+            const selected = wizardState.template === t.slug ? 'selected' : '';
+            const moods = (t.mood || []).slice(0, 3).join(' · ');
+            return `
+              <button class="wizard-card template-card ${selected}" data-template="${escapeHtml(t.slug)}" onclick="wizardSelectTemplate('${escapeHtml(t.slug)}')">
+                <img class="template-thumb" loading="lazy" src="external-templates/screenshots/${escapeHtml(t.slug)}.png" alt="${escapeHtml(t.name)}">
+                <span class="card-name template-name">${escapeHtml(t.name)}</span>
+                <span class="card-desc">${escapeHtml(t.tagline || '')}</span>
+                <span class="card-export">${escapeHtml(moods)}</span>
+              </button>`;
+          }).join('')}
+        </div>
+      </div>
+    `;
+    cont.disabled = !wizardState.template;
+    return;
+  }
+
+  if (stepName === 'brand') {
     body.innerHTML = `
       <div class="wizard-group">
         <div class="wizard-group-title">Marca</div>
@@ -3271,12 +3350,18 @@ function renderWizardStep() {
       </div>
     `;
     cont.disabled = !wizardState.brand;
-    cont.innerHTML = 'Empezar<span class="arrow">→</span>';
   }
 }
 
 function wizardSelectType(t) {
+  // Si cambia el tipo, resetea plantilla (el siguiente paso re-pregunta)
+  if (wizardState.type !== t) wizardState.template = null;
   wizardState.type = t;
+  renderWizardStep();
+}
+
+function wizardSelectTemplate(slug) {
+  wizardState.template = slug;
   renderWizardStep();
 }
 
@@ -3306,20 +3391,28 @@ function wizardCancel() {
 }
 
 function applyWizardSelection() {
-  const { type, brand } = wizardState;
+  const { type, template, brand } = wizardState;
   if (brand && BRANDS[brand] && brand !== currentBrand) setActiveBrand(brand);
   if (type && type !== currentType) selectType(type);
   // Limpia editor y deja al usuario escribir
   currentPieceId = null;
   uploadedImages = {};
+  selectedTemplate = template || null;
   const ta = document.getElementById('content');
   if (ta) ta.value = '';
   if (typeof renderImageThumbs === 'function') renderImageThumbs();
   setSaveStatus('', '');
   _lastSavedAt = null;
   showScreen('editor');
+  if (type === 'html-deck' && template) {
+    // S6b: aquí cargará el iframe + color picker. Por ahora solo registramos selección.
+    toast(`Plantilla "${template}" seleccionada · render en el editor llega en S6b`);
+  }
   if (ta) ta.focus();
 }
+
+// Slug de la plantilla externa activa, si la pieza es html-deck. Persiste en buildPieceSnapshot.
+let selectedTemplate = null;
 
 // ── TYPE DEFINITIONS ──
 const TYPE_META = {
@@ -3913,6 +4006,15 @@ Curated media map for the two verticals in scope, reflecting criteria applied in
 | 5 | movilidadelectrica.com | E-Mobility | EV professional and consumer |
 
 *This is a curated subset. Full 60+ media landscape mapped.*`
+  },
+  'html-deck': {
+    title: 'Deck HTML (plantilla externa)',
+    desc: '32 plantillas HTML curadas (zarazhangrui/beautiful-html-templates). Elige una y personaliza colores',
+    exportLabel: 'Descargar HTML',
+    hint: `<strong>Tipo experimental.</strong> Estos decks no se generan desde YAML — son plantillas HTML completas que eliges en el wizard. El editor te deja ajustar paleta y descargar el HTML para editarlo aparte o pasárselo a Claude para que adapte el contenido.<br><br>
+<strong>Fuente:</strong> <a href="https://github.com/zarazhangrui/beautiful-html-templates" target="_blank" rel="noopener">zarazhangrui/beautiful-html-templates</a> — 32 sistemas visuales curados, vendoreados localmente en <code>external-templates/</code>.<br><br>
+<strong>Workflow:</strong> wizard → elige plantilla por mood → editor con iframe + color picker → descarga HTML.`,
+    example: ''
   }
 };
 
