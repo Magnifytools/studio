@@ -10141,6 +10141,31 @@ function generate() {
     if (shapeErr) { showError('<strong>Formato no reconocido.</strong> ' + shapeErr); return; }
   }
 
+  // Auto-detect type from YAML frontmatter: si el usuario pegó un YAML que declara
+  // `tipo: <X>` en el primer bloque (antes del primer ---) y X es un tipo válido distinto
+  // al activo, cambiamos el editor a ese tipo antes de renderizar. Sin esto, pegar un
+  // carousel con el editor en linkedin-post fallaba silenciosamente.
+  if (currentType !== 'documento') {
+    const head = raw.split(/^---\s*$/m)[0] || '';
+    const m = head.match(/^\s*tipo\s*:\s*([\w\-]+)\s*$/im);
+    if (m) {
+      const declared = m[1].toLowerCase();
+      if (TYPE_META[declared] && declared !== currentType) {
+        toast(`Detectado tipo: ${declared} → cambiando editor`);
+        // Preserva el textarea (el contenido pegado) antes de selectType
+        const ta = document.getElementById('content');
+        const preserved = ta ? ta.value : '';
+        selectType(declared);
+        // selectType puede haber metido el example de la galería de variantes — restauramos
+        // el contenido del usuario y aseguramos que el textarea esté visible.
+        if (ta) {
+          ta.value = preserved;
+          ta.parentElement.style.display = '';
+        }
+      }
+    }
+  }
+
   // Brand override: si el YAML declara `marca: outpost` (alias deprecado: `proyecto:`) en
   // el frontmatter, activamos ese sistema visual antes del render. Si no, se queda con la
   // selección del sidebar.
