@@ -89,21 +89,22 @@ La marca usa `.ing-ap` como acento amarillo: `magnify.ing`, `prioritiz.ing`, `di
 
 ## 3. Tipos de output
 
-| Tipo | Botón | Descripción | Export |
-|---|---|---|---|
-| `linkedin-post` | Post LinkedIn | Single tarjeta cuadrada para feed | PPTX |
-| `linkedin-carousel` | Carousel LinkedIn | Slides verticales conectadas | PPTX |
-| `banner` | Banner / Logo | Asset gráfico standalone | PPTX |
-| `case-study` | Caso de Estudio | Doc A4 multipágina, single layout | PDF |
-| `case-study-longform` | Dossier (longform) | Doc A4 16-20pp editorial con divisores, TL;DR, visuals | PDF |
-| `propuesta` | Propuesta | Propuesta comercial A4 multipágina | PDF |
-| `report-cover` | Portada Informe | Cover page A4 standalone | PDF |
-| `presentacion` | Presentación | Slides 16:9. Tiene 3 sub-variantes: Diagnóstico de marca · Propuesta de servicios · **Charla / Keynote** | PPTX |
-| `documento` | Documento (MD) | Markdown formateado a A4 editorial | PDF |
-| `email-sig` | Firma Email | HTML firma email | HTML inline |
-| `html-deck` | Deck HTML (plantilla externa) | 32 plantillas curadas de zarazhangrui/beautiful-html-templates. Workflow distinto: NO usa YAML, customiza paleta sobre HTML | HTML |
+| Tipo | Botón | Descripción | Export | Schema |
+|---|---|---|---|---|
+| `linkedin-post` | Post LinkedIn | Tarjeta cuadrada 1200×1200 (o 1200×628 en `quote-landscape`) | PNG | [§3.bis](#3bis-schema-yaml--plantillas-de-linkedin-post-cuadrado-1200×1200) |
+| `linkedin-carousel` | Carousel LinkedIn | Slides verticales 1080×1350 | PPTX/PDF/ZIP | [§3.ter](#3ter-schema-yaml--plantillas-de-linkedin-carousel-vertical-1080×1350) |
+| `banner` | Banner / Logo | OG image, banners LinkedIn (perfil + company), logo cuadrado | PNG | [§3.quat](#3quat-schema-yaml--banner-assets-gráficos-standalone) |
+| `thumbnail` | Thumbnail (YT/Pod) | Portadas YouTube 1280×720 + Podcast 3000×3000 | PNG | [§3.quint](#3quint-schema-yaml--thumbnail-youtube--podcast) |
+| `case-study` | Caso de Estudio | Doc A4 multi-página single-layout | PDF | [§4](#4-schema-yaml--caso-de-estudio-case-study) |
+| `case-study-longform` | Dossier (longform) | Editorial A4 16-20pp con divisores, TL;DR, visuals | PDF | [§5](#5-schema-yaml--dossier-longform-case-study-longform) |
+| `propuesta` | Propuesta | Propuesta comercial A4 multi-página | PDF | [§4.bis](#4bis-schema-yaml--propuesta-comercial-propuesta) |
+| `report-cover` | Portada Informe | Cover A4 standalone (794×1123) | PNG | [§3.sext](#3sext-schema-yaml--report-cover-portada-de-informe-a4) |
+| `presentacion` | Presentación | Slides 16:9 (1920×1080), 3 sub-variantes nativas | PPTX | [§6](#6-schema-yaml--presentación-charla--keynote) |
+| `documento` | Documento (MD) | Markdown estándar formateado a A4 editorial | PDF | [§6.ter](#6ter-schema-markdown--documento-markdown-a-a4-editorial) |
+| `email-sig` | Firma Email | Bloque HTML 600px para firma de email | HTML inline | [§3.sept](#3sept-schema-yaml--email-sig-firma-de-email) |
+| `html-deck` | Deck HTML (plantilla externa) | 32 plantillas HTML curadas (zarazhangrui/beautiful-html-templates). NO usa YAML, customiza paleta sobre HTML | HTML | [§3.beta](#3beta-tipo-html-deck--plantillas-externas) |
 
-> **Nota:** la columna "Botón" antes era literal del sidebar; tras el rediseño UX 2026-05-07 los tipos se eligen en el wizard (Empezar) o en la sidebar del editor.
+> **Cómo se elige el tipo:** desde la pantalla home de Studio pulsa "Empezar" — el editor abre con la galería de variantes del tipo activo. Para cambiar de tipo, usa la sidebar izquierda del editor. Para `html-deck`, el atajo "desde plantilla externa" del launcher abre directamente la galería de las 32 plantillas.
 
 ---
 
@@ -555,6 +556,234 @@ El editor de Studio expone 3 ejemplos pre-rellenos cuando seleccionas `linkedin-
 
 ---
 
+## 3.quat Schema YAML — `banner` (assets gráficos standalone)
+
+Tipo single-frame (un YAML = un asset). Cubre OG images, banners de LinkedIn (perfil + company) y logos. Combina dos ejes: `formato:` (canvas) × `plantilla:` (composición). Export PNG.
+
+### Bloque común
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `formato` | requerido | Canvas: `og` (1200×630, default), `linkedin-profile` (1584×396), `linkedin-company` (1128×191), `logo` (400×400). |
+| `plantilla` | requerido | Composición: `statement`, `data`, `minimal`, `wordmark`, `icon`. Ver matriz abajo. |
+
+> **Matriz formato × plantilla:**
+> - `statement` y `data` están pensadas para `og` (1200×630). En otros formatos saturan.
+> - `wordmark` e `icon` funcionan en todos los formatos.
+> - `minimal` funciona en `og` y `linkedin-profile`.
+> - `logo` (400×400) usa siempre `icon` (A-mark centrada).
+
+Brackets `[palabra]` aplican highlight en `titular` y `subtitulo`.
+
+### `statement` — OG con titular + subtítulo
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `eyebrow` | opcional | Etiqueta uppercase con accent amarillo. ≤8 palabras. |
+| `titular` | requerido | Headline editorial. Highlights `[…]`. Default `Tu headline`. |
+| `subtitulo` | opcional | Línea de apoyo bajo el titular. |
+
+```yaml
+formato: og
+plantilla: statement
+eyebrow: DIAGNÓSTICO DE MARCA
+titular: Las marcas que no se [miden] no se mejoran
+subtitulo: Se improvisan. Y la improvisación no escala.
+```
+
+### `data` — OG con stat dominante
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `eyebrow` | opcional | Etiqueta con accent. |
+| `numero` | requerido | El número (acepta alias `stat`). |
+| `sufijo` | opcional | Sufijo elevado a `<sup>` (`%`, `x`, `+`). Default `%`. Acepta alias `suffix`. |
+| `descripcion` | requerido | Contexto narrativo bajo la stat. Acepta alias `cuerpo`. |
+| `meta` | opcional | Línea pequeña tipo "n=30, encuesta interna". |
+
+```yaml
+formato: og
+plantilla: data
+eyebrow: ENCUESTA MAGNIFY
+numero: 73
+sufijo: %
+descripcion: de marcas B2B no puede articular qué las [diferencia]
+meta: +50 líderes de marketing consultados
+```
+
+### `minimal` — Wordmark + tagline
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `tagline` | opcional | Subtítulo bajo el wordmark. Default `Brand visibility consultancy`. |
+
+```yaml
+formato: linkedin-profile
+plantilla: minimal
+tagline: Brand visibility consultancy
+```
+
+### `wordmark` — Solo wordmark sobre negro
+
+Sin campos. Renderiza wordmark Magnify (o el de la marca activa) centrado sobre fondo `#0A0A0A`.
+
+```yaml
+formato: linkedin-profile
+plantilla: wordmark
+```
+
+### `icon` — A-mark sobre negro
+
+Sin campos. En `linkedin-profile` y `linkedin-company` la A-mark va abajo derecha. En `logo` (400×400) va centrada — uso típico: avatar, favicon, logo de company en LinkedIn.
+
+```yaml
+formato: logo
+plantilla: icon
+```
+
+### Plantillas pre-rellenas (gallery del editor)
+
+7 entradas: `og-statement`, `og-data`, `og-minimal`, `li-profile-icon`, `li-profile-wordmark`, `li-company`, `logo-square`. Cubren los casos de uso típicos de Magnify (post-share, banners de perfil, logo company).
+
+---
+
+## 3.quint Schema YAML — `thumbnail` (YouTube + Podcast)
+
+Portadas para YouTube (1280×720, 16:9) y podcast (1500×1500 preview · 3000×3000 export, 1:1). Single-frame, export PNG. Usa `marca: outpost` en frontmatter para activar el sistema visual de Outpost (videopodcast); por defecto Magnify.
+
+### Bloque común
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `formato` | opcional | `youtube` (default · alias `yt`) o `podcast` (alias `pod`/`square`). |
+| `plantilla` | requerido | `cover`, `episode`, `quote`, `data`. |
+| `fondo` | opcional | Surface: `oscuro` (default), `claro`, `amarillo`. Aliases en/es: `dark/lt/yl`. |
+| `serie` | opcional | Etiqueta uppercase para chip-tag en header. Ej: `STANDARD`, `INTERVIEW`, `SPECIAL`. |
+| `episodio` | opcional | Número de episodio. Auto-pad a 2 dígitos (`5` → `05`). Combina con `serie` para meta clásica. |
+
+Footer fijo: wordmark + URL de la marca activa (Magnify: `magnify.ing` · Outpost: `outpost.magnify.ing`). Watermark del icon al fondo (oculto en surface amarilla).
+
+Brackets `[palabra]` aplican en titular/subtitulo/cita/contexto.
+
+### `cover` — Portada de show o serie
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `titular` | requerido | Claim hero. Acepta alias `titulo`. Default `Tu titular`. |
+| `subtitulo` | opcional | Línea de apoyo bajo el claim. |
+
+```yaml
+formato: youtube
+plantilla: cover
+titular: La marca ya no es lo que [rankea]
+subtitulo: Conversaciones sobre lo que cambia bajo la superficie
+```
+
+### `episode` — Episodio individual
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `titular` | requerido | Título del episodio. Acepta alias `titulo`. |
+| `invitado` | opcional | "Con **Nombre**". Si hay `rol`, se suma con ` · `. |
+| `rol` | opcional | Cargo/empresa del invitado. |
+| `imagen` | opcional | ID de imagen subida (`img1`, etc) o nombre sin extensión. Acepta `image`/`foto`. Si la imagen falta pero hay referencia, placeholder visible. |
+
+```yaml
+formato: youtube
+plantilla: episode
+serie: STANDARD
+episodio: 12
+titular: La marca ya no es lo que [rankea].
+invitado: Lily Ray
+rol: Senior Director, Amsive Digital
+imagen: img1
+```
+
+### `quote` — Cita destacada del episodio
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `cita` | requerido | Texto de la cita. Acepta alias `quote`. Default placeholder. |
+| `autor` | opcional | Atribución. Acepta alias `author`. Renderiza como `— Autor`. |
+
+```yaml
+formato: podcast
+plantilla: quote
+serie: INTERVIEW
+cita: El SEO técnico ya está resuelto. Lo que queda por entender es la marca.
+autor: Lily Ray
+```
+
+### `data` — Cifra hero del episodio
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `numero` | requerido | El número. Acepta alias `stat`. Default `73`. |
+| `sufijo` | opcional | Auto-elevado a `<sup>`. Default `%`. Alias `suffix`. |
+| `contexto` | opcional | Línea narrativa bajo la stat. Aliases `descripcion`/`cuerpo`. |
+
+```yaml
+formato: youtube
+plantilla: data
+serie: STANDARD
+episodio: 04
+numero: 73
+sufijo: %
+contexto: de marcas B2B no puede articular qué las [diferencia]
+```
+
+### Reglas operativas
+
+- **Surface dark por defecto** — los thumbnails captan mirada en feed dark-first. Solo cambiar a `claro`/`amarillo` para portadas alternativas (cierre crescendo, claim editorial).
+- **Para Outpost**: `marca: outpost` en frontmatter. Las brackets MAYÚSCULAS (`[STANDARD]`, `[INTERVIEW]`) renderan como chip técnico en lugar de highlight editorial.
+- **Episodio + serie son metadatos pequeños** — no fuerces todos los thumbnails a llevar ambos. Una serie con un solo episodio puede omitir `episodio:`.
+
+---
+
+## 3.sext Schema YAML — `report-cover` (Portada de informe A4)
+
+Single-frame A4 (794×1123). Para covers de auditorías, deliverables, dossiers cortos. Export PNG.
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `cliente` | requerido | Nombre del cliente. Default `Cliente`. |
+| `subtitulo` | recomendado | Tipo de informe. Auto-uppercase. Acepta alias `eyebrow`. Default `Diagnóstico de marca`. |
+| `fecha` | opcional | "Mes Año" debajo del nombre del cliente. |
+| `confidencial` | opcional | `si` (case-insensitive) muestra badge "Confidencial" arriba derecha. |
+
+Renderiza watermark del icon al fondo, wordmark arriba izquierda, accent amarillo bajo el eyebrow, URL `magnify.ing` (o el de la marca activa) al pie.
+
+```yaml
+cliente: TechCorp
+subtitulo: Auditoría de Visibilidad
+fecha: Marzo 2026
+confidencial: si
+```
+
+---
+
+## 3.sept Schema YAML — `email-sig` (Firma de email)
+
+Bloque HTML 600px. Output diferente a los otros tipos: el botón "Exportar" copia el HTML al portapapeles (no descarga PNG/PDF). Pegar directamente en el editor de firma de Gmail/Outlook.
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `nombre` | requerido | Nombre completo. Default `Nombre`. |
+| `cargo` | requerido | Cargo / rol. Default `Cargo`. |
+| `link` | opcional | URL completa para "Agendar reunión ↗". Si se omite, no aparece el link. |
+
+URL de la marca activa (`magnify.ing` con `.ing` resaltado) sale automática.
+
+```yaml
+nombre: David Carrasco
+cargo: Founder & SEO Strategist
+link: https://magnify.ing/agendar
+```
+
+> Nota técnica: el HTML inline está optimizado para clientes de email (table-based, inline styles, sin `<style>` global, sin SVG inline — usa `<img>` con data URI para el icon). No tocar la estructura sin probar en Gmail + Outlook + Apple Mail.
+
+---
+
 ## 4. Schema YAML — Caso de Estudio (`case-study`)
 
 > ### ⚠️ El parser de Studio NO es YAML real
@@ -615,6 +844,137 @@ cuerpo: ¿Tu marca necesita un diagnóstico similar? Agenda en magnify.ing/agend
 ```
 
 **Per-page fondo override**: cada `seccion` puede llevar `fondo: oscuro|claro|amarillo` para alternar surfaces.
+
+---
+
+## 4.bis Schema YAML — Propuesta comercial (`propuesta`)
+
+Documento comercial multi-página A4 — la pieza que envías cuando alguien te pide presupuesto. Comparte estructura con `case-study` (bloque global + secciones separadas por `---`) pero con renderers propios optimizados para venta: portada con validez, tabla de inversión, timeline gantt-like, CTA con flecha.
+
+### Bloque global
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `tipo` | recomendado | `propuesta`. Etiqueta semántica para Studio. |
+| `cliente` | requerido | Aparece en cabecera de todas las páginas (uppercase) y en portada. |
+| `fecha` | requerido | Fecha de emisión. |
+| `validez` | opcional | "30 días", "Hasta 31 mayo", etc. Se muestra como "Válida 30 días" en portada. |
+| `documento` | opcional | Sobreescribe el header "Propuesta" por uno custom (ej. "Propuesta H&W 2026"). Acepta alias `titulo`. |
+| `referencia` | opcional | Código corto a la derecha del header. Acepta alias `cliente` (si no hay propio). |
+| `url` | opcional | URL del footer. Default `magnify.ing`. |
+
+Cada `seccion:` puede llevar `fondo: oscuro|claro|amarillo`, `header: no` (oculta header) o `footer: no` (oculta footer) per-page.
+
+### `seccion: portada`
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `titular` | requerido | Headline de la propuesta. Brackets `[…]`. |
+| `subtitulo` | opcional | Línea bajo el titular. Default vacío. |
+
+Renderiza eyebrow "Propuesta", accent amarillo, datos del cliente (`cliente`, `fecha`, `validez` del bloque global) y "Confidencial" abajo derecha.
+
+### `seccion: contexto`
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `titulo` | requerido | H2 de la página. Default `Contexto`. |
+| `cuerpo` | requerido | Párrafo(s). Saltos de línea `\n` separan párrafos. Highlights `[…]`. |
+
+### `seccion: aproximacion` (fases del proyecto)
+
+Lista de fases numeradas con etiqueta tipo `DIAGNOS.ING` (el sufijo `.ING` se resalta automáticamente).
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `titulo` | requerido | Default `Aproximación`. |
+| `faseN_etiqueta` | requerido | "DIAGNOS.ING", "PRIORITIZ.ING", "IMPLEMENT.ING"… N de 1 a 6. |
+| `faseN_titulo` | requerido | Headline de la fase. |
+| `faseN_desc` | requerido | Descripción 1-2 frases. |
+| `faseN_duracion` | recomendado | "2 semanas", "3 días". Aparece a la derecha de la etiqueta. |
+
+### `seccion: timeline` (gantt simplificado)
+
+Si declaras `timelineN_fase` y `timelineN_semanas` se usan esas filas. Si no, se reutilizan automáticamente las `faseN_*` de la sección `aproximacion` (parsea el número de la `faseN_duracion`).
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `titulo` | opcional | Default `Timeline`. |
+| `timelineN_fase` | opcional | Etiqueta de la fila. |
+| `timelineN_semanas` | opcional | Float. La barra más larga = 100% del ancho disponible. |
+
+### `seccion: inversion` (tabla de precios)
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `titulo` | opcional | Default `Inversión`. |
+| `conceptoN` | requerido | Línea de servicio. N de 1 a 8. |
+| `precioN` | requerido | Precio formateado por ti (`6.000 €`, `2.500 €/mes`, `Por definir`). |
+| `total` | opcional | Línea final destacada con label "Total". |
+
+### `seccion: siguiente-paso` (CTA final)
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `titulo` | opcional | Default `Siguiente paso`. |
+| `cuerpo` | opcional | Párrafo de cierre. Saltos `\n` → `<br>`. |
+| `cta` | opcional | URL principal. Renderiza con flecha `→`. |
+| `cta_texto` | opcional | Label sobre la URL. Default `Agenda tu kickoff`. |
+
+### Ejemplo completo
+
+```yaml
+tipo: propuesta
+cliente: TechCorp
+fecha: Abril 2026
+validez: 30 días
+---
+seccion: portada
+titular: Propuesta de [Diagnóstico] y Posicionamiento
+subtitulo: Para TechCorp
+---
+seccion: contexto
+titulo: Contexto
+cuerpo: TechCorp opera en un mercado saturado donde la diferenciación percibida es crítica. Tras conversaciones iniciales, identificamos tres áreas de oportunidad clave.
+---
+seccion: aproximacion
+titulo: Nuestra aproximación
+fase1_etiqueta: DIAGNOS.ING
+fase1_titulo: Auditoría 360
+fase1_desc: Percepción interna y externa, análisis competitivo, audit de touchpoints.
+fase1_duracion: 2 semanas
+fase2_etiqueta: PRIORITIZ.ING
+fase2_titulo: 5 prioridades
+fase2_desc: Framework de priorización con impacto vs. esfuerzo.
+fase2_duracion: 1 semana
+fase3_etiqueta: IMPLEMENT.ING
+fase3_titulo: Ejecución
+fase3_desc: Rollout con acompañamiento semanal.
+fase3_duracion: 6 semanas
+---
+seccion: timeline
+titulo: Timeline
+---
+seccion: inversion
+titulo: Inversión
+concepto1: Diagnóstico completo
+precio1: 6.000 €
+concepto2: Acompañamiento estratégico (3 meses)
+precio2: 2.500 €/mes
+total: 6.000 € + 7.500 € (3 meses)
+---
+seccion: siguiente-paso
+titulo: ¿Siguiente paso?
+cuerpo: Agenda el kickoff esta semana y empezamos en 7 días.
+cta: magnify.ing/agendar
+```
+
+### Reglas operativas
+
+- **`.ING` sufijo**: usa siempre mayúsculas en `faseN_etiqueta` para activar el resaltado automático del sufijo (`DIAGNOS.ING`, `IMPLEMENT.ING`).
+- **Timeline reusa fases**: si tienes `seccion: aproximacion` con `faseN_duracion`, la sección `timeline` puede ir vacía y autopoblará el gantt.
+- **Inversión sin sumas automáticas**: el campo `total` lo escribes a mano. Studio no calcula — es deliberado para evitar errores de redondeo en propuestas firmadas.
+- **CTA → copy-paste manual**: tras descargar el PDF, el flujo Magnify es enviar email con borrador IA + PDF adjunto (decisión de producto en the-agency).
 
 ---
 
@@ -1142,6 +1502,101 @@ paginacion: no       # no = sin contador, default = paginación XX/XX
 8. **Crescendo invertido del amarillo en charla**: a diferencia del dossier (donde el amarillo solo cierra), en charla el amarillo abre los 3 actos. Sigue siendo una decisión estructural, no decorativa.
 9. **Las letras griegas marker (Α/Β/Γ) sobre amarillo van en gris oscuro `#444444`**, no en negro puro. Es el contraste editorial que diferencia un Magnify de un PowerPoint corporate.
 10. **Texto sobre oscuro a `#F0F0F0`, NUNCA `#FFFFFF`**. La diferencia es sutil pero clave para que la pantalla no queme.
+
+---
+
+## 6.ter Schema Markdown — `documento` (markdown a A4 editorial)
+
+Tipo distinto a los demás: **no usa key:value**, usa **Markdown estándar (GFM)** que Studio renderiza con la tipografía y los acentos de marca, paginando automáticamente a A4. Para pitches, propuestas largas en formato carta, informes ejecutivos, dossiers cortos. Export PDF.
+
+### Reglas de paginación
+
+- **Salto de página**: dos `---` seguidos en líneas separadas (con o sin línea vacía en medio).
+  ```
+  ---
+  ---
+  ```
+- **Regla horizontal dentro de página**: un solo `---` entre párrafos.
+- **Auto-paginación**: si el contenido de una página no cabe en A4, Studio muestra una alerta amarilla en el preview. Añade un `---\n---` para dividir.
+
+### Detección automática de portada
+
+La **primera página** se renderiza como portada editorial si cumple:
+- Empieza con un heading (`#`, `##`, `###`, `####`).
+- Solo contiene headings y párrafos (sin listas, tablas, hr, blockquote, code blocks).
+
+Bajo esa heurística, Studio extrae:
+- **Título** = primer heading.
+- **Subtítulo** = segundo heading (si existe).
+- **Metadatos** = párrafos con `<strong>` (ej. `**Prepared for:** Cliente`).
+- **Confidencial / tagline** = párrafo en italic-only (`*texto*` solo, sin más).
+
+Si el primer chunk no cumple (incluye lista, tabla, hr, etc.), va a body normal sin tratamiento de portada.
+
+### Markdown soportado
+
+Todo lo que GFM (GitHub Flavored Markdown) cubre:
+- `# h1`, `## h2`, `### h3`, `#### h4`
+- Listas `- ` / `1.`
+- Tablas GFM
+- `**negrita**` / `*cursiva*`
+- `> blockquote`
+- `` `code inline` `` y bloques de código triple-tick
+- Enlaces `[texto](url)`
+- Em-dashes al inicio de párrafo (`— texto`) se convierten automáticamente en bullets reales.
+
+### Header / footer auto
+
+- **Header**: wordmark Magnify (o de la marca activa) arriba izquierda, sin más decoración. Antes había un running header con el título — se quitó porque duplicaba cuando el MD empezaba con "# Magnify" y añadía ruido sin información.
+- **Footer**: URL `magnify.ing` izquierda + paginación `01 / 12` derecha (mono).
+- **Sign-offs reconocidos** ("Best", "Saludos cordiales", "Atentamente"…) se formatean automáticamente como bloque de cierre.
+
+### Ejemplo
+
+```markdown
+# Pitch support document
+
+**Prepared for:** Georgia Tan
+**Subject:** Outdoor sports (B2C) and e-mobility (B2B) — Spanish market input
+**From:** David Carrasco · Magnify
+**Date:** 22 April 2026
+
+*Confidential — for internal review*
+
+---
+---
+
+## Cover letter
+
+Georgia,
+
+For your proposal on the outdoor sports brief, I've put together two case studies and a media map specific to the verticals you described.
+
+The two case studies document work I've led end-to-end:
+
+— A European retailer in motorcycle gear: +81% YoY organic revenue on a €52K annual budget.
+— A B2B wholesaler with a ~15,000-PDP catalog recovering from a core update.
+
+Best,
+David Carrasco
+Magnify
+
+---
+---
+
+# Case study 01
+
+## Context
+
+The brief…
+```
+
+### Reglas operativas
+
+- **Brackets `[…]` no aplican aquí** — `documento` no pasa por `applyHighlights`. Para énfasis usa `**negrita**` o `*cursiva*` markdown.
+- **Tablas anchas** se ajustan al ancho de página automáticamente. Si una columna queda apretada, considera dividir la tabla o reducir columnas.
+- **Code blocks** mantienen monospace, pero perpetúan el ancho del A4 — para snippets largos considera reducir indentación.
+- **Marca via switcher, no via frontmatter**: aunque `applyYamlBrandOverride` técnicamente buscaría `marca: outpost` en cualquier lugar antes del primer `---`, en markdown eso aparecería como párrafo de prosa. Para `documento` activa la marca con el switcher de la app.
 
 ---
 
