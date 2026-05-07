@@ -101,6 +101,66 @@ La marca usa `.ing-ap` como acento amarillo: `magnify.ing`, `prioritiz.ing`, `di
 | `presentacion` | Presentación | Slides 16:9. Tiene 3 sub-variantes: Diagnóstico de marca · Propuesta de servicios · **Charla / Keynote** | PPTX |
 | `documento` | Documento (MD) | Markdown formateado a A4 editorial | PDF |
 | `email-sig` | Firma Email | HTML firma email | HTML inline |
+| `html-deck` | Deck HTML (plantilla externa) | 32 plantillas curadas de zarazhangrui/beautiful-html-templates. Workflow distinto: NO usa YAML, customiza paleta sobre HTML | HTML |
+
+> **Nota:** la columna "Botón" antes era literal del sidebar; tras el rediseño UX 2026-05-07 los tipos se eligen en el wizard (Empezar) o en la sidebar del editor.
+
+---
+
+## 3.alfa Sistema de marcas (Magnify · Outpost · futuras)
+
+> Renombrado de "proyecto" → "marca" el 2026-05-07. El alias `proyecto:` sigue aceptado en frontmatter durante 6 meses con `console.warn`.
+
+Frontmatter del bloque global del YAML (antes del primer `---`) puede declarar:
+
+```yaml
+marca: outpost
+titular: ...
+```
+
+Si no se declara, se usa la marca activa del switcher del sidebar (persistido en `studio:activeBrand`). Marcas vigentes:
+- `magnify` (default): dark `#0A0A0A`/hueso `#FAFAFA`/yellow `#FFD600`. PP Editorial New + NM (PP Neue Montreal) + JetBrains Mono. Brackets `[palabra]` = highlight editorial.
+- `outpost`: surface clara `#F5F5F0`. DM Serif Display + Inter. Brackets `[BRACKETS_MAYÚSCULAS]` = chip técnico (no highlight).
+
+Override solo cambia tokens (colores, fuentes, logo, URL en footers). Layout y simetría son sagrados — no se tocan.
+
+---
+
+## 3.beta Tipo `html-deck` — plantillas externas
+
+Tipo experimental (introducido 2026-05-07). NO se genera desde YAML, no participa de los budgets ni de las reglas de Magnify. Workflow distinto:
+
+1. En el wizard de Studio, eliges `html-deck` en el grupo "Deck".
+2. Step intermedio del wizard muestra **32 plantillas curadas** del repo `zarazhangrui/beautiful-html-templates` (vendoreadas en `external-templates/`). Cada una tiene thumbnail + tagline + moods.
+3. Tras seleccionar plantilla y marca (la marca aquí es solo para clasificación de la pieza guardada — no afecta render), entras al editor en modo dedicado.
+4. **Editor en html-deck mode:** iframe a la izquierda con el HTML del template renderizado, color pickers a la derecha con cada color nombrado de `template.json/palette`. Cambias colores, ves preview en vivo.
+5. **Exportar** descarga el HTML customizado (no PPTX/PDF). Lo abres en navegador → Print → PDF.
+
+### Para adaptar contenido (no solo paleta) con Claude
+
+El repo upstream incluye un `AGENTS.md` con el workflow oficial para que un agente AI:
+- Pregunte por ocasión + mood
+- Elija 3 candidatas del `index.json`
+- Construya previews title-slide
+- Tras elección del usuario, adapte cada slide al sistema visual del template
+
+Ese `AGENTS.md` está vendoreado en `external-templates/AGENTS.md`. Si quieres adaptar un deck con contenido propio (no solo cambiar colores), descárgalo desde el launcher (botón "Bundle de contexto" — ver §0.bis) y pásalo al chat junto con el `template.html` activo.
+
+### Crédito
+
+Repo upstream: https://github.com/zarazhangrui/beautiful-html-templates
+Licencia: ver `external-templates/LICENSE`. Vendoreado con atribución intacta.
+
+---
+
+## 0.bis Bundle de contexto para Claude
+
+Cuando le pidas a Claude (web, Claude Code, etc) que genere o adapte contenido para Studio, lo más eficaz es subirle **un solo archivo de contexto** con todo lo que necesita saber. Studio expone dos descargas:
+
+1. **`STUDIO-BRIEF.md`** (este archivo) — fuente de verdad para tipos nativos. Cubre schema YAML, sistema de marca, budgets, antipatrones, parser quirks. Suficiente para todo excepto html-deck.
+2. **`studio-context.zip`** (descarga del launcher) — bundle: `STUDIO-BRIEF.md` + `external-templates/AGENTS.md` + `external-templates/index.json`. Suficiente para todo, incluido html-deck.
+
+Cuando estés en el editor en modo html-deck, también puedes descargar el bundle específico del template activo: `template.html` + `template.json` + `AGENTS.md` empaquetados, listos para subir a Claude.
 
 ---
 

@@ -2628,6 +2628,7 @@
         <li><button type="button" onclick="triggerImportZip()">importar .zip<span class="kbd">⌘O</span></button></li>
         <li><button type="button" onclick="newPiece(true)">abrir YAML pegado<span class="kbd">⌘V</span></button></li>
         <li><a href="STUDIO-BRIEF.md" download="STUDIO-BRIEF.md">ver brief técnico<span class="kbd">.md</span></a></li>
+        <li><button type="button" onclick="downloadStudioContextBundle()" title="Descarga STUDIO-BRIEF.md + AGENTS.md + index.json en un zip listo para subir a Claude">bundle de contexto para Claude<span class="kbd">.zip</span></button></li>
       </ul>
       <input type="file" id="launcher-import-input" accept=".zip" style="display:none" onchange="handleImportZip(event)">
     </aside>
@@ -3598,6 +3599,7 @@ function renderHtmlDeckPickers() {
         </div>`;
     }).join('')}
     <button type="button" class="picker-reset" onclick="resetDeckPalette()">restaurar paleta original</button>
+    <button type="button" class="picker-reset" onclick="downloadStudioContextBundle({includeActiveTemplate:true})" title="Descarga bundle con BRIEF + AGENTS + index + template activo, para subir a Claude">bundle de contexto para Claude (con esta plantilla)</button>
   `;
 }
 
@@ -3651,6 +3653,59 @@ function renderHtmlDeckIframe() {
   const blob = new Blob([finalHtml], { type: 'text/html' });
   htmlDeckState.blobUrl = URL.createObjectURL(blob);
   iframe.src = htmlDeckState.blobUrl;
+}
+
+// Bundle de contexto para subir a un chat de Claude. Incluye STUDIO-BRIEF.md +
+// external-templates/AGENTS.md + external-templates/index.json. Para html-deck mode
+// también incluye el template.html y template.json activos.
+async function downloadStudioContextBundle(opts) {
+  opts = opts || {};
+  const includeActiveTemplate = opts.includeActiveTemplate && htmlDeckState.slug;
+  try {
+    const zip = new JSZip();
+    const files = [
+      ['STUDIO-BRIEF.md', 'STUDIO-BRIEF.md'],
+      ['external-templates/AGENTS.md', 'external-templates/AGENTS.md'],
+      ['external-templates/index.json', 'external-templates/index.json'],
+    ];
+    if (includeActiveTemplate) {
+      const slug = htmlDeckState.slug;
+      files.push(
+        [`external-templates/templates/${slug}/template.html`, `templates/${slug}/template.html`],
+        [`external-templates/templates/${slug}/template.json`, `templates/${slug}/template.json`],
+      );
+    }
+    await Promise.all(files.map(async ([url, name]) => {
+      const r = await fetch(url);
+      if (!r.ok) throw new Error(`fetch ${url} → HTTP ${r.status}`);
+      zip.file(name, await r.text());
+    }));
+    // README orientativo
+    const readme = `# Bundle de contexto para Magnify Studio
+
+Súbele este zip a un chat con Claude antes de pedirle que genere o adapte contenido para Studio.
+
+Incluye:
+- \`STUDIO-BRIEF.md\` — schema YAML, sistema de marca, budgets, antipatrones para todos los tipos nativos.
+- \`external-templates/AGENTS.md\` — workflow oficial para adaptar las 32 plantillas externas (tipo \`html-deck\`).
+- \`external-templates/index.json\` — manifiesto de las 32 plantillas con mood, tone, occasion, palette.${includeActiveTemplate ? `
+- \`templates/${htmlDeckState.slug}/template.html\` — template HTML activo (el que tienes abierto en el editor).
+- \`templates/${htmlDeckState.slug}/template.json\` — metadata + paleta nombrada del template activo.` : ''}
+
+Generado: ${new Date().toISOString()}
+`;
+    zip.file('README.md', readme);
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = includeActiveTemplate ? `studio-context-${htmlDeckState.slug}.zip` : 'studio-context.zip';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    toast('✓ Bundle descargado · súbelo a tu chat de Claude');
+  } catch (e) {
+    console.error('[studio] error generando bundle:', e);
+    toast('Error generando bundle');
+  }
 }
 
 // Export para html-deck: descarga el HTML customizado.
