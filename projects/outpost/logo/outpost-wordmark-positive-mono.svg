@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" role="img">
+  <title>Outpost wordmark · positive · monochrome</title>
+  <desc>Wordmark "OUTPOST" en monocromo total para impresión a una tinta o contextos sin color. Punto interno también en negro.</desc>
+  <rect width="600" height="200" fill="#F5F5F0"/>
+  <circle cx="80" cy="100" r="50" stroke="#0A0A0A" stroke-width="2.4" fill="none"/>
+  <circle cx="78" cy="102" r="48" stroke="#0A0A0A" stroke-width="2.4" fill="none"/>
+  <circle cx="81" cy="98" r="46" stroke="#0A0A0A" stroke-width="2.4" fill="none"/>
+  <circle cx="106" cy="74" r="16" fill="#0A0A0A"/>
+  <text x="135" y="138" font-family="Inter, Helvetica, Arial, sans-serif" font-weight="800" font-size="100" fill="#0A0A0A" letter-spacing="-3">UTPOST</text>
+</svg>

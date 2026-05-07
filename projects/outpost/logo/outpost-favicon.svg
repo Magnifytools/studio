@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img">
+  <title>Outpost favicon</title>
+  <desc>Símbolo Outpost para uso como favicon. Misma geometría que outpost-icon.svg: tres aros casi concéntricos con punto amarillo en el cuadrante superior derecho. Fondo transparente.</desc>
+  <circle cx="80" cy="80" r="50" stroke="#0A0A0A" stroke-width="2.4" fill="none"/>
+  <circle cx="78" cy="82" r="48" stroke="#0A0A0A" stroke-width="2.4" fill="none"/>
+  <circle cx="81" cy="78" r="46" stroke="#0A0A0A" stroke-width="2.4" fill="none"/>
+  <circle cx="106" cy="54" r="16" fill="#FFD600"/>
+</svg>

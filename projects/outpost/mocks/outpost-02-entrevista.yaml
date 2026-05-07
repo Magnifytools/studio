@@ -1,0 +1,138 @@
+# [mock] Outpost 02 · entrevista (Tipo 2)
+# Test fixture para validar plantillas de Studio con sistema visual Outpost
+# en formato entrevista. Invitada y empresa son ficticias, marcadas como [mock].
+# Reemplazar contenido cuando exista la entrevista real.
+
+tipo: presentacion-charla
+proyecto: outpost
+serie: INTERVIEW
+episodio: 02
+
+titulo: Medir lo que no se puede medir todavía.
+autor: David Carrasco
+fecha: mayo de 2026
+evento_nombre: OUTPOST · 02
+evento_handle: outpost.magnify.ing
+paginacion: no
+
+---
+slide: hero
+titular: Medir lo que no se puede medir todavía.
+autor: David Carrasco · con Marta Vidal '[mock]'
+fecha: '[INTERVIEW] · 02 · mayo 2026'
+evento_handle: outpost.magnify.ing
+
+---
+slide: imagen-split
+posicion: izquierda
+imagen: img1
+eyebrow: '[INVITADA]'
+titular: Marta Vidal '[mock]'
+cuerpo: |
+  Head of SEO en Drift Labs '[mock]', SaaS B2B europeo de observabilidad. Catorce meses construyendo un dashboard interno para medir presencia de marca en respuestas de IA cuando ninguna herramienta consolidada lo hacía.
+meta: '[STACK] · queries semanales a 4-5 modelos · scoring de aparición · evolución temporal'
+
+---
+slide: divisor-charla
+numero: '01'
+eyebrow: '[APERTURA_EDITORIAL]'
+titulo: David, antes de la conversación
+fondo: amarillo
+
+---
+slide: manifiesto
+titular: |
+  Estamos midiendo algo
+  que cambia cada [semana].
+fondo: oscuro
+
+---
+slide: standard
+eyebrow: '[CONTEXTO]'
+titular: Sin herramientas estables. Sin metodología consensuada.
+cuerpo: |
+  Lo que Marta tiene es un proceso vivo. No una solución. Le pregunto cómo lo ha montado, qué métricas descartó, y qué haría distinto si empezara hoy. La conversación no resuelve el problema. Mapea su forma actual.
+
+---
+slide: divisor-charla
+numero: '02'
+eyebrow: '[CONVERSACIÓN]'
+titulo: Siete temas con Marta
+fondo: amarillo
+
+---
+slide: standard
+eyebrow: '[TEMA_01]'
+titular: Por qué decidió empezar a medir esto cuando nadie más lo hacía.
+cuerpo: |
+  El detonante no fue una directiva de arriba. Fue una pregunta de un cliente que Marta no supo responder con datos: "¿estamos apareciendo cuando alguien le pregunta a ChatGPT por nuestro tipo de producto?". A partir de ahí, todo.
+
+---
+slide: standard
+eyebrow: '[TEMA_02]'
+titular: Las primeras métricas que probó y por qué las descartó.
+cuerpo: |
+  Frecuencia de aparición sin contexto. Resultó ser ruido. Una marca puede aparecer mucho y aparecer mal. La métrica útil llegó cuando empezó a clasificar el tipo de mención: recomendación, comparación, mención lateral.
+
+---
+slide: standard
+eyebrow: '[TEMA_03]'
+titular: El stack actual.
+cuerpo: |
+  Queries semanales a cinco modelos. Cada query corre con tres formulaciones distintas para reducir ruido. Scoring binario de aparición más clasificación cualitativa. Evolución temporal en una hoja de cálculo. Sin BI, sin dashboard, sin pretensión.
+
+---
+slide: standard
+eyebrow: '[TEMA_04]'
+titular: Falsos positivos típicos.
+cuerpo: |
+  La IA cita la marca pero no para lo que querrías. Aparece en un contexto irrelevante, o como contraejemplo, o asociada a un caso que ya no existe. La aparición sin contexto es una métrica peor que no medir.
+
+---
+slide: standard
+eyebrow: '[TEMA_05]'
+titular: La conversación interna con dirección.
+cuerpo: |
+  Cómo justificar inversión en algo no probado. Marta no lo justificó como ROI. Lo justificó como [riesgo]: si esto se asienta y no estamos midiendo, llegaremos tarde. La inversión fue tiempo, no presupuesto.
+
+---
+slide: standard
+eyebrow: '[TEMA_06]'
+titular: Qué pasa cuando el modelo cambia y tu serie histórica se rompe.
+cuerpo: |
+  Pasa. Y no hay forma elegante de resolverlo. Marta marca el cambio en la serie, anota la fecha, sigue midiendo. Acepta que la métrica no es comparable longitudinalmente cuando el modelo subyacente cambia. Eso ya es una conclusión.
+
+---
+slide: standard
+eyebrow: '[TEMA_07]'
+titular: Qué haría distinto si empezara hoy.
+cuerpo: |
+  Empezaría por el scoring cualitativo, no por la frecuencia. Y dedicaría las primeras seis semanas a definir qué es una "buena aparición" antes de contar ninguna. El error inicial fue medir antes de saber qué medir.
+
+---
+slide: divisor-charla
+numero: '03'
+eyebrow: '[CIERRE_EDITORIAL]'
+titulo: David, después de la conversación
+fondo: amarillo
+
+---
+slide: manifiesto
+titular: |
+  Nadie lo tiene resuelto.
+  Empezar ahora son seis meses de [ventaja].
+fondo: oscuro
+
+---
+slide: standard
+eyebrow: '[PRÓXIMO]'
+titular: Cuándo una marca está lista para aparecer en respuestas de IA.
+cuerpo: |
+  En el próximo episodio. Si todavía no tiene la masa crítica de discurso público que lo justifique, medir presencia es medir ausencia. Hay un umbral. Hablaremos de cómo identificarlo.
+
+---
+slide: cierre
+contacto: |
+  outpost.magnify.ing
+  un canal de magnify
+  presentado por david carrasco

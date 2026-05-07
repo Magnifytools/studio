@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" role="img">
+  <title>Foto invitada · placeholder mock</title>
+  <desc>Placeholder de la foto de Marta Vidal (invitada ficticia del mock Outpost 02). Reemplazar con foto real cuando exista.</desc>
+  <rect width="400" height="500" fill="#F5F5F0"/>
+  <rect x="2" y="2" width="396" height="496" fill="none" stroke="#0A0A0A" stroke-width="2"/>
+  <line x1="20" y1="40" x2="380" y2="40" stroke="#0A0A0A" stroke-width="0.5"/>
+  <text x="20" y="32" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#888780" letter-spacing="2">[MOCK] · IMG_01</text>
+  <text x="20" y="465" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#888780" letter-spacing="2">FOTO_INVITADA · PLACEHOLDER</text>
+  <line x1="20" y1="475" x2="380" y2="475" stroke="#0A0A0A" stroke-width="0.5"/>
+  <circle cx="200" cy="220" r="60" stroke="#0A0A0A" stroke-width="2" fill="none"/>
+  <circle cx="198" cy="222" r="58" stroke="#0A0A0A" stroke-width="2" fill="none"/>
+  <circle cx="201" cy="218" r="56" stroke="#0A0A0A" stroke-width="2" fill="none"/>
+  <circle cx="231" cy="190" r="18" fill="#FFD600"/>
+  <text x="200" y="330" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" font-weight="800" fill="#0A0A0A" text-anchor="middle" letter-spacing="-1">Marta Vidal</text>
+  <text x="200" y="358" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#444748" text-anchor="middle">Head of SEO · Drift Labs</text>
+  <text x="200" y="378" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#888780" text-anchor="middle" letter-spacing="2">[INVITADA_FICTICIA]</text>
+</svg>

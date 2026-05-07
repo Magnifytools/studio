@@ -1,0 +1,111 @@
+# [mock] Outpost 01 · piloto editorial
+# Test fixture para validar plantillas de Studio con sistema visual Outpost.
+# Reemplazar contenido cuando exista el episodio piloto real.
+
+tipo: presentacion-charla
+proyecto: outpost
+serie: STANDARD
+episodio: 01
+
+titulo: La marca ya no es lo que rankea. Es lo que la IA cita.
+autor: David Carrasco
+fecha: mayo de 2026
+evento_nombre: OUTPOST · 01
+evento_handle: outpost.magnify.ing
+paginacion: no
+
+---
+slide: hero
+titular: Lo que rankea ya no es lo que la IA cita.
+autor: David Carrasco Pamies
+fecha: '[STANDARD] · 01 · mayo 2026'
+evento_handle: outpost.magnify.ing
+
+---
+slide: divisor-charla
+numero: '01'
+eyebrow: '[ACTO_PRIMERO]'
+titulo: Tres señales del presente
+fondo: amarillo
+
+---
+slide: standard
+eyebrow: '[SEÑAL_01]'
+titular: AI Overviews lleva un año estable.
+cuerpo: |
+  Las marcas que aparecen citadas en AI Overviews no coinciden con las que ocupan top 1-3 orgánico. Solapamiento parcial, no total. La pelea por aparecer en SERPs y la pelea por aparecer en respuestas de IA no son el mismo trabajo.
+
+---
+slide: standard
+eyebrow: '[SEÑAL_02]'
+titular: ChatGPT y Perplexity citan consenso, no on-page.
+cuerpo: |
+  Cuando se les pregunta por una recomendación de producto, citan a las marcas más mencionadas en foros, prensa y discurso público. La autoridad no se está midiendo en backlinks. Se está midiendo en presencia narrativa.
+
+---
+slide: standard
+eyebrow: '[SEÑAL_03]'
+titular: Tracking de menciones en LLMs, como métrica nueva.
+cuerpo: |
+  Las SEO tools la integran como métrica nueva, no como derivada del posicionamiento. Eso ya es una pista. Si fuera lo mismo, lo derivarían. La tratan como métrica nueva porque saben que es un eje distinto.
+
+---
+slide: divisor-charla
+numero: '02'
+eyebrow: '[ACTO_SEGUNDO]'
+titulo: La lectura
+fondo: amarillo
+
+---
+slide: manifiesto
+titular: |
+  No es disciplina nueva.
+  Es el viejo trabajo de [marca].
+fondo: oscuro
+
+---
+slide: compare
+titular: Dos guerras distintas, no la misma con otro nombre.
+label_a: PELEA POR SERPs
+a1: Relevancia técnica
+a2: Backlinks como autoridad
+a3: Veinte años de SEO organizado aquí
+label_b: PELEA POR LLMs
+b1: Relevancia técnica
+b2: Consenso del discurso público
+b3: Marca real, no un sustituto técnico
+
+---
+slide: quote-big
+cita: Una marca aparece citada en ChatGPT no porque tenga muchos enlaces apuntándola, sino porque cuando la gente habla del problema que esa marca resuelve, la nombra.
+nombre: David Carrasco
+rol: Outpost 01
+fondo: oscuro
+
+---
+slide: divisor-charla
+numero: '03'
+eyebrow: '[ACTO_TERCERO]'
+titulo: La consecuencia operativa
+fondo: amarillo
+
+---
+slide: standard
+eyebrow: '[NO_HAY_ACRÓNIMO]'
+titular: No es LLMO. No es GEO. No es AEO.
+cuerpo: |
+  Es marca trabajada con disciplina y trazabilidad. Eso ya existía. Lo que existe ahora es una herramienta más para medirlo. La fragmentación en acrónimos es marketing-driven, no técnica.
+
+---
+slide: manifiesto
+titular: |
+  Tu próxima reunión:
+  ¿te mencionan o tienen que [buscarte]?
+fondo: amarillo
+
+---
+slide: cierre
+contacto: |
+  outpost.magnify.ing
+  un canal de magnify
+  presentado por david carrasco
