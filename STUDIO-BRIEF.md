@@ -1682,11 +1682,18 @@ The brief…
 
 Si vas a darle a Claude (o a otra IA) la tarea de generar contenido para Studio:
 
-1. **Sube este documento** (`STUDIO-BRIEF.md`) como contexto
-2. **Especifica el tipo exacto**: `case-study-longform`, `presentacion-charla`, etc.
-3. **Da el brief del caso**: cliente real (o ficticio anonimizado), industria, problema a resolver, datos disponibles, voz deseada
-4. **Pide el YAML completo** con secciones separadas por `---`, sin explicar (Claude tiende a explicar lo que hace; aquí solo queremos el YAML)
-5. **Si necesitas imágenes**: pídele a Claude descripciones detalladas de qué imagen iría en cada `visual_id` o `imagen` referenced (luego las generas/exportas y subes con el mismo nombre que dijo Claude)
+1. **Sube el contexto correcto**:
+   - Para tipos nativos (linkedin-post, carousel, case-study, dossier, propuesta, presentación, banner, thumbnail, report-cover, documento, email-sig): basta este documento (`STUDIO-BRIEF.md`).
+   - Si vas a tocar también `html-deck`: descarga el **bundle de contexto** completo (botón "bundle de contexto para Claude .zip" del launcher de Studio). Incluye STUDIO-BRIEF.md + external-templates/AGENTS.md + index.json. Si tienes una plantilla externa específica activa, descárgalo desde el editor html-deck para que también lleve `template.html` + `template.json` del template activo.
+2. **Especifica el tipo exacto**: `case-study-longform`, `presentacion-charla`, `linkedin-carousel`, etc. Si tu YAML va a empezar por `tipo: <X>` Studio lo auto-detecta y switchea solo el editor.
+3. **Da el brief del caso**: cliente real (o ficticio anonimizado), industria, problema a resolver, datos disponibles, voz deseada.
+4. **Pide el YAML completo** con secciones separadas por `---`, sin explicar (Claude tiende a explicar lo que hace; aquí solo queremos el YAML).
+5. **Marca la marca activa** si difiere del default: declara `marca: outpost` en el frontmatter (alias deprecado `proyecto: outpost` sigue aceptado).
+6. **Si hay imágenes**:
+   - Para slides con foto hero atmosférica → usa `plantilla: imagen` (full-bleed con gradiente).
+   - Para slides con captura de SERP / dashboard / thread donde el texto interno tiene que verse → usa `plantilla: screenshot` (con margen, stage hueso `#FAFAFA`, caption explicativa).
+   - Pide a Claude descripciones detalladas de qué muestra cada imagen referenced (luego las exportas/recortas y las subes a Studio con el mismo nombre que dijo Claude — ej `img1`, `img2`).
+7. **Para `html-deck`**: el flujo es distinto. Usa AGENTS.md del repo upstream — describe ocasión + mood, deja que Claude pre-seleccione 3 candidatas del index.json, valida con preview de slide-cover, y luego adapta cada slide al sistema visual del template.
 
 ### Ejemplo de prompt de invocación
 > Eres mi asistente de contenido para Magnify Studio. Acabo de subirte el brief STUDIO-BRIEF.md.
