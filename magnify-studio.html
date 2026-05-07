@@ -82,133 +82,13 @@
     -webkit-font-smoothing: antialiased; height:100vh; overflow:hidden;
   }
 
-  /* ── SCREEN STATE MACHINE ──
-     La shell tiene dos pantallas (launcher, editor) controladas por clase en body.
-     Solo una está visible a la vez. Default: launcher al cargar la app. */
+  /* ── SHELL ──
+     Editor es la única pantalla. Eliminado el launcher home tras feedback de UX (David
+     2026-05-07): aportaba más ruido que valor. La app abre directamente al editor. */
   .screen { display:none; }
-  body.screen-launcher .screen-launcher,
   body.screen-editor .screen-editor { display:flex; }
-
-  /* ── LAYOUT (editor) ──
-     screen-editor es el wrapper; .layout dentro debe expandirse a 100% del ancho/alto.
-     Sin esto, .layout se shrinka a content-width y el preview-area queda con clientWidth
-     pequeño/cero, escalando los frames a casi 0px. */
   .screen-editor { display:flex; height:100vh; width:100%; }
   body.screen-editor .screen-editor > .layout { flex:1 1 auto; width:100%; height:100%; min-width:0; }
-
-  /* ── LAUNCHER ── */
-  .screen-launcher {
-    flex-direction:column; height:100vh; padding:48px 64px 32px;
-    background:var(--bg); color:var(--h2); overflow-y:auto;
-  }
-  .launcher-head {
-    display:flex; justify-content:space-between; align-items:flex-start;
-    padding-bottom:48px; border-bottom:1px solid var(--border-dk);
-  }
-  .launcher-hero { display:flex; flex-direction:column; gap:8px; }
-  .launcher-wordmark { display:flex; align-items:baseline; gap:14px; }
-  .launcher-wordmark .wm { display:inline-flex; }
-  .launcher-wordmark .wm svg { height:32px; width:auto; }
-  .launcher-wordmark .studio {
-    font-family:var(--serif); font-size:38px; font-style:italic; font-weight:400;
-    color:var(--h1); letter-spacing:-0.01em;
-  }
-  .launcher-sub {
-    font-family:var(--sans); font-size:14px; color:var(--body-dk);
-    letter-spacing:0.01em; max-width:42ch;
-  }
-  .brand-pill {
-    font-family:var(--mono); font-size:11px; letter-spacing:0.08em;
-    text-transform:uppercase; color:var(--body-dk);
-    background:transparent; border:1px solid var(--border-dk);
-    padding:8px 14px; border-radius:999px; cursor:pointer;
-    transition:border-color 0.15s, color 0.15s;
-  }
-  .brand-pill:hover { border-color:#444; color:var(--h2); }
-  .brand-pill .brand-pill-name { color:var(--h2); margin-left:6px; }
-
-  .launcher-body {
-    display:grid; grid-template-columns:minmax(0, 1.5fr) minmax(0, 1fr);
-    gap:64px; flex:1; padding-top:48px;
-  }
-  .launcher-pieces { display:flex; flex-direction:column; min-height:0; }
-  .launcher-pieces h2,
-  .launcher-cta h2 {
-    font-family:var(--mono); font-size:11px; letter-spacing:0.18em; text-transform:uppercase;
-    color:var(--body-dk); font-weight:500; margin:0 0 24px;
-  }
-  .pieces-list { display:flex; flex-direction:column; }
-  .pieces-list .piece-row {
-    display:grid; grid-template-columns:140px 1fr auto;
-    gap:24px; align-items:baseline;
-    padding:18px 0; border-top:1px solid var(--border-dk);
-    cursor:pointer; transition:background 0.1s;
-  }
-  .pieces-list .piece-row:last-child { border-bottom:1px solid var(--border-dk); }
-  .pieces-list .piece-row:hover,
-  .pieces-list .piece-row.focused { background:rgba(255,255,255,0.02); }
-  .piece-row .piece-meta {
-    font-family:var(--mono); font-size:11px; letter-spacing:0.06em;
-    color:var(--body-dk); text-transform:lowercase;
-  }
-  .piece-row .piece-title {
-    font-family:var(--serif); font-size:20px; line-height:1.25; color:var(--h1);
-    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-  }
-  .piece-row .piece-when {
-    font-family:var(--sans); font-size:12px; color:var(--body-dk);
-  }
-  .piece-row .piece-delete {
-    background:none; border:none; color:transparent; cursor:pointer; padding:4px 8px;
-    font-family:var(--mono); font-size:12px; transition:color 0.15s;
-  }
-  .piece-row:hover .piece-delete { color:var(--body-dk); }
-  .piece-row .piece-delete:hover { color:var(--yellow); }
-
-  .pieces-empty {
-    padding:40px 0; max-width:42ch;
-  }
-  .pieces-empty .quote {
-    font-family:var(--serif); font-size:28px; font-style:italic; line-height:1.3;
-    color:var(--h2);
-  }
-  .pieces-empty .quote-sub {
-    font-family:var(--sans); font-size:13px; color:var(--body-dk); margin-top:14px;
-  }
-
-  .launcher-cta { display:flex; flex-direction:column; }
-  .btn-empezar {
-    width:100%; padding:32px 24px; background:var(--yellow); color:var(--bg);
-    border:none; border-radius:0; cursor:pointer;
-    font-family:var(--serif); font-size:32px; font-style:italic; font-weight:400;
-    letter-spacing:-0.01em; transition:background 0.15s;
-    text-align:left; line-height:1;
-  }
-  .btn-empezar:hover { background:#ffe640; }
-  .btn-empezar .arrow {
-    float:right; font-style:normal; font-family:var(--sans); font-size:24px;
-    transition:transform 0.15s;
-  }
-  .btn-empezar:hover .arrow { transform:translateX(4px); }
-  .launcher-shortcuts {
-    list-style:none; padding:0; margin:24px 0 0; display:flex; flex-direction:column; gap:2px;
-  }
-  .launcher-shortcuts li button,
-  .launcher-shortcuts li a {
-    display:flex; justify-content:space-between; align-items:center;
-    width:100%; padding:14px 0; background:none; border:none; cursor:pointer;
-    border-bottom:1px solid var(--border-dk);
-    font-family:var(--sans); font-size:13px; color:var(--h2);
-    text-align:left; text-decoration:none;
-    transition:color 0.15s, padding-left 0.15s;
-  }
-  .launcher-shortcuts li button:hover,
-  .launcher-shortcuts li a:hover {
-    color:var(--yellow); padding-left:8px;
-  }
-  .launcher-shortcuts .kbd {
-    font-family:var(--mono); font-size:10px; color:var(--body-dk); letter-spacing:0.06em;
-  }
 
   /* ── LAYOUT (editor original) ── */
   .layout { display:flex; height:100vh; }
@@ -516,16 +396,6 @@
     width:100%; height:100%; border:none; background:#0f0f0f;
   }
 
-  /* Save status indicator (aria-live, sits inside .actions). Mono pequeño, color tenue.
-     Estados: vacío | "guardando…" | "guardado · hace Xs" | "sin guardar" (amarillo) | "error" (amarillo). */
-  .save-status {
-    font-family:var(--mono); font-size:11px; color:#666; letter-spacing:0.04em;
-    text-align:center; min-height:16px; padding-top:2px;
-  }
-  .save-status.dirty { color:var(--yellow); }
-  .save-status.saving { color:#888; }
-  .save-status.saved { color:#666; }
-  .save-status.error { color:var(--yellow); }
 
   /* ── RIGHT: PREVIEW ── */
   .preview-area {
@@ -2647,46 +2517,12 @@
   }
 </style>
 </head>
-<body class="screen-launcher">
+<body class="screen-editor">
 
-<!-- LAUNCHER (home) — pantalla de inicio. Lista de piezas guardadas + CTA "Empezar".
-     Visible cuando body.screen-launcher (default al cargar la app). -->
-<div class="screen screen-launcher">
-  <header class="launcher-head">
-    <div class="launcher-hero">
-      <div class="launcher-wordmark">
-        <span class="wm" id="launcher-wm"></span>
-        <span class="studio">Studio</span>
-      </div>
-      <p class="launcher-sub">Genera piezas editoriales desde texto.</p>
-    </div>
-    <button class="brand-pill" id="launcher-brand-pill" onclick="cycleBrand()" title="Cambiar marca activa">
-      <span>Marca</span><span class="brand-pill-name" id="launcher-brand-name">Magnify</span>
-    </button>
-  </header>
-  <main class="launcher-body">
-    <section class="launcher-pieces">
-      <h2>Tus piezas</h2>
-      <div id="pieces-list" class="pieces-list"></div>
-    </section>
-    <aside class="launcher-cta">
-      <h2>Nueva</h2>
-      <button class="btn-empezar" onclick="newPiece()">
-        Empezar<span class="arrow">→</span>
-      </button>
-      <ul class="launcher-shortcuts">
-        <li><button type="button" onclick="newHtmlDeck()">desde plantilla externa<span class="kbd">32</span></button></li>
-        <li><button type="button" onclick="triggerImportZip()">importar .zip<span class="kbd">⌘O</span></button></li>
-        <li><button type="button" onclick="newPiece(true)">abrir YAML pegado<span class="kbd">⌘V</span></button></li>
-        <li><a href="STUDIO-BRIEF.md" download="STUDIO-BRIEF.md">ver brief técnico<span class="kbd">.md</span></a></li>
-        <li><button type="button" onclick="downloadStudioContextBundle()" title="Descarga STUDIO-BRIEF.md + AGENTS.md + index.json en un zip listo para subir a Claude">bundle de contexto para Claude<span class="kbd">.zip</span></button></li>
-      </ul>
-      <input type="file" id="launcher-import-input" accept=".zip" style="display:none" onchange="handleImportZip(event)">
-    </aside>
-  </main>
-</div>
+<!-- Input oculto reutilizable para importar zip desde la sidebar del editor. -->
+<input type="file" id="launcher-import-input" accept=".zip" style="display:none" onchange="handleImportZip(event)">
 
-<!-- EDITOR — la shell que existía hasta hoy. Visible cuando body.screen-editor. -->
+<!-- EDITOR — única pantalla. La app abre directa aquí. -->
 <div class="screen screen-editor">
 <div class="layout">
   <!-- SIDEBAR -->
@@ -2743,13 +2579,26 @@
       <span class="ic">&#9993;</span>
       <span>Firma Email</span>
     </button>
-    <!-- Brief técnico — descarga directa del STUDIO-BRIEF.md servido junto al HTML.
-         Útil para pasar a IA como contexto antes de pedir YAML. Se actualiza solo:
-         siempre devuelve la versión que está en el repositorio en este momento. -->
+    <!-- Atajo único para html-deck (32 plantillas externas). No aparece como tipo en la
+         sidebar de tipos porque tiene un editor mode propio (iframe + color picker). -->
+    <button class="sidebar-item" onclick="newHtmlDeck()" title="Galería de 32 plantillas HTML curadas (zarazhangrui/beautiful-html-templates)">
+      <span class="ic">&#9744;</span>
+      <span>Plantilla HTML externa</span>
+    </button>
+    <!-- Utilidades — descarga del brief, bundle de contexto para Claude, import zip de
+         pieza archivada previamente. Pinned al final con border-top. -->
     <a class="sidebar-item sidebar-brief" href="STUDIO-BRIEF.md" download="STUDIO-BRIEF.md" title="Descarga el brief técnico del Studio (formatos, schema, normas tipográficas y de visuales)">
       <span class="ic">&#9776;</span>
       <span>Descargar brief</span>
     </a>
+    <button class="sidebar-item sidebar-brief" onclick="downloadStudioContextBundle()" title="Descarga STUDIO-BRIEF.md + AGENTS.md + index.json en un zip listo para subir a Claude">
+      <span class="ic">&#9783;</span>
+      <span>Bundle para Claude</span>
+    </button>
+    <button class="sidebar-item sidebar-brief" onclick="triggerImportZip()" title="Carga una pieza archivada (.zip exportado previamente) en el editor">
+      <span class="ic">&#9112;</span>
+      <span>Importar .zip</span>
+    </button>
   </div>
 
   <!-- CENTER PANEL -->
@@ -2787,9 +2636,7 @@
       <button class="btn btn-primary" onclick="generate()">Generar Preview</button>
       <button class="btn btn-secondary" id="btn-export" onclick="exportAll()" disabled>Exportar</button>
       <button class="btn btn-secondary" id="btn-export-pdf" onclick="exportPresentacionPdf()" disabled style="display:none">Descargar PDF</button>
-      <button class="btn btn-secondary" id="btn-save-piece" onclick="savePieceNow()" title="Guardar pieza en este navegador (⌘S)">Guardar pieza</button>
-      <button class="btn btn-secondary" id="btn-export-zip" onclick="exportPieceZip()" title="Descargar pieza como .zip (yaml + assets)">Descargar .zip</button>
-      <span id="save-status" class="save-status" aria-live="polite"></span>
+      <button class="btn btn-secondary" id="btn-export-zip" onclick="exportPieceZip()" title="Descarga el YAML + imágenes como .zip para archivar (no guarda nada en el navegador)">Archivar .zip</button>
     </div>
   </div>
 
@@ -2828,196 +2675,15 @@ let imageMapping = {};
 let currentColor = null;
 let currentVariantColors = null;
 
-// ID de la pieza activa en el editor (null si es nueva sin guardar). Cuando hay id, las
-// llamadas a Pieces.save() actualizan en lugar de crear.
-let currentPieceId = null;
+// Slug de la plantilla html-deck activa (null si no estamos en html-deck mode).
+let selectedTemplate = null;
 
-// ── PIECES STORE ──
-// Persistencia local de "piezas" (yaml + assets + tipo + plantilla + marca) en IndexedDB.
-// Sin backend, sin auth: las piezas viven en este navegador. Para portabilidad → exportZip.
-//
-// Schema v1 (db: studio, store: pieces, keyPath: id):
-//   { id, createdAt, updatedAt, title, type, template, brand, yaml, assets:{name:dataURL} }
-//
-// API pública vía window.Pieces. Auto-save con debounce 30s desde el último cambio en
-// el textarea. Indicador de estado en .save-status (.dirty / .saving / .saved / .error).
-const Pieces = (() => {
-  const DB_NAME = 'studio';
-  const DB_VERSION = 1;
-  const STORE = 'pieces';
-  let dbPromise = null;
-
-  function open() {
-    if (dbPromise) return dbPromise;
-    dbPromise = new Promise((resolve, reject) => {
-      const req = indexedDB.open(DB_NAME, DB_VERSION);
-      req.onupgradeneeded = (ev) => {
-        const db = ev.target.result;
-        if (!db.objectStoreNames.contains(STORE)) {
-          const store = db.createObjectStore(STORE, { keyPath: 'id' });
-          store.createIndex('updatedAt', 'updatedAt');
-        }
-      };
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => reject(req.error);
-    });
-    return dbPromise;
-  }
-
-  function tx(mode) {
-    return open().then(db => db.transaction(STORE, mode).objectStore(STORE));
-  }
-
-  function uuid() {
-    if (crypto && crypto.randomUUID) return crypto.randomUUID();
-    return 'p-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
-  }
-
-  // Pide persistencia al navegador para que no nos limpie la BD en cleanup automático.
-  // Idempotente; el navegador puede negar silenciosamente y seguimos funcionando.
-  let persistRequested = false;
-  async function ensurePersistent() {
-    if (persistRequested) return;
-    persistRequested = true;
-    try {
-      if (navigator.storage && navigator.storage.persist) await navigator.storage.persist();
-    } catch (_) { /* shrug */ }
-  }
-
-  return {
-    list() {
-      return tx('readonly').then(store => new Promise((resolve, reject) => {
-        const out = [];
-        const req = store.index('updatedAt').openCursor(null, 'prev');
-        req.onsuccess = (e) => {
-          const cur = e.target.result;
-          if (cur) { out.push(cur.value); cur.continue(); } else resolve(out);
-        };
-        req.onerror = () => reject(req.error);
-      }));
-    },
-    get(id) {
-      return tx('readonly').then(store => new Promise((resolve, reject) => {
-        const req = store.get(id);
-        req.onsuccess = () => resolve(req.result || null);
-        req.onerror = () => reject(req.error);
-      }));
-    },
-    async save(piece) {
-      const now = new Date().toISOString();
-      if (!piece.id) {
-        piece.id = uuid();
-        piece.createdAt = now;
-      }
-      piece.updatedAt = now;
-      ensurePersistent();
-      return tx('readwrite').then(store => new Promise((resolve, reject) => {
-        const req = store.put(piece);
-        req.onsuccess = () => resolve(piece);
-        req.onerror = () => reject(req.error);
-      }));
-    },
-    delete(id) {
-      return tx('readwrite').then(store => new Promise((resolve, reject) => {
-        const req = store.delete(id);
-        req.onsuccess = () => resolve();
-        req.onerror = () => reject(req.error);
-      }));
-    },
-    async exportZip(id) {
-      const piece = await this.get(id);
-      if (!piece) throw new Error('pieza no encontrada');
-      const zip = new JSZip();
-      // metadata.json contiene todo menos los assets binarios (que van como ficheros).
-      const meta = { ...piece, assets: undefined };
-      zip.file('metadata.json', JSON.stringify(meta, null, 2));
-      zip.file('content.yaml', piece.yaml || '');
-      const assetsFolder = zip.folder('assets');
-      for (const [name, dataUrl] of Object.entries(piece.assets || {})) {
-        const m = /^data:([^;]+);base64,(.+)$/.exec(dataUrl);
-        if (!m) continue;
-        // Heurística simple: si el name no tiene extensión, derivarla del mime.
-        const mime = m[1];
-        const ext = mime.split('/')[1] || 'bin';
-        const fileName = /\.[a-z0-9]+$/i.test(name) ? name : `${name}.${ext}`;
-        assetsFolder.file(fileName, m[2], { base64: true });
-      }
-      const blob = await zip.generateAsync({ type: 'blob' });
-      const safeTitle = (piece.title || 'pieza').replace(/[^\w\-. ]+/g, '_').slice(0, 60);
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `${safeTitle}.studio.zip`;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-    },
-    async importZip(file) {
-      const zip = await JSZip.loadAsync(file);
-      const metaFile = zip.file('metadata.json');
-      if (!metaFile) throw new Error('zip inválido: falta metadata.json');
-      const meta = JSON.parse(await metaFile.async('string'));
-      const yamlFile = zip.file('content.yaml');
-      const yaml = yamlFile ? await yamlFile.async('string') : (meta.yaml || '');
-      const assets = {};
-      const assetsDir = zip.folder('assets');
-      if (assetsDir) {
-        const files = [];
-        assetsDir.forEach((path, entry) => { if (!entry.dir) files.push(entry); });
-        for (const entry of files) {
-          const base = entry.name.replace(/^assets\//, '');
-          const mime = guessMime(base);
-          const b64 = await entry.async('base64');
-          // Clave sin extensión para alinearse con el textarea (img1, hoguera, etc.).
-          const key = base.replace(/\.[a-z0-9]+$/i, '');
-          assets[key] = `data:${mime};base64,${b64}`;
-        }
-      }
-      // Devuelve la pieza sin guardar; el caller decide si llamar save().
-      return { ...meta, yaml, assets, id: undefined, createdAt: undefined, updatedAt: undefined };
-    },
-  };
-
-  function guessMime(name) {
-    const ext = (name.split('.').pop() || '').toLowerCase();
-    return {
-      svg: 'image/svg+xml', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg',
-      webp: 'image/webp', gif: 'image/gif', yaml: 'text/yaml', yml: 'text/yaml',
-      md: 'text/markdown', json: 'application/json',
-    }[ext] || 'application/octet-stream';
-  }
-})();
-window.Pieces = Pieces; // expuesto para inspección desde consola
-
-// ── PIECE EDITOR STATE ──
-// Indicador visual de estado de guardado y debounce de auto-save.
-let _saveStatusTimer = null;
-let _autoSaveTimer = null;
-let _lastSavedAt = null;
-
-function setSaveStatus(state, text) {
-  const el = document.getElementById('save-status');
-  if (!el) return;
-  el.className = 'save-status ' + state;
-  el.textContent = text || '';
-  // Refresh "hace Xs" cada 10s mientras esté en saved.
-  clearTimeout(_saveStatusTimer);
-  if (state === 'saved' && _lastSavedAt) {
-    _saveStatusTimer = setTimeout(refreshSavedAge, 10000);
-  }
-}
-
-function refreshSavedAge() {
-  if (!_lastSavedAt) return;
-  const secs = Math.max(0, Math.round((Date.now() - _lastSavedAt) / 1000));
-  let label;
-  if (secs < 5) label = 'guardado · ahora';
-  else if (secs < 60) label = `guardado · hace ${secs}s`;
-  else if (secs < 3600) label = `guardado · hace ${Math.round(secs/60)}m`;
-  else label = `guardado · hace ${Math.round(secs/3600)}h`;
-  setSaveStatus('saved', label);
-}
-
-// Deriva un título de la pieza a partir del YAML (campo `titulo:` o `titular:`),
-// con fallback a tipo + fecha. Limita a 80 chars.
+// ── EXPORT/IMPORT ZIP (on-demand, sin IndexedDB) ──
+// El rediseño UX previo añadió persistencia local con auto-save + lista de "tus piezas
+// guardadas" que David sintió como ruido (decisión 2026-05-07). Lo eliminado: launcher
+// home, Pieces store IndexedDB, auto-save, indicador "guardando…", botón "Guardar pieza",
+// atajos ⌘N/⌘S/Esc-launcher. Lo que queda: un export/import .zip on-demand para archivar
+// o recargar una pieza puntual. El YAML normalmente vive en disco (decks/<slug>/file.yaml).
 function derivePieceTitle(yaml, type) {
   if (yaml) {
     const m = yaml.match(/^\s*(?:titulo|titular|title)\s*:\s*(.+)$/im);
@@ -3026,46 +2692,38 @@ function derivePieceTitle(yaml, type) {
       if (raw) return raw.slice(0, 80);
     }
   }
-  const date = new Date().toISOString().slice(0, 10);
-  return `Sin título · ${type} · ${date}`;
-}
-
-// Snapshot del editor → pieza serializable. No guarda; solo prepara.
-function buildPieceSnapshot() {
-  const yaml = (document.getElementById('content') || {}).value || '';
-  const type = currentType;
-  const brand = currentBrand;
-  const title = derivePieceTitle(yaml, type);
-  return {
-    id: currentPieceId,
-    title, type,
-    template: selectedTemplate || null,
-    brand,
-    yaml,
-    assets: { ...uploadedImages },
-  };
-}
-
-async function savePieceNow() {
-  try {
-    setSaveStatus('saving', 'guardando…');
-    const snap = buildPieceSnapshot();
-    const saved = await Pieces.save(snap);
-    currentPieceId = saved.id;
-    _lastSavedAt = Date.now();
-    refreshSavedAge();
-  } catch (e) {
-    console.error('[studio] error guardando pieza:', e);
-    setSaveStatus('error', 'no se pudo guardar · reintentar');
-  }
+  return `${type} · ${new Date().toISOString().slice(0, 10)}`;
 }
 
 async function exportPieceZip() {
-  // Si la pieza aún no se ha guardado, guardarla primero (necesitamos un id).
-  if (!currentPieceId) await savePieceNow();
-  if (!currentPieceId) return;
+  const yaml = (document.getElementById('content') || {}).value || '';
+  if (!yaml.trim()) { toast('Pega contenido primero'); return; }
   try {
-    await Pieces.exportZip(currentPieceId);
+    const zip = new JSZip();
+    const meta = {
+      title: derivePieceTitle(yaml, currentType),
+      type: currentType,
+      template: selectedTemplate || null,
+      brand: currentBrand,
+      exportedAt: new Date().toISOString(),
+    };
+    zip.file('metadata.json', JSON.stringify(meta, null, 2));
+    zip.file('content.yaml', yaml);
+    const assetsFolder = zip.folder('assets');
+    for (const [name, dataUrl] of Object.entries(uploadedImages)) {
+      const m = /^data:([^;]+);base64,(.+)$/.exec(dataUrl);
+      if (!m) continue;
+      const ext = (m[1].split('/')[1] || 'bin');
+      const fileName = /\.[a-z0-9]+$/i.test(name) ? name : `${name}.${ext}`;
+      assetsFolder.file(fileName, m[2], { base64: true });
+    }
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const safeTitle = meta.title.replace(/[^\w\-. ]+/g, '_').slice(0, 60);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${safeTitle}.studio.zip`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     toast('✓ .zip descargado');
   } catch (e) {
     console.error('[studio] error exportando zip:', e);
@@ -3073,187 +2731,6 @@ async function exportPieceZip() {
   }
 }
 
-// Marca el editor como "dirty" y arma debounce de auto-save (30s desde último cambio).
-function markPieceDirty() {
-  setSaveStatus('dirty', 'sin guardar');
-  clearTimeout(_autoSaveTimer);
-  _autoSaveTimer = setTimeout(() => {
-    // Solo auto-save si hay contenido real (evita guardar piezas vacías al pulsar y borrar).
-    const yaml = (document.getElementById('content') || {}).value || '';
-    if (yaml.trim().length < 10) return;
-    savePieceNow();
-  }, 30000);
-}
-
-// Wire-up: input listener en el textarea y atajos globales. Llamado en INIT.
-function wirePieceEditor() {
-  const ta = document.getElementById('content');
-  if (ta) ta.addEventListener('input', markPieceDirty);
-  document.addEventListener('keydown', (e) => {
-    const mod = e.metaKey || e.ctrlKey;
-    // ⌘/Ctrl + S → guardar pieza (siempre disponible)
-    if (mod && (e.key === 's' || e.key === 'S')) {
-      e.preventDefault();
-      savePieceNow();
-      return;
-    }
-    // ⌘/Ctrl + N → nueva pieza desde launcher (no en editor para evitar perder cambios sin querer)
-    if (mod && (e.key === 'n' || e.key === 'N')) {
-      e.preventDefault();
-      newPiece();
-      return;
-    }
-    // Esc → en editor vuelve al launcher (con confirm si dirty)
-    if (e.key === 'Escape') {
-      if (document.body.classList.contains('screen-editor')) {
-        const dirty = document.getElementById('save-status').classList.contains('dirty');
-        if (dirty && !confirm('Tienes cambios sin guardar. ¿Volver al inicio igualmente?')) return;
-        showScreen('launcher');
-      }
-      return;
-    }
-  });
-}
-
-// ── SCREEN STATE ──
-// Conmuta entre launcher / editor. La lógica de wiring por pantalla vive en cada
-// función específica (renderLauncher, etc.). showScreen NO toca contenido, solo la clase del body.
-function showScreen(name) {
-  document.body.classList.remove('screen-launcher', 'screen-editor');
-  document.body.classList.add('screen-' + name);
-  if (name === 'launcher') renderLauncher();
-}
-
-// ── LAUNCHER ──
-// Pinta wordmark de la marca activa, pill con nombre, y lista de piezas guardadas.
-async function renderLauncher() {
-  const wm = document.getElementById('launcher-wm');
-  if (wm) wm.innerHTML = (BRANDS[currentBrand] && BRANDS[currentBrand].logo) ? BRANDS[currentBrand].logo() : '';
-  const pillName = document.getElementById('launcher-brand-name');
-  if (pillName) pillName.textContent = (currentBrand === 'outpost') ? 'Outpost' : 'Magnify';
-  const list = document.getElementById('pieces-list');
-  if (!list) return;
-  let pieces = [];
-  try { pieces = await Pieces.list(); } catch (e) { console.error('[studio] error listando piezas:', e); }
-  if (!pieces.length) {
-    list.innerHTML = `
-      <div class="pieces-empty">
-        <p class="quote">"Empieza por escribir."</p>
-        <p class="quote-sub">Las piezas que guardes aparecerán aquí. Viven en este navegador — exporta el .zip si quieres llevártelas.</p>
-      </div>`;
-    return;
-  }
-  list.innerHTML = pieces.map(p => {
-    const meta = p.template ? `${p.type} · ${p.template}` : p.type;
-    const when = formatRelTime(p.updatedAt);
-    const brand = p.brand && p.brand !== 'magnify' ? ` · ${p.brand}` : '';
-    return `
-      <div class="piece-row" data-id="${escapeHtml(p.id)}" tabindex="0">
-        <span class="piece-meta">${escapeHtml(meta)}</span>
-        <span class="piece-title">${escapeHtml(p.title || 'Sin título')}</span>
-        <span class="piece-when">${when}${brand}</span>
-        <button class="piece-delete" onclick="event.stopPropagation(); deletePiece('${escapeHtml(p.id)}')" title="Borrar pieza">borrar</button>
-      </div>`;
-  }).join('');
-  list.querySelectorAll('.piece-row').forEach(row => {
-    row.addEventListener('click', () => openPiece(row.dataset.id));
-    row.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') openPiece(row.dataset.id);
-    });
-  });
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-}
-
-function formatRelTime(iso) {
-  if (!iso) return '';
-  const diff = Math.max(0, Date.now() - new Date(iso).getTime());
-  const m = Math.round(diff / 60000);
-  if (m < 1) return 'ahora';
-  if (m < 60) return `hace ${m}m`;
-  const h = Math.round(m / 60);
-  if (h < 24) return `hace ${h}h`;
-  const d = Math.round(h / 24);
-  if (d < 30) return `hace ${d}d`;
-  return new Date(iso).toISOString().slice(0, 10);
-}
-
-async function openPiece(id) {
-  const p = await Pieces.get(id);
-  if (!p) return;
-  currentPieceId = p.id;
-  uploadedImages = { ...(p.assets || {}) };
-  selectedTemplate = p.template || null;
-  // Salir de html-deck si veníamos en él y la nueva pieza no lo es
-  if (currentType === 'html-deck' && p.type !== 'html-deck') exitHtmlDeckMode();
-  // Aplicar marca de la pieza si difiere de la activa
-  if (p.brand && BRANDS[p.brand] && p.brand !== currentBrand) setActiveBrand(p.brand);
-  // Aplicar tipo de la pieza
-  if (p.type && p.type !== currentType) selectType(p.type);
-  // Cargar YAML / paleta
-  const ta = document.getElementById('content');
-  if (ta) ta.value = p.yaml || '';
-  // Refrescar uploads UI si hay helper
-  if (typeof renderImageThumbs === 'function') renderImageThumbs();
-  showScreen('editor');
-  // html-deck: rehidratar modo con paleta serializada en yaml
-  if (p.type === 'html-deck' && p.template) {
-    let palette = {};
-    try { palette = p.yaml ? JSON.parse(p.yaml) : {}; } catch (_) {}
-    await enterHtmlDeckMode(p.template, palette);
-  }
-  setSaveStatus('saved', 'guardado · ' + formatRelTime(p.updatedAt));
-  _lastSavedAt = new Date(p.updatedAt).getTime();
-}
-
-async function deletePiece(id) {
-  if (!confirm('¿Borrar esta pieza? No se puede deshacer.')) return;
-  await Pieces.delete(id);
-  renderLauncher();
-}
-
-// Nueva pieza: limpia el editor y lo muestra. La galería de variantes existente
-// (renderVariantGallery dentro de selectType) se ocupa de la elección granular según el
-// tipo activo. Si openClipboard=true, intenta pegar contenido del clipboard al abrir
-// (atajo "abrir YAML pegado" del launcher).
-async function newPiece(openClipboard) {
-  currentPieceId = null;
-  uploadedImages = {};
-  selectedTemplate = null;
-  if (currentType === 'html-deck') exitHtmlDeckMode();
-  const ta = document.getElementById('content');
-  if (ta) ta.value = '';
-  if (openClipboard) {
-    try {
-      const txt = await navigator.clipboard.readText();
-      if (txt && ta && txt.trim().length > 0) ta.value = txt;
-    } catch (_) { /* permission denied o no clipboard API */ }
-  }
-  if (typeof renderImageThumbs === 'function') renderImageThumbs();
-  setSaveStatus('', '');
-  _lastSavedAt = null;
-  showScreen('editor');
-  // Re-aplicar el tipo activo para que la galería de variantes (si la hay) se muestre.
-  selectType(currentType || 'linkedin-post');
-  if (ta && !openClipboard) {
-    // Si el tipo NO tiene variantes, foco al textarea. Si tiene variantes, foco al primer card.
-    const variants = VARIANTS[currentType];
-    if (!variants || !variants.length) ta.focus();
-  }
-}
-
-// Cycla la marca activa (Magnify ↔ Outpost) desde el launcher pill.
-function cycleBrand() {
-  const order = Object.keys(BRANDS);
-  const idx = order.indexOf(currentBrand);
-  const next = order[(idx + 1) % order.length] || 'magnify';
-  setActiveBrand(next);
-  renderLauncher();
-}
-
-// Trigger del input file oculto para importar zip.
 function triggerImportZip() {
   const input = document.getElementById('launcher-import-input');
   if (input) input.click();
@@ -3262,24 +2739,49 @@ function triggerImportZip() {
 async function handleImportZip(ev) {
   const file = ev.target.files && ev.target.files[0];
   if (!file) return;
-  ev.target.value = ''; // permite re-importar el mismo archivo después
+  ev.target.value = '';
   try {
-    const piece = await Pieces.importZip(file);
-    const saved = await Pieces.save(piece);
-    await openPiece(saved.id);
-    toast('✓ Pieza importada');
+    const zip = await JSZip.loadAsync(file);
+    const metaFile = zip.file('metadata.json');
+    if (!metaFile) throw new Error('zip inválido: falta metadata.json');
+    const meta = JSON.parse(await metaFile.async('string'));
+    const yamlFile = zip.file('content.yaml');
+    const yaml = yamlFile ? await yamlFile.async('string') : '';
+    const assets = {};
+    const assetsDir = zip.folder('assets');
+    if (assetsDir) {
+      const entries = [];
+      assetsDir.forEach((path, entry) => { if (!entry.dir) entries.push(entry); });
+      const guessMime = (n) => {
+        const ext = (n.split('.').pop() || '').toLowerCase();
+        return { svg:'image/svg+xml', png:'image/png', jpg:'image/jpeg', jpeg:'image/jpeg',
+                 webp:'image/webp', gif:'image/gif' }[ext] || 'application/octet-stream';
+      };
+      for (const entry of entries) {
+        const base = entry.name.replace(/^assets\//, '');
+        const b64 = await entry.async('base64');
+        const key = base.replace(/\.[a-z0-9]+$/i, '');
+        assets[key] = `data:${guessMime(base)};base64,${b64}`;
+      }
+    }
+    if (meta.brand && BRANDS[meta.brand] && meta.brand !== currentBrand) setActiveBrand(meta.brand);
+    if (meta.type && meta.type !== currentType) selectType(meta.type);
+    selectedTemplate = meta.template || null;
+    uploadedImages = { ...assets };
+    const ta = document.getElementById('content');
+    if (ta) ta.value = yaml;
+    if (ta && ta.parentElement) ta.parentElement.style.display = '';
+    if (TYPE_META[meta.type] && TYPE_META[meta.type].hint) {
+      document.getElementById('hint').innerHTML = TYPE_META[meta.type].hint;
+    }
+    if (typeof renderImageThumbs === 'function') renderImageThumbs();
+    toast('✓ Pieza cargada del zip');
   } catch (e) {
     console.error('[studio] error importando zip:', e);
     toast('Error importando .zip');
   }
 }
 
-// ── WIZARD (eliminado 2026-05-07) ──
-// La pantalla wizard se quitó por feedback de UX: duplicaba decisiones (el editor ya
-// tenía galería de variantes per tipo) y el visual no estaba a la altura. Flujo nuevo:
-// "Empezar" del launcher → editor directo → galería de tipos/variantes en el editor
-// (renderTypePicker / variant gallery existente) hasta que el usuario elige.
-// Cache del index.json de external-templates. Lazy-load cuando html-deck entra en juego.
 let _externalTemplatesIndex = null;
 async function loadExternalTemplatesIndex() {
   if (_externalTemplatesIndex) return _externalTemplatesIndex;
@@ -3293,9 +2795,6 @@ async function loadExternalTemplatesIndex() {
   }
   return _externalTemplatesIndex;
 }
-
-// Slug de la plantilla externa activa, si la pieza es html-deck. Persiste en buildPieceSnapshot.
-let selectedTemplate = null;
 
 // ── HTML-DECK MODE ──
 // Cuando type === 'html-deck' y selectedTemplate está fijado, el editor cambia su comportamiento:
@@ -3360,7 +2859,7 @@ async function enterHtmlDeckMode(slug, paletteOverride) {
     if (expBtn) expBtn.disabled = false;
     // Cambia el label del botón export al modo html-deck
     if (expBtn) expBtn.textContent = 'Descargar HTML';
-    // Sincroniza el textarea con un JSON serializable (para que savePieceNow guarde paleta)
+    // Sincroniza el textarea con un JSON serializable (para que exportPieceZip lo archive)
     const ta = document.getElementById('content');
     if (ta) ta.value = JSON.stringify(htmlDeckState.paletteOverride, null, 2);
     // Actualiza panel head
@@ -3434,12 +2933,9 @@ function updateDeckColor(input) {
     row.querySelector('.hex').textContent = value;
   }
   renderHtmlDeckIframe();
-  // Sync textarea (para que savePieceNow + auto-save lo capture)
+  // Sync textarea con paleta como JSON (para que exportPieceZip pueda archivarla).
   const ta = document.getElementById('content');
-  if (ta) {
-    ta.value = JSON.stringify(htmlDeckState.paletteOverride, null, 2);
-    markPieceDirty();
-  }
+  if (ta) ta.value = JSON.stringify(htmlDeckState.paletteOverride, null, 2);
 }
 
 function resetDeckPalette() {
@@ -3447,7 +2943,7 @@ function resetDeckPalette() {
   renderHtmlDeckPickers();
   renderHtmlDeckIframe();
   const ta = document.getElementById('content');
-  if (ta) { ta.value = '{}'; markPieceDirty(); }
+  if (ta) ta.value = '{}';
 }
 
 function renderHtmlDeckIframe() {
@@ -4780,20 +4276,16 @@ async function ensureHtmlDeckVariants() {
   }));
 }
 
-// Atajo del launcher "desde plantilla externa": entra al editor en html-deck mode con la
-// galería visible. El tipo `html-deck` no aparece en la sidebar (la sidebar sigue
-// limpia para los tipos nativos); este shortcut es el único punto de entrada.
+// Entra al modo html-deck (32 plantillas externas). Único punto de entrada — html-deck
+// como tipo NO aparece en la sidebar de tipos. Llamado desde el botón "Plantilla HTML
+// externa" del sidebar de utilidades.
 async function newHtmlDeck() {
-  currentPieceId = null;
   uploadedImages = {};
   selectedTemplate = null;
   const ta = document.getElementById('content');
   if (ta) ta.value = '';
   if (typeof renderImageThumbs === 'function') renderImageThumbs();
-  setSaveStatus('', '');
-  _lastSavedAt = null;
   await ensureHtmlDeckVariants();
-  showScreen('editor');
   selectType('html-deck');
 }
 
@@ -10885,11 +10377,6 @@ setActiveBrand(_persistedBrand);
 wireUploadZone();
 selectType('linkedin-post');
 checkBrandFonts();
-wirePieceEditor();
-// Arranca en el launcher por defecto. La clase ya está en <body>; renderLauncher()
-// pinta wordmark + lista de piezas. Si en el futuro queremos "deep-link" a una pieza
-// concreta, este es el sitio para mirar location.hash y saltar al editor.
-renderLauncher();
 </script>
 </body>
 </html>
