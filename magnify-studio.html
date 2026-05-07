@@ -350,6 +350,21 @@
   .upload-drop { border:1px dashed #333; border-radius:8px; padding:18px 14px; text-align:center; color:#999; font-size:12px; cursor:pointer; transition:all 0.15s; user-select:none; }
   .upload-drop u { color:#ccc; text-decoration:underline; }
   .upload-drop:hover, .upload-drop.drag { border-color:var(--yellow); color:#ddd; background:rgba(255,214,0,0.04); }
+  /* Flash visible cuando focusUploadZone() se llama desde los warnings: pulso amarillo
+     que llama la atención a la zona correcta sin hacer modal ni toast. */
+  @keyframes upload-flash {
+    0%,100% { border-color:var(--yellow); background:rgba(255,214,0,0.18); color:var(--yellow); }
+    50%     { border-color:#444; background:transparent; color:#999; }
+  }
+  .upload-drop.flash { animation: upload-flash 0.45s ease-in-out 2; }
+  /* CTA dentro del bloque de avisos amarillos. Mismo color que el texto pero con underline
+     y cursor pointer — claramente accionable sin ser un botón pesado. */
+  .warn-action {
+    background:none; border:none; padding:0; cursor:pointer;
+    color:var(--yellow); font:inherit; text-decoration:underline; text-underline-offset:2px;
+    transition:opacity 0.12s;
+  }
+  .warn-action:hover { opacity:0.7; }
   .upload-thumbs { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-top:10px; }
   .upload-thumb { position:relative; aspect-ratio:1/1; background:#1a1a1a; border-radius:6px; overflow:hidden; border:1px solid #2a2a2a; }
   .upload-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
@@ -4869,6 +4884,21 @@ function wireUploadZone() {
     drop.classList.remove('drag');
   }));
   drop.addEventListener('drop', e => handleDroppedFiles(e.dataTransfer.files));
+}
+
+// Acción del CTA de los avisos cuando faltan imágenes: scroll a la zona de uploads,
+// flash visible para localizar dónde es y abrir el file picker.
+function focusUploadZone() {
+  const uploads = document.getElementById('uploads');
+  const drop = document.getElementById('upload-drop');
+  if (!uploads || !drop) return;
+  // Asegura que la zona está visible (si por algún path no se activó el .on)
+  uploads.classList.add('on');
+  uploads.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  drop.classList.add('flash');
+  setTimeout(() => drop.classList.remove('flash'), 900);
+  // Abre el file picker tras el flash
+  setTimeout(() => document.getElementById('upload-input').click(), 250);
 }
 
 // ── SIDEBAR / TYPE SELECTION ──
@@ -10075,7 +10105,8 @@ function validateRenderedCarousel(actualDiv, data, n, total) {
 
   const tpl = (data.plantilla || '').toLowerCase().trim();
   if ((tpl === 'imagen' || tpl === 'image' || tpl === 'foto') && !uploadedImages[(data.imagen || data.image || '').trim().toLowerCase()]) {
-    warnings.push(`Slide <code>${n}</code>: imagen referenciada no subida — se está renderizando placeholder.`);
+    const ref = (data.imagen || data.image || '').trim().toLowerCase();
+    warnings.push(`Slide <code>${n}</code>: falta <code>${ref}</code> — <button type="button" class="warn-action" onclick="focusUploadZone()">subir imagen ↑</button>`);
   }
 
   if (total > 10) {
