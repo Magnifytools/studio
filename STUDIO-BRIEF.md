@@ -434,7 +434,7 @@ Carousel vertical para LinkedIn Document Posts. Cada slide va separado por `---`
 | Campo | Tipo | Descripción |
 |---|---|---|
 | `slide` | opcional | Número informativo (1, 2, 3…). El renderer no lo usa — la posición del bloque manda. Útil como ayuda visual al editar. |
-| `plantilla` | opcional | Una de las 5 plantillas: `cover` (alias `portada`), `interior` (default), `imagen` (alias `image`/`foto`), `stat`, `cta`. Si se omite, slide 0 → `cover`, resto → `interior`. |
+| `plantilla` | opcional | Una de las 6 plantillas: `cover` (alias `portada`), `interior` (default), `imagen` (alias `image`/`foto` — foto hero fullbleed), `screenshot` (alias `captura`/`serp` — captura legible con margen), `stat`, `cta`. Si se omite, slide 0 → `cover`, resto → `interior`. |
 
 > Reglas de plantilla:
 > - **Slide 0 siempre se renderiza como `cover`**, declares lo que declares (es la portada).
@@ -503,9 +503,9 @@ titular: El equipo comercial iba en paralelo al de marketing
 cuerpo: Mensaje cambiaba en cada canal. 15 competidores indiferenciados.
 ```
 
-### `imagen` — Slide con foto fullbleed
+### `imagen` — Slide con foto hero (fullbleed)
 
-Foto cubre el frame completo, gradiente inferior + caption editorial. Si la imagen no resuelve, placeholder visible con guía.
+Foto cubre el frame completo, gradiente inferior + caption editorial. **Para fotos hero atmosféricas** (mood, evento, persona, foto de stock estilizada). NO para capturas de SERP/dashboards/threads — el texto interno del screenshot se vuelve ilegible. Para esos casos usa `screenshot` (siguiente).
 
 | Campo | Tipo | Notas |
 |---|---|---|
@@ -520,6 +520,32 @@ imagen: img1
 eyebrow: EJEMPLO
 titular: Lo que el mercado [realmente] percibe
 ```
+
+### `screenshot` — Slide para captura legible (con margen)
+
+Para mostrar capturas de **SERPs, dashboards, threads, pantallas de producto** donde el contenido textual de la imagen tiene que verse legible. La imagen va dentro de un "stage" hueso `#FAFAFA` con margen 60px alrededor (no full-bleed). El editorial Magnify se mantiene en bandas oscuras: header arriba (eyebrow + titular), caption + footer abajo. Aliases del campo `plantilla:`: `captura`, `serp`.
+
+Cuándo usar — la prueba del olfato:
+- ¿Lo que estás mostrando tiene texto que el lector debe LEER? → `screenshot`
+- ¿La imagen es un "mood" / hero atmosférico? → `imagen`
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `imagen` | requerido | ID de imagen subida. Acepta aliases `image`/`captura`. |
+| `eyebrow` | recomendado | Etiqueta yellow uppercase. Ej: "CASO 1 · FACTORIAL". |
+| `titular` | requerido | Headline serif italic encima de la captura. Highlights `[…]` aplican. |
+| `caption` | opcional | Texto explicativo bajo la imagen (sans 22px). 1-2 frases que digan **qué** estamos viendo en la captura. Aliases: `cuerpo`, `pie`. |
+
+```yaml
+slide: 4
+plantilla: screenshot
+imagen: img2
+eyebrow: CASO 1 · FACTORIAL
+titular: Lidero awareness. Pierdo el [intent específico].
+caption: AI Mode cita Factorial cuando la pregunta es genérica. Al concretar ("automatizar nóminas"), aparece PayFit en el top.
+```
+
+> **Pro-tip**: la captura se renderiza con `object-fit: contain` y sombra suave. Si tu screenshot es muy alto/largo (ej. SERP con scroll), recórtalo antes de subirlo a la zona crítica del slide — el contain conserva aspect pero limita altura útil ~770px.
 
 ### `cta` — Cierre / call to action
 

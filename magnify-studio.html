@@ -742,6 +742,54 @@
   .t-img .dots { position:absolute; bottom:24px; right:80px; display:flex; gap:8px; }
   .t-img .dots .d { width:40px; height:4px; background:rgba(250,250,250,0.35); border-radius:2px; }
   .t-img .dots .d.on { background:var(--yellow); }
+
+  /* ── CAROUSEL: SCREENSHOT plantilla ──
+     Para mostrar capturas de SERP / dashboards / contenido textual donde la legibilidad
+     manda. Imagen NO va full-bleed: vive dentro de un "stage" hueso con margen. Editorial
+     Magnify alrededor (header dark + caption + footer). */
+  .t-shot { height:100%; display:flex; flex-direction:column; background:var(--bg); }
+  .t-shot .head { padding:60px 80px 36px; }
+  .t-shot .head .eb {
+    font-family:var(--sans); font-size:22px; font-weight:700; letter-spacing:3px;
+    text-transform:uppercase; color:var(--yellow); margin-bottom:18px;
+  }
+  .t-shot .head h2 {
+    font-family:var(--serif); font-size:54px; color:var(--h1); line-height:1.1;
+    letter-spacing:-1px; max-width:900px; font-weight:400; margin:0;
+  }
+  .t-shot .stage {
+    flex:1; background:#FAFAFA; padding:40px 60px;
+    display:flex; align-items:center; justify-content:center; min-height:0;
+  }
+  .t-shot .stage img {
+    max-width:100%; max-height:100%; object-fit:contain; display:block;
+    box-shadow:0 8px 28px rgba(0,0,0,0.18); border:1px solid rgba(0,0,0,0.06);
+  }
+  .t-shot .stage.empty {
+    background:repeating-linear-gradient(45deg, #1a1a1a 0 24px, #222 24px 48px);
+    color:#666; font-family:var(--mono); font-size:18px; letter-spacing:0.1em; text-align:center;
+  }
+  .t-shot .stage.empty code {
+    color:var(--yellow); background:rgba(255,214,0,0.08);
+    padding:2px 8px; border-radius:3px; margin:0 .3em; font-size:18px;
+  }
+  .t-shot .foot-area {
+    padding:36px 80px 36px; display:flex; flex-direction:column; gap:24px;
+    background:var(--bg);
+  }
+  .t-shot .foot-area .cap {
+    font-family:var(--sans); font-size:22px; line-height:1.45;
+    color:rgba(250,250,250,0.82); max-width:920px; margin:0;
+  }
+  .t-shot .foot-area .meta {
+    display:flex; justify-content:space-between; align-items:flex-end;
+    border-top:1px solid rgba(255,255,255,0.1); padding-top:20px; margin-top:auto;
+  }
+  .t-shot .foot-area .meta .left .logo-svg.wm { height:36px; width:auto; display:block; margin-bottom:6px; }
+  .t-shot .foot-area .meta .left .url { font-family:var(--mono); font-size:14px; color:#999; letter-spacing:0.05em; }
+  .t-shot .foot-area .meta .dots { display:flex; gap:8px; align-items:center; }
+  .t-shot .foot-area .meta .dots .d { width:36px; height:4px; background:rgba(250,250,250,0.3); border-radius:2px; }
+  .t-shot .foot-area .meta .dots .d.on { background:var(--yellow); }
   /* T2 — Stats Grid */
   .t2 { padding:100px; display:flex; flex-direction:column; height:calc(100% - 80px); }
   .t2-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px; background:rgba(0,0,0,0.12); margin-top:48px; flex:1; border-radius:2px; overflow:hidden; }
@@ -3480,8 +3528,10 @@ Cada slide separado por <code>---</code><br><br>
 <code>eyebrow:</code> Etiqueta &nbsp; <code>titular:</code> Headline &nbsp; <code>subtitulo:</code> Texto<br><br>
 <strong>Slides de contenido:</strong><br>
 <code>eyebrow:</code> PRINCIPIO 01 &nbsp; <code>titular:</code> Headline &nbsp; <code>cuerpo:</code> P\u00e1rrafo<br><br>
-<strong>Slide imagen:</strong><br>
+<strong>Slide imagen (foto hero, full-bleed):</strong><br>
 <code>plantilla: imagen</code> &nbsp; <code>imagen:</code> img1 (tras subirla arriba) &nbsp; <code>eyebrow:</code> opcional &nbsp; <code>titular:</code> caption<br><br>
+<strong>Slide screenshot (captura SERP/dashboard, con margen):</strong><br>
+<code>plantilla: screenshot</code> &nbsp; <code>imagen:</code> img1 &nbsp; <code>eyebrow:</code> · <code>titular:</code> · <code>caption:</code> opcional explica qué se ve. Aliases: <code>captura</code>, <code>serp</code>.<br><br>
 <strong>Slide CTA (cierre):</strong><br>
 <code>plantilla: cta</code><br>
 <code>titular:</code> Mensaje / pregunta (arriba, serif)<br>
@@ -4301,6 +4351,44 @@ cuerpo: Cambia el logo y nadie nota la diferencia. Eso es un problema de posicio
 slide: 4
 plantilla: cta
 titular: ¿Tu marca está construida para crecer o para [sobrevivir?]
+url: magnify.ing` },
+    { id: 'metodo-screenshots', name: 'Método con capturas',
+      desc: 'Demostrar un método mostrando SERPs/dashboards/threads. Mezcla cover + screenshot + interior + cta.',
+      example: `slide: 1
+plantilla: cover
+eyebrow: EXPERIMENTO
+titular: Mapeé el journey de [dos marcas] en AI Mode
+subtitulo: Lo que ven los compradores cuando preguntan por su sector
+---
+slide: 2
+plantilla: interior
+eyebrow: EL MÉTODO
+titular: Pregunta a AI Mode por la categoría
+cuerpo: Steve Toth publicó un truco. Le preguntas a AI Mode "mejores X en Y" y mapeas qué marcas aparecen en cada rama.
+---
+slide: 3
+plantilla: screenshot
+imagen: img1
+eyebrow: CASO 1 · FACTORIAL
+titular: Lidero awareness. Pierdo el [intent].
+caption: AI Mode la cita cuando la pregunta es genérica. Cuando concretas (automatizar nóminas), aparece PayFit.
+---
+slide: 4
+plantilla: screenshot
+imagen: img2
+eyebrow: CASO 2 · HOLDED
+titular: Lidero categoría. Quedo fuera del [filtro regulatorio].
+caption: En "software de facturación", lidera. Pero al añadir "compatible con Veri*factu", desaparece del top.
+---
+slide: 5
+plantilla: interior
+eyebrow: EL INSIGHT
+titular: El gap no es no aparecer. Es aparecer en el [bucket equivocado].
+cuerpo: AI Mode construye categorías dinámicas según concretas la búsqueda. Tu marca puede liderar awareness y desaparecer en intent.
+---
+slide: 6
+plantilla: cta
+titular: ¿En qué bucket te coloca AI Mode hoy?
 url: magnify.ing` },
     { id: 'caso-estudio-carousel', name: 'Caso de estudio',
       desc: 'Narrativa de resultado cliente en formato carousel.',
@@ -5646,6 +5734,42 @@ function renderCarouselImage(d, slideNum, totalSlides) {
     </div>
     <div class="dots">${dots}</div>
   </div>${ftrCDk()}</div>`;
+}
+
+// SCREENSHOT plantilla: para enseñar capturas que tienen contenido legible (SERPs,
+// dashboards, threads). NO full-bleed. La captura va en un "stage" hueso con margen,
+// mientras que el editorial Magnify (eyebrow + titular + caption + footer) vive en
+// bandas oscuras arriba y abajo. Usa cuando el método requiere mostrar lo que viste,
+// no solo describirlo.
+function renderCarouselScreenshot(d, slideNum, totalSlides) {
+  const imgRef = (d.imagen || d.image || d.captura || '').trim().toLowerCase();
+  const dataUrl = uploadedImages[imgRef];
+  const stageHtml = dataUrl
+    ? `<div class="stage"><img src="${dataUrl}" alt="${safeText(imgRef)}"></div>`
+    : `<div class="stage empty">Sin imagen — sube una y referénciala como <code>${imgRef || 'img1'}</code></div>`;
+  const dots = Array.from({ length: totalSlides }, (_, i) =>
+    `<div class="d${i + 1 === slideNum ? ' on' : ''}"></div>`
+  ).join('');
+  const cap = d.caption || d.cuerpo || d.pie || '';
+  const eyebrowHtml = d.eyebrow ? `<div class="eb">${safeText(d.eyebrow)}</div>` : '';
+  const url = brandUrlHtml();
+  return `<div class="frame cr dk"><div class="t-shot">
+    <div class="head">
+      ${eyebrowHtml}
+      <h2>${applySafeHighlights(d.titular || '')}</h2>
+    </div>
+    ${stageHtml}
+    <div class="foot-area">
+      ${cap ? `<p class="cap">${applySafeHighlights(cap).replace(/\n/g, '<br>')}</p>` : ''}
+      <div class="meta">
+        <div class="left">
+          ${wordmark('#FAFAFA')}
+          <span class="url">${url}</span>
+        </div>
+        <div class="dots">${dots}</div>
+      </div>
+    </div>
+  </div></div>`;
 }
 
 function renderCarouselCTA(d) {
@@ -10104,9 +10228,12 @@ function validateRenderedCarousel(actualDiv, data, n, total) {
   }
 
   const tpl = (data.plantilla || '').toLowerCase().trim();
-  if ((tpl === 'imagen' || tpl === 'image' || tpl === 'foto') && !uploadedImages[(data.imagen || data.image || '').trim().toLowerCase()]) {
-    const ref = (data.imagen || data.image || '').trim().toLowerCase();
-    warnings.push(`Slide <code>${n}</code>: falta <code>${ref}</code> — <button type="button" class="warn-action" onclick="focusUploadZone()">subir imagen ↑</button>`);
+  const tplsConImagen = ['imagen', 'image', 'foto', 'screenshot', 'captura', 'serp'];
+  if (tplsConImagen.includes(tpl)) {
+    const ref = (data.imagen || data.image || data.captura || '').trim().toLowerCase();
+    if (ref && !uploadedImages[ref]) {
+      warnings.push(`Slide <code>${n}</code>: falta <code>${ref}</code> — <button type="button" class="warn-action" onclick="focusUploadZone()">subir imagen ↑</button>`);
+    }
   }
 
   if (total > 10) {
@@ -10342,6 +10469,8 @@ function generateCarousel(raw, preview, renderC) {
       html = renderCarouselCover(data);
     } else if (plantilla === 'cta' || (data.cta && !data.titular && !data.cuerpo)) {
       html = renderCarouselCTA(data);
+    } else if (plantilla === 'screenshot' || plantilla === 'captura' || plantilla === 'serp') {
+      html = renderCarouselScreenshot(data, idx + 1, totalContent);
     } else if (plantilla === 'imagen' || plantilla === 'image' || plantilla === 'foto') {
       html = renderCarouselImage(data, idx + 1, totalContent);
     } else if (plantilla === 'stat' || data.stat || data.numero) {
