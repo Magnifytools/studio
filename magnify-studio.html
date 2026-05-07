@@ -83,11 +83,10 @@
   }
 
   /* ── SCREEN STATE MACHINE ──
-     La shell tiene tres pantallas (launcher, wizard, editor) controladas por clase en body.
+     La shell tiene dos pantallas (launcher, editor) controladas por clase en body.
      Solo una está visible a la vez. Default: launcher al cargar la app. */
   .screen { display:none; }
   body.screen-launcher .screen-launcher,
-  body.screen-wizard .screen-wizard,
   body.screen-editor .screen-editor { display:flex; }
 
   /* ── LAYOUT (editor) ── */
@@ -206,109 +205,6 @@
   .launcher-shortcuts .kbd {
     font-family:var(--mono); font-size:10px; color:var(--body-dk); letter-spacing:0.06em;
   }
-
-  /* ── WIZARD ── */
-  .screen-wizard {
-    flex-direction:column; height:100vh; padding:48px 64px 32px;
-    background:var(--bg); color:var(--h2); overflow-y:auto;
-  }
-  .wizard-head {
-    display:flex; justify-content:space-between; align-items:center;
-    padding-bottom:24px; border-bottom:1px solid var(--border-dk);
-  }
-  .wizard-progress {
-    font-family:var(--mono); font-size:11px; letter-spacing:0.18em;
-    text-transform:uppercase; color:var(--body-dk);
-  }
-  .wizard-progress strong { color:var(--h2); font-weight:500; }
-  .wizard-back, .wizard-cancel {
-    background:none; border:none; cursor:pointer;
-    font-family:var(--sans); font-size:12px; color:var(--body-dk);
-    padding:8px 0; transition:color 0.15s;
-  }
-  .wizard-back:hover, .wizard-cancel:hover { color:var(--h2); }
-  .wizard-back:disabled { opacity:0.3; cursor:not-allowed; }
-
-  .wizard-body { flex:1; padding:48px 0 24px; min-height:0; }
-  .wizard-group { margin-bottom:48px; }
-  .wizard-group-title {
-    font-family:var(--mono); font-size:10px; letter-spacing:0.22em; text-transform:uppercase;
-    color:var(--body-dk); margin-bottom:18px; font-weight:500;
-  }
-  .wizard-grid {
-    display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
-    gap:14px;
-  }
-  .wizard-card {
-    display:flex; flex-direction:column; gap:8px;
-    padding:24px 22px; border:1px solid var(--border-dk); background:transparent;
-    cursor:pointer; text-align:left; color:var(--h2);
-    font-family:var(--sans); transition:border-color 0.15s, background 0.15s;
-    position:relative; min-height:108px;
-  }
-  .wizard-card:hover { border-color:#444; background:rgba(255,255,255,0.02); }
-  .wizard-card.selected { border-color:var(--yellow); background:rgba(255,214,0,0.04); }
-  .wizard-card .card-num {
-    position:absolute; top:12px; right:14px;
-    font-family:var(--mono); font-size:10px; color:var(--body-dk); letter-spacing:0.06em;
-  }
-  .wizard-card .card-name {
-    font-family:var(--serif); font-size:22px; line-height:1.15; color:var(--h1);
-    font-style:italic; letter-spacing:-0.005em;
-  }
-  .wizard-card.selected .card-name { color:var(--yellow); }
-  .wizard-card .card-desc {
-    font-family:var(--sans); font-size:12px; color:var(--body-dk); line-height:1.4;
-  }
-  .wizard-card .card-export {
-    font-family:var(--mono); font-size:9px; letter-spacing:0.18em; text-transform:uppercase;
-    color:var(--body-dk); margin-top:auto;
-  }
-  /* Template cards (html-deck): thumbnail grande + nombre + tagline corto */
-  .wizard-grid.template-grid { grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:18px; }
-  .wizard-card.template-card { padding:0; min-height:auto; overflow:hidden; gap:0; }
-  .wizard-card.template-card .template-thumb {
-    width:100%; aspect-ratio:16/10; object-fit:cover; display:block;
-    background:#1a1a1a;
-  }
-  .wizard-card.template-card .template-name {
-    font-size:18px; padding:14px 18px 4px;
-  }
-  .wizard-card.template-card .card-desc { padding:0 18px 8px; font-size:11px; }
-  .wizard-card.template-card .card-export { padding:0 18px 14px; font-size:9px; }
-
-  /* Brand cards: misma base pero con muestra de paleta */
-  .wizard-card.brand-card { padding:20px; }
-  .wizard-card.brand-card .palette {
-    display:flex; gap:0; height:24px; margin-top:8px;
-    border:1px solid var(--border-dk);
-  }
-  .wizard-card.brand-card .palette span { flex:1; }
-  .wizard-card.brand-card[data-brand="magnify"] .palette span:nth-child(1) { background:#0A0A0A; }
-  .wizard-card.brand-card[data-brand="magnify"] .palette span:nth-child(2) { background:#FAFAFA; }
-  .wizard-card.brand-card[data-brand="magnify"] .palette span:nth-child(3) { background:#FFD600; }
-  .wizard-card.brand-card[data-brand="outpost"] .palette span:nth-child(1) { background:#0A0A0A; }
-  .wizard-card.brand-card[data-brand="outpost"] .palette span:nth-child(2) { background:#F5F5F0; }
-  .wizard-card.brand-card[data-brand="outpost"] .palette span:nth-child(3) { background:#FFD600; }
-  .wizard-card.brand-card.placeholder {
-    border-style:dashed; opacity:0.4; cursor:not-allowed;
-  }
-
-  .wizard-foot {
-    display:flex; justify-content:flex-end; gap:12px;
-    padding-top:24px; border-top:1px solid var(--border-dk);
-  }
-  .btn-cont {
-    padding:14px 32px; background:var(--yellow); color:var(--bg);
-    border:none; border-radius:0; cursor:pointer;
-    font-family:var(--serif); font-size:18px; font-style:italic; letter-spacing:-0.005em;
-    transition:background 0.15s, opacity 0.15s;
-  }
-  .btn-cont:hover { background:#ffe640; }
-  .btn-cont:disabled {
-    background:#1a1a1a; color:#444; cursor:not-allowed;
-  }
-  .btn-cont .arrow { font-style:normal; font-family:var(--sans); margin-left:8px; }
 
   /* ── LAYOUT (editor original) ── */
   .layout { display:flex; height:100vh; }
@@ -479,20 +375,56 @@
   .color-btn.on { background:var(--yellow); color:var(--bg); border-color:var(--yellow); }
   .color-btn.on .swatch { border-color:rgba(10,10,10,0.3); }
 
-  /* Variant gallery: shown when a type has multiple sub-variants. User picks one, then edits. */
-  .variant-intro { font-size:13px; color:#C8C8C8; line-height:1.5; margin-bottom:14px; }
-  .variant-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
-  .variant-card {
-    background:#1a1a1a; border:1px solid #2a2a2a; border-radius:8px;
-    padding:12px 14px; cursor:pointer; transition:all 0.15s; text-align:left;
-    display:flex; flex-direction:column; gap:4px;
+  /* ── VARIANT GALLERY ──
+     Vista que sustituye al textarea cuando el tipo activo tiene sub-variantes. Editorial,
+     densa pero con respiración. Sin radius, sin background-glow, sin gradientes — solo
+     tipografía + 1px borders. Hover = borde amarillo. */
+  .variant-intro {
+    font-family:var(--mono); font-size:10px; letter-spacing:0.18em; text-transform:uppercase;
+    color:var(--body-dk); margin:0 0 18px; font-weight:500;
   }
-  .variant-card:hover { border-color:var(--yellow); background:#1f1f1f; }
-  .variant-card.on { border-color:var(--yellow); background:rgba(255,214,0,0.06); }
-  .variant-card .vn { font-family:var(--serif); font-size:17px; color:#F0F0F0; line-height:1.1; }
-  .variant-card .vd { font-size:11.5px; color:#999; line-height:1.4; }
-  /* Back link must sit on its own line (above the "Formato:" hint block), so display:flex + width:fit-content over the previous inline-flex which was flowing inline with the following text. */
-  .variant-back { font-size:12px; color:#888; cursor:pointer; margin-bottom:16px; display:flex; width:fit-content; align-items:center; gap:6px; padding:4px 2px; }
+  .variant-intro strong { color:var(--h2); font-weight:500; }
+  .variant-grid {
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+    gap:1px; background:var(--border-dk); margin:0 0 18px;
+    border:1px solid var(--border-dk);
+  }
+  .variant-card {
+    background:#0F0F0F; border:none; cursor:pointer; text-align:left;
+    padding:18px 20px; display:flex; flex-direction:column; gap:6px;
+    transition:background 0.12s, color 0.12s; color:var(--h2);
+    font-family:var(--sans); position:relative; min-height:88px;
+  }
+  .variant-card:hover { background:#161616; }
+  .variant-card.on { background:rgba(255,214,0,0.05); }
+  .variant-card .vn {
+    font-family:var(--serif); font-size:20px; line-height:1.1; color:var(--h1);
+    font-style:italic; letter-spacing:-0.005em;
+  }
+  .variant-card.on .vn { color:var(--yellow); }
+  .variant-card .vd {
+    font-family:var(--sans); font-size:12px; line-height:1.45; color:var(--body-dk);
+  }
+  .variant-card .vmoods {
+    font-family:var(--mono); font-size:9px; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--body-dk); margin-top:auto; padding-top:6px;
+  }
+  /* Variant card en versión "external" con thumbnail (html-deck templates). */
+  .variant-card.has-thumb { padding:0; min-height:auto; gap:0; overflow:hidden; }
+  .variant-card.has-thumb .vthumb {
+    display:block; width:100%; aspect-ratio:16/10; object-fit:cover; background:#1a1a1a;
+  }
+  .variant-card.has-thumb .vbody { padding:14px 18px 16px; display:flex; flex-direction:column; gap:5px; }
+  .variant-card.has-thumb .vn { font-size:17px; }
+  .variant-card.has-thumb .vd { font-size:11px; }
+  .variant-card.has-thumb .vmoods { padding-top:4px; }
+
+  .variant-back {
+    font-family:var(--mono); font-size:10px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--body-dk); cursor:pointer; margin:0 0 18px;
+    display:inline-flex; width:fit-content; align-items:center; gap:6px; padding:0;
+    background:none; border:none; transition:color 0.12s;
+  }
   .variant-back:hover { color:var(--yellow); }
 
   /* Buttons */
@@ -2624,7 +2556,7 @@
         Empezar<span class="arrow">→</span>
       </button>
       <ul class="launcher-shortcuts">
-        <li><button type="button" onclick="toast('Plantillas externas: próximamente')">desde plantilla externa<span class="kbd">pronto</span></button></li>
+        <li><button type="button" onclick="newHtmlDeck()">desde plantilla externa<span class="kbd">32</span></button></li>
         <li><button type="button" onclick="triggerImportZip()">importar .zip<span class="kbd">⌘O</span></button></li>
         <li><button type="button" onclick="newPiece(true)">abrir YAML pegado<span class="kbd">⌘V</span></button></li>
         <li><a href="STUDIO-BRIEF.md" download="STUDIO-BRIEF.md">ver brief técnico<span class="kbd">.md</span></a></li>
@@ -2633,22 +2565,6 @@
       <input type="file" id="launcher-import-input" accept=".zip" style="display:none" onchange="handleImportZip(event)">
     </aside>
   </main>
-</div>
-
-<!-- WIZARD — pantalla intermedia entre launcher y editor. Una decisión por paso.
-     Step 1: tipo de pieza · Step 2: marca. (Step de plantilla pendiente para S6.) -->
-<div class="screen screen-wizard">
-  <header class="wizard-head">
-    <button class="wizard-back" id="wizard-back" onclick="wizardBack()">← atrás</button>
-    <span class="wizard-progress" id="wizard-progress">1 de 2 · <strong>Elige tipo</strong></span>
-    <button class="wizard-cancel" onclick="wizardCancel()">cancelar</button>
-  </header>
-  <main class="wizard-body" id="wizard-body"></main>
-  <footer class="wizard-foot">
-    <button class="btn-cont" id="wizard-continue" onclick="wizardContinue()" disabled>
-      Continuar<span class="arrow">→</span>
-    </button>
-  </footer>
 </div>
 
 <!-- EDITOR — la shell que existía hasta hoy. Visible cuando body.screen-editor. -->
@@ -3068,37 +2984,23 @@ function wirePieceEditor() {
       newPiece();
       return;
     }
-    // Esc → en editor vuelve al launcher (con confirm si dirty); en wizard retrocede paso o cancela
+    // Esc → en editor vuelve al launcher (con confirm si dirty)
     if (e.key === 'Escape') {
       if (document.body.classList.contains('screen-editor')) {
         const dirty = document.getElementById('save-status').classList.contains('dirty');
         if (dirty && !confirm('Tienes cambios sin guardar. ¿Volver al inicio igualmente?')) return;
         showScreen('launcher');
-      } else if (document.body.classList.contains('screen-wizard')) {
-        if (wizardState.step > 1) wizardBack();
-        else wizardCancel();
       }
       return;
-    }
-    // En wizard: 1-9 selecciona la card N (1-indexed) del paso actual; Enter continúa.
-    if (document.body.classList.contains('screen-wizard')) {
-      if (/^[1-9]$/.test(e.key)) {
-        const cards = document.querySelectorAll('.wizard-card:not(.placeholder)');
-        const idx = parseInt(e.key, 10) - 1;
-        if (cards[idx]) { e.preventDefault(); cards[idx].click(); }
-      } else if (e.key === 'Enter') {
-        const cont = document.getElementById('wizard-continue');
-        if (cont && !cont.disabled) { e.preventDefault(); cont.click(); }
-      }
     }
   });
 }
 
 // ── SCREEN STATE ──
-// Conmuta entre launcher / wizard / editor. La lógica de wiring por pantalla vive en cada
+// Conmuta entre launcher / editor. La lógica de wiring por pantalla vive en cada
 // función específica (renderLauncher, etc.). showScreen NO toca contenido, solo la clase del body.
 function showScreen(name) {
-  document.body.classList.remove('screen-launcher', 'screen-wizard', 'screen-editor');
+  document.body.classList.remove('screen-launcher', 'screen-editor');
   document.body.classList.add('screen-' + name);
   if (name === 'launcher') renderLauncher();
 }
@@ -3193,28 +3095,34 @@ async function deletePiece(id) {
   renderLauncher();
 }
 
-// Nueva pieza: lanza el wizard. Si openClipboard=true, va directo al editor con
-// el contenido del clipboard pegado (atajo "abrir YAML pegado" del launcher).
+// Nueva pieza: limpia el editor y lo muestra. La galería de variantes existente
+// (renderVariantGallery dentro de selectType) se ocupa de la elección granular según el
+// tipo activo. Si openClipboard=true, intenta pegar contenido del clipboard al abrir
+// (atajo "abrir YAML pegado" del launcher).
 async function newPiece(openClipboard) {
+  currentPieceId = null;
+  uploadedImages = {};
+  selectedTemplate = null;
+  if (currentType === 'html-deck') exitHtmlDeckMode();
+  const ta = document.getElementById('content');
+  if (ta) ta.value = '';
   if (openClipboard) {
-    currentPieceId = null;
-    uploadedImages = {};
-    const ta = document.getElementById('content');
-    if (ta) {
-      ta.value = '';
-      try {
-        const txt = await navigator.clipboard.readText();
-        if (txt && txt.trim().length > 0) ta.value = txt;
-      } catch (_) { /* permission denied o no clipboard API */ }
-    }
-    if (typeof renderImageThumbs === 'function') renderImageThumbs();
-    setSaveStatus('', '');
-    _lastSavedAt = null;
-    showScreen('editor');
-    if (ta) ta.focus();
-    return;
+    try {
+      const txt = await navigator.clipboard.readText();
+      if (txt && ta && txt.trim().length > 0) ta.value = txt;
+    } catch (_) { /* permission denied o no clipboard API */ }
   }
-  wizardStart();
+  if (typeof renderImageThumbs === 'function') renderImageThumbs();
+  setSaveStatus('', '');
+  _lastSavedAt = null;
+  showScreen('editor');
+  // Re-aplicar el tipo activo para que la galería de variantes (si la hay) se muestre.
+  selectType(currentType || 'linkedin-post');
+  if (ta && !openClipboard) {
+    // Si el tipo NO tiene variantes, foco al textarea. Si tiene variantes, foco al primer card.
+    const variants = VARIANTS[currentType];
+    if (!variants || !variants.length) ta.focus();
+  }
 }
 
 // Cycla la marca activa (Magnify ↔ Outpost) desde el launcher pill.
@@ -3247,48 +3155,11 @@ async function handleImportZip(ev) {
   }
 }
 
-// ── WIZARD ──
-// State machine de 2 pasos por ahora (tipo · marca). Plantilla irá como paso intermedio
-// cuando S6 introduzca tipos con sub-variantes seleccionables (html-deck con 32 templates).
-//
-// Flujo: newPiece() → wizard step 1 → step 2 → applyWizardSelection() → showScreen('editor').
-
-const WIZARD_TYPE_GROUPS = [
-  { label: 'Social', types: ['linkedin-post', 'linkedin-carousel', 'thumbnail', 'banner'] },
-  { label: 'Editorial', types: ['case-study', 'case-study-longform', 'documento', 'report-cover'] },
-  { label: 'Comercial', types: ['propuesta'] },
-  { label: 'Deck', types: ['presentacion', 'html-deck'] },
-  { label: 'Otros', types: ['email-sig'] },
-];
-
-const WIZARD_TYPE_DESC = {
-  'linkedin-post': 'Tarjeta cuadrada para feed.',
-  'linkedin-carousel': 'Slides verticales conectadas (1080×1350).',
-  'banner': 'OG image, perfil, logo varios tamaños.',
-  'thumbnail': 'YouTube 1280×720 + Podcast 1500×1500.',
-  'case-study': 'Doc A4 multi-página single-layout.',
-  'case-study-longform': 'Editorial A4 16-20pp con divisores.',
-  'propuesta': 'Propuesta comercial A4 multi-página.',
-  'report-cover': 'Cover A4 standalone.',
-  'presentacion': 'Slides 16:9. 3 sub-variantes nativas.',
-  'html-deck': '32 plantillas HTML curadas. Elegir y customizar.',
-  'documento': 'Markdown formateado a A4 editorial.',
-  'email-sig': 'Firma HTML para email.',
-};
-
-const WIZARD_TYPE_EXPORT = {
-  'linkedin-post': 'PNG', 'linkedin-carousel': 'PPTX/PDF/ZIP', 'banner': 'PNG',
-  'thumbnail': 'PNG', 'case-study': 'PDF', 'case-study-longform': 'PDF',
-  'propuesta': 'PDF', 'report-cover': 'PNG', 'presentacion': 'PPTX',
-  'html-deck': 'HTML', 'documento': 'PDF', 'email-sig': 'HTML',
-};
-
-// Tipos que tienen step intermedio "plantilla" en el wizard. Cuando el usuario los elige
-// en step 1, el wizard inserta un step 2 antes de la marca.
-const TYPES_WITH_TEMPLATE_STEP = new Set(['html-deck']);
-
-let wizardState = { step: 1, type: null, template: null, brand: null, totalSteps: 2 };
-
+// ── WIZARD (eliminado 2026-05-07) ──
+// La pantalla wizard se quitó por feedback de UX: duplicaba decisiones (el editor ya
+// tenía galería de variantes per tipo) y el visual no estaba a la altura. Flujo nuevo:
+// "Empezar" del launcher → editor directo → galería de tipos/variantes en el editor
+// (renderTypePicker / variant gallery existente) hasta que el usuario elige.
 // Cache del index.json de external-templates. Lazy-load cuando html-deck entra en juego.
 let _externalTemplatesIndex = null;
 async function loadExternalTemplatesIndex() {
@@ -3302,176 +3173,6 @@ async function loadExternalTemplatesIndex() {
     _externalTemplatesIndex = { templates: [] };
   }
   return _externalTemplatesIndex;
-}
-
-function wizardStart() {
-  wizardState = { step: 1, type: null, template: null, brand: currentBrand, totalSteps: 2 };
-  showScreen('wizard');
-  renderWizardStep();
-}
-
-// Recalcula totalSteps y resuelve el label del paso actual. Pasos posibles:
-// 1=tipo, 2(condicional)=plantilla si type∈TYPES_WITH_TEMPLATE_STEP, último=marca.
-function wizardComputeSteps() {
-  const hasTemplate = wizardState.type && TYPES_WITH_TEMPLATE_STEP.has(wizardState.type);
-  wizardState.totalSteps = hasTemplate ? 3 : 2;
-}
-function wizardCurrentStepName() {
-  if (wizardState.step === 1) return 'type';
-  if (wizardState.totalSteps === 3 && wizardState.step === 2) return 'template';
-  return 'brand';
-}
-
-async function renderWizardStep() {
-  wizardComputeSteps();
-  const body = document.getElementById('wizard-body');
-  const back = document.getElementById('wizard-back');
-  const cont = document.getElementById('wizard-continue');
-  const prog = document.getElementById('wizard-progress');
-  if (!body || !cont || !prog) return;
-  back.disabled = wizardState.step === 1;
-
-  const stepName = wizardCurrentStepName();
-  const labels = { type: 'Elige tipo', template: 'Elige plantilla', brand: 'Elige marca' };
-  prog.innerHTML = `${wizardState.step} de ${wizardState.totalSteps} · <strong>${labels[stepName]}</strong>`;
-  const isLast = wizardState.step === wizardState.totalSteps;
-  cont.innerHTML = (isLast ? 'Empezar' : 'Continuar') + '<span class="arrow">→</span>';
-
-  if (stepName === 'type') {
-    body.innerHTML = WIZARD_TYPE_GROUPS.map(grp => `
-      <div class="wizard-group">
-        <div class="wizard-group-title">${grp.label}</div>
-        <div class="wizard-grid">
-          ${grp.types.map(t => {
-            const meta = TYPE_META[t] || {};
-            const selected = wizardState.type === t ? 'selected' : '';
-            return `
-              <button class="wizard-card ${selected}" data-type="${escapeHtml(t)}" onclick="wizardSelectType('${escapeHtml(t)}')">
-                <span class="card-name">${escapeHtml(meta.title || t)}</span>
-                <span class="card-desc">${escapeHtml(WIZARD_TYPE_DESC[t] || '')}</span>
-                <span class="card-export">${escapeHtml(WIZARD_TYPE_EXPORT[t] || '')}</span>
-              </button>`;
-          }).join('')}
-        </div>
-      </div>
-    `).join('');
-    cont.disabled = !wizardState.type;
-    return;
-  }
-
-  if (stepName === 'template') {
-    body.innerHTML = '<div class="wizard-group"><div class="wizard-group-title">Cargando plantillas…</div></div>';
-    const idx = await loadExternalTemplatesIndex();
-    const tpls = idx.templates || [];
-    body.innerHTML = `
-      <div class="wizard-group">
-        <div class="wizard-group-title">${tpls.length} plantillas curadas · zarazhangrui/beautiful-html-templates</div>
-        <div class="wizard-grid template-grid">
-          ${tpls.map(t => {
-            const selected = wizardState.template === t.slug ? 'selected' : '';
-            const moods = (t.mood || []).slice(0, 3).join(' · ');
-            return `
-              <button class="wizard-card template-card ${selected}" data-template="${escapeHtml(t.slug)}" onclick="wizardSelectTemplate('${escapeHtml(t.slug)}')">
-                <img class="template-thumb" loading="lazy" src="external-templates/screenshots/${escapeHtml(t.slug)}.png" alt="${escapeHtml(t.name)}">
-                <span class="card-name template-name">${escapeHtml(t.name)}</span>
-                <span class="card-desc">${escapeHtml(t.tagline || '')}</span>
-                <span class="card-export">${escapeHtml(moods)}</span>
-              </button>`;
-          }).join('')}
-        </div>
-      </div>
-    `;
-    cont.disabled = !wizardState.template;
-    return;
-  }
-
-  if (stepName === 'brand') {
-    body.innerHTML = `
-      <div class="wizard-group">
-        <div class="wizard-group-title">Marca</div>
-        <div class="wizard-grid">
-          ${Object.keys(BRANDS).map(b => {
-            const selected = wizardState.brand === b ? 'selected' : '';
-            const name = b === 'outpost' ? 'Outpost' : 'Magnify';
-            const desc = b === 'outpost'
-              ? 'Canal editorial. Inter + DM Serif. Surface clara.'
-              : 'Sistema base. NM + PP Editorial. Surface oscura.';
-            return `
-              <button class="wizard-card brand-card ${selected}" data-brand="${escapeHtml(b)}" onclick="wizardSelectBrand('${escapeHtml(b)}')">
-                <span class="card-name">${escapeHtml(name)}</span>
-                <span class="card-desc">${escapeHtml(desc)}</span>
-                <div class="palette"><span></span><span></span><span></span></div>
-              </button>`;
-          }).join('')}
-          <button class="wizard-card brand-card placeholder" disabled title="Próximamente">
-            <span class="card-name" style="color:var(--body-dk)">+ Nueva marca</span>
-            <span class="card-desc">Crea una marca propia con tu paleta y tipografías.</span>
-          </button>
-        </div>
-      </div>
-    `;
-    cont.disabled = !wizardState.brand;
-  }
-}
-
-function wizardSelectType(t) {
-  // Si cambia el tipo, resetea plantilla (el siguiente paso re-pregunta)
-  if (wizardState.type !== t) wizardState.template = null;
-  wizardState.type = t;
-  renderWizardStep();
-}
-
-function wizardSelectTemplate(slug) {
-  wizardState.template = slug;
-  renderWizardStep();
-}
-
-function wizardSelectBrand(b) {
-  wizardState.brand = b;
-  renderWizardStep();
-}
-
-function wizardContinue() {
-  if (wizardState.step < wizardState.totalSteps) {
-    wizardState.step++;
-    renderWizardStep();
-    return;
-  }
-  applyWizardSelection();
-}
-
-function wizardBack() {
-  if (wizardState.step > 1) {
-    wizardState.step--;
-    renderWizardStep();
-  }
-}
-
-function wizardCancel() {
-  showScreen('launcher');
-}
-
-function applyWizardSelection() {
-  const { type, template, brand } = wizardState;
-  if (brand && BRANDS[brand] && brand !== currentBrand) setActiveBrand(brand);
-  // Salimos de html-deck si veníamos en él y el nuevo tipo es otro
-  if (currentType === 'html-deck' && type !== 'html-deck') exitHtmlDeckMode();
-  if (type && type !== currentType) selectType(type);
-  // Limpia editor y deja al usuario escribir
-  currentPieceId = null;
-  uploadedImages = {};
-  selectedTemplate = template || null;
-  const ta = document.getElementById('content');
-  if (ta) ta.value = '';
-  if (typeof renderImageThumbs === 'function') renderImageThumbs();
-  setSaveStatus('', '');
-  _lastSavedAt = null;
-  showScreen('editor');
-  if (type === 'html-deck' && template) {
-    enterHtmlDeckMode(template, {});
-  } else if (ta) {
-    ta.focus();
-  }
 }
 
 // Slug de la plantilla externa activa, si la pieza es html-deck. Persiste en buildPieceSnapshot.
@@ -4323,9 +4024,9 @@ Curated media map for the two verticals in scope, reflecting criteria applied in
     title: 'Deck HTML (plantilla externa)',
     desc: '32 plantillas HTML curadas (zarazhangrui/beautiful-html-templates). Elige una y personaliza colores',
     exportLabel: 'Descargar HTML',
-    hint: `<strong>Tipo experimental.</strong> Estos decks no se generan desde YAML — son plantillas HTML completas que eliges en el wizard. El editor te deja ajustar paleta y descargar el HTML para editarlo aparte o pasárselo a Claude para que adapte el contenido.<br><br>
+    hint: `<strong>Tipo experimental.</strong> Estos decks no se generan desde YAML — son plantillas HTML completas que eliges en la galería. El editor te deja ajustar paleta y descargar el HTML para editarlo aparte o pasárselo a Claude para que adapte el contenido.<br><br>
 <strong>Fuente:</strong> <a href="https://github.com/zarazhangrui/beautiful-html-templates" target="_blank" rel="noopener">zarazhangrui/beautiful-html-templates</a> — 32 sistemas visuales curados, vendoreados localmente en <code>external-templates/</code>.<br><br>
-<strong>Workflow:</strong> wizard → elige plantilla por mood → editor con iframe + color picker → descarga HTML.`,
+<strong>Workflow:</strong> launcher → "desde plantilla externa" → galería 32 plantillas → editor con iframe + color picker → descarga HTML.`,
     example: ''
   }
 };
@@ -4901,6 +4602,46 @@ contacto: hola@magnify.ing
   ]
 };
 
+// html-deck: las "variantes" son las 32 plantillas externas de
+// zarazhangrui/beautiful-html-templates. Se hidratan lazy desde external-templates/index.json
+// la primera vez que selectType('html-deck') se invoca; antes de eso, VARIANTS['html-deck']
+// está undefined y la galería muestra un placeholder de carga.
+async function ensureHtmlDeckVariants() {
+  if (VARIANTS['html-deck']) return;
+  const idx = await loadExternalTemplatesIndex();
+  VARIANTS['html-deck'] = (idx.templates || []).map(t => ({
+    id: t.slug,
+    name: t.name,
+    desc: t.tagline || '',
+    moods: (t.mood || []).slice(0, 3).join(' · '),
+    thumb: `external-templates/screenshots/${t.slug}.png`,
+    external: true,
+  }));
+}
+
+// Atajo del launcher "desde plantilla externa": entra al editor en html-deck mode con la
+// galería visible. El tipo `html-deck` no aparece en la sidebar (la sidebar sigue
+// limpia para los tipos nativos); este shortcut es el único punto de entrada.
+async function newHtmlDeck() {
+  currentPieceId = null;
+  uploadedImages = {};
+  selectedTemplate = null;
+  const ta = document.getElementById('content');
+  if (ta) ta.value = '';
+  if (typeof renderImageThumbs === 'function') renderImageThumbs();
+  setSaveStatus('', '');
+  _lastSavedAt = null;
+  await ensureHtmlDeckVariants();
+  showScreen('editor');
+  selectType('html-deck');
+}
+
+// Vuelve de un template seleccionado (iframe + color picker) a la galería de 32 templates.
+function backToHtmlDeckGallery() {
+  exitHtmlDeckMode();
+  selectType('html-deck');
+}
+
 // ── COLOR SELECTOR ──
 // Renders a segmented control when the active variant declares `colors`. Clicking a button updates state
 // and re-runs generate() if a preview already exists so the user sees the change instantly.
@@ -5126,7 +4867,7 @@ function selectType(type) {
   if (currentType === 'html-deck' && type !== 'html-deck') exitHtmlDeckMode();
   currentType = type;
   document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('on'));
-  // html-deck no tiene botón en la sidebar (entra solo vía wizard) — guardamos el ?.
+  // html-deck no tiene botón en la sidebar (entra solo vía launcher shortcut) — guardamos.
   const sidebarBtn = document.querySelector(`[data-type="${type}"]`);
   if (sidebarBtn) sidebarBtn.classList.add('on');
 
@@ -5169,11 +4910,29 @@ function selectType(type) {
 }
 
 function renderVariantGallery(type, variants) {
-  const cards = variants.map(v => `<button class="variant-card" onclick="selectVariant('${type}', '${v.id}')">
-    <span class="vn">${v.name}</span>
-    <span class="vd">${v.desc}</span>
-  </button>`).join('');
-  return `<p class="variant-intro"><strong>Elige una plantilla:</strong></p>
+  const introText = type === 'html-deck'
+    ? `<strong>${variants.length}</strong> · plantillas curadas · <strong>elige una</strong>`
+    : `${variants.length} <strong>plantillas</strong> · elige una para empezar`;
+  const cards = variants.map(v => {
+    if (v.external && v.thumb) {
+      const moods = v.moods ? `<span class="vmoods">${escapeHtml(v.moods)}</span>` : '';
+      return `<button class="variant-card has-thumb" onclick="selectVariant('${type}', '${escapeHtml(v.id)}')" title="${escapeHtml(v.name)}">
+        <img class="vthumb" loading="lazy" src="${escapeHtml(v.thumb)}" alt="${escapeHtml(v.name)}">
+        <span class="vbody">
+          <span class="vn">${escapeHtml(v.name)}</span>
+          <span class="vd">${escapeHtml(v.desc)}</span>
+          ${moods}
+        </span>
+      </button>`;
+    }
+    const moods = v.moods ? `<span class="vmoods">${escapeHtml(v.moods)}</span>` : '';
+    return `<button class="variant-card" onclick="selectVariant('${type}', '${escapeHtml(v.id)}')">
+      <span class="vn">${escapeHtml(v.name)}</span>
+      <span class="vd">${escapeHtml(v.desc)}</span>
+      ${moods}
+    </button>`;
+  }).join('');
+  return `<p class="variant-intro">${introText}</p>
     <div class="variant-grid">${cards}</div>`;
 }
 
@@ -5182,12 +4941,19 @@ function selectVariant(type, variantId) {
   const v = variants.find(x => x.id === variantId);
   if (!v) return;
   const meta = TYPE_META[type];
-  // Swap UI from gallery to editor
+  // html-deck: las "variantes" son las 32 plantillas externas. Entrar en html-deck mode
+  // en lugar del flujo YAML. El gallery se reemplaza por iframe + color picker.
+  if (type === 'html-deck' && v.external) {
+    enterHtmlDeckMode(v.id, {});
+    document.getElementById('hint').innerHTML = `<button class="variant-back" type="button" onclick="backToHtmlDeckGallery()">\u2190 ver otras plantillas</button>`;
+    return;
+  }
+  // Swap UI from gallery to editor (flujo nativo)
   const contentEl = document.getElementById('content');
   contentEl.parentElement.style.display = '';
   contentEl.value = v.example;
   // Hint: show a "back to gallery" link + the type-level format hint
-  document.getElementById('hint').innerHTML = `<div class="variant-back" onclick="selectType('${type}')">\u2190 Ver otras plantillas</div>${meta.hint}`;
+  document.getElementById('hint').innerHTML = `<button class="variant-back" type="button" onclick="selectType('${type}')">\u2190 ver otras plantillas</button>${meta.hint}`;
   // Color bar: show only if this variant declares `colors`. Reset currentColor so each variant starts on its default.
   currentColor = null;
   renderColorBar(v.colors || null);
