@@ -5221,7 +5221,7 @@ function renderCarouselText(d, slideNum, totalSlides) {
     </div>
     <div class="t9-content">
       <h3 class="t9-title">${applySafeHighlights(d.titular || '')}</h3>
-      <p class="t9-body">${safeText(d.cuerpo || '').replace(/\n/g, '<br>')}</p>
+      <p class="t9-body">${applySafeHighlights(d.cuerpo || '').replace(/\n/g, '<br>')}</p>
     </div>
     <div class="t9-dots">${dots}</div>
   </div>${ftrCLt()}</div>`;
@@ -5248,7 +5248,7 @@ function renderCarouselSplit(d, slideNum, totalSlides) {
     </div>
     <div class="t10-bot">
       <h3>${applySafeHighlights(d.titular || d.pregunta || '')}</h3>
-      <p>${safeText(d.cuerpo || '')}</p>
+      <p>${applySafeHighlights(d.cuerpo || '')}</p>
     </div>
   </div><div class="ftr-c ftr-lt" style="background:#fff">${icon('#0A0A0A')}<span class="url url-lt">${brandUrlHtml()}</span></div></div>`;
 }
