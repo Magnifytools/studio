@@ -507,6 +507,58 @@
   .btn-secondary:hover { border-color:#444; color:#ddd; }
   .btn:disabled { opacity:0.4; cursor:not-allowed; }
 
+  /* HTML-DECK MODE: el editor central muestra color pickers en lugar de textarea, y la
+     preview area aloja un iframe a tamaño 16:9 con la plantilla renderizada. */
+  body.html-deck-mode .input-area > div:first-child,
+  body.html-deck-mode #uploads,
+  body.html-deck-mode #color-bar { display:none; }
+  .html-deck-pickers { padding:24px; display:flex; flex-direction:column; gap:14px; }
+  .html-deck-pickers .picker-head {
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding-bottom:12px; border-bottom:1px solid var(--border-dk);
+    font-family:var(--mono); font-size:10px; letter-spacing:0.18em;
+    text-transform:uppercase; color:var(--body-dk);
+  }
+  .html-deck-pickers .picker-head a {
+    color:var(--body-dk); text-decoration:none;
+    transition:color 0.15s;
+  }
+  .html-deck-pickers .picker-head a:hover { color:var(--yellow); }
+  .html-deck-pickers .picker-row {
+    display:grid; grid-template-columns:32px 1fr 88px;
+    gap:14px; align-items:center;
+  }
+  .html-deck-pickers .picker-row .swatch {
+    width:32px; height:32px; border:1px solid var(--border-dk); cursor:pointer;
+    position:relative; overflow:hidden;
+  }
+  .html-deck-pickers .picker-row .swatch input[type="color"] {
+    position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; border:none;
+  }
+  .html-deck-pickers .picker-row .label {
+    font-family:var(--sans); font-size:13px; color:var(--h2);
+  }
+  .html-deck-pickers .picker-row .label .key {
+    font-family:var(--mono); font-size:10px; letter-spacing:0.06em; color:var(--body-dk);
+    margin-left:6px;
+  }
+  .html-deck-pickers .picker-row .hex {
+    font-family:var(--mono); font-size:11px; color:var(--body-dk);
+    text-align:right;
+  }
+  .html-deck-pickers .picker-reset {
+    margin-top:12px; align-self:flex-start;
+    background:none; border:none; padding:0; cursor:pointer;
+    font-family:var(--sans); font-size:12px; color:var(--body-dk);
+    text-decoration:underline; transition:color 0.15s;
+  }
+  .html-deck-pickers .picker-reset:hover { color:var(--yellow); }
+
+  body.html-deck-mode .preview-area { padding:0; background:#1a1a1a; }
+  .html-deck-iframe {
+    width:100%; height:100%; border:none; background:#0f0f0f;
+  }
+
   /* Save status indicator (aria-live, sits inside .actions). Mono pequeño, color tenue.
      Estados: vacío | "guardando…" | "guardado · hace Xs" | "sin guardar" (amarillo) | "error" (amarillo). */
   .save-status {
@@ -3112,16 +3164,24 @@ async function openPiece(id) {
   currentPieceId = p.id;
   uploadedImages = { ...(p.assets || {}) };
   selectedTemplate = p.template || null;
+  // Salir de html-deck si veníamos en él y la nueva pieza no lo es
+  if (currentType === 'html-deck' && p.type !== 'html-deck') exitHtmlDeckMode();
   // Aplicar marca de la pieza si difiere de la activa
   if (p.brand && BRANDS[p.brand] && p.brand !== currentBrand) setActiveBrand(p.brand);
   // Aplicar tipo de la pieza
   if (p.type && p.type !== currentType) selectType(p.type);
-  // Cargar YAML
+  // Cargar YAML / paleta
   const ta = document.getElementById('content');
   if (ta) ta.value = p.yaml || '';
   // Refrescar uploads UI si hay helper
   if (typeof renderImageThumbs === 'function') renderImageThumbs();
   showScreen('editor');
+  // html-deck: rehidratar modo con paleta serializada en yaml
+  if (p.type === 'html-deck' && p.template) {
+    let palette = {};
+    try { palette = p.yaml ? JSON.parse(p.yaml) : {}; } catch (_) {}
+    await enterHtmlDeckMode(p.template, palette);
+  }
   setSaveStatus('saved', 'guardado · ' + formatRelTime(p.updatedAt));
   _lastSavedAt = new Date(p.updatedAt).getTime();
 }
@@ -3393,6 +3453,8 @@ function wizardCancel() {
 function applyWizardSelection() {
   const { type, template, brand } = wizardState;
   if (brand && BRANDS[brand] && brand !== currentBrand) setActiveBrand(brand);
+  // Salimos de html-deck si veníamos en él y el nuevo tipo es otro
+  if (currentType === 'html-deck' && type !== 'html-deck') exitHtmlDeckMode();
   if (type && type !== currentType) selectType(type);
   // Limpia editor y deja al usuario escribir
   currentPieceId = null;
@@ -3405,14 +3467,209 @@ function applyWizardSelection() {
   _lastSavedAt = null;
   showScreen('editor');
   if (type === 'html-deck' && template) {
-    // S6b: aquí cargará el iframe + color picker. Por ahora solo registramos selección.
-    toast(`Plantilla "${template}" seleccionada · render en el editor llega en S6b`);
+    enterHtmlDeckMode(template, {});
+  } else if (ta) {
+    ta.focus();
   }
-  if (ta) ta.focus();
 }
 
 // Slug de la plantilla externa activa, si la pieza es html-deck. Persiste en buildPieceSnapshot.
 let selectedTemplate = null;
+
+// ── HTML-DECK MODE ──
+// Cuando type === 'html-deck' y selectedTemplate está fijado, el editor cambia su comportamiento:
+//   - oculta textarea/uploads/color-bar
+//   - inyecta color pickers en .input-area derivados de template.json/palette
+//   - renderiza un iframe (preview-area) con el HTML del template, con los colores del usuario
+//     aplicados via string-replace (busca cada hex original y lo cambia por el nuevo)
+//   - botón "Exportar" descarga el HTML resultante en lugar del flujo PPTX/PDF normal
+// El YAML guardado para este tipo es JSON con los overrides de paleta (mejor que YAML real
+// para algo que es estructurado, no narrativo).
+
+let htmlDeckState = {
+  slug: null,           // template slug
+  paletteOriginal: {},  // { neon_pink: '#F0A6CA', ... }
+  paletteOverride: {},  // { neon_pink: '#FF00FF', ... } — solo claves modificadas
+  rawHtml: '',          // template.html original sin tocar
+  blobUrl: null,        // blob: URL del iframe renderizado (para revoke)
+};
+
+async function fetchTemplate(slug) {
+  const [htmlRes, jsonRes] = await Promise.all([
+    fetch(`external-templates/templates/${slug}/template.html`),
+    fetch(`external-templates/templates/${slug}/template.json`),
+  ]);
+  if (!htmlRes.ok || !jsonRes.ok) throw new Error('Template fetch failed');
+  return { html: await htmlRes.text(), meta: await jsonRes.json() };
+}
+
+// Reemplaza hex codes en el HTML usando un mapa { originalHex: newHex }. Hace replace
+// case-insensitive sobre el string completo (los hex en CSS pueden ir en cualquier case).
+// Solo reemplaza claves que difieren — si override === original no toca nada.
+function applyPaletteToHtml(html, original, override) {
+  let out = html;
+  for (const [key, origHex] of Object.entries(original)) {
+    if (key === 'description') continue; // campo de prosa, no color
+    if (typeof origHex !== 'string' || !/^#[0-9a-f]{3,8}$/i.test(origHex)) continue;
+    const newHex = override[key];
+    if (!newHex || newHex.toLowerCase() === origHex.toLowerCase()) continue;
+    // Escapamos el hex para regex y reemplazamos case-insensitive.
+    const re = new RegExp(escapeRegex(origHex), 'gi');
+    out = out.replace(re, newHex);
+  }
+  return out;
+}
+
+function escapeRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+async function enterHtmlDeckMode(slug, paletteOverride) {
+  document.body.classList.add('html-deck-mode');
+  selectedTemplate = slug;
+  try {
+    const { html, meta } = await fetchTemplate(slug);
+    htmlDeckState.slug = slug;
+    htmlDeckState.rawHtml = html;
+    htmlDeckState.paletteOriginal = (meta.palette || {});
+    htmlDeckState.paletteOverride = paletteOverride && typeof paletteOverride === 'object'
+      ? { ...paletteOverride } : {};
+    renderHtmlDeckPickers();
+    renderHtmlDeckIframe();
+    // Botón Exportar disponible inmediatamente (no requiere "Generar" previo)
+    const expBtn = document.getElementById('btn-export');
+    if (expBtn) expBtn.disabled = false;
+    // Cambia el label del botón export al modo html-deck
+    if (expBtn) expBtn.textContent = 'Descargar HTML';
+    // Sincroniza el textarea con un JSON serializable (para que savePieceNow guarde paleta)
+    const ta = document.getElementById('content');
+    if (ta) ta.value = JSON.stringify(htmlDeckState.paletteOverride, null, 2);
+    // Actualiza panel head
+    const title = document.getElementById('panel-title');
+    const desc = document.getElementById('panel-desc');
+    if (title) title.textContent = `Deck HTML · ${slug}`;
+    if (desc) desc.textContent = 'Personaliza la paleta y descarga el HTML.';
+  } catch (e) {
+    console.error('[studio] error cargando template:', e);
+    toast('No se pudo cargar la plantilla');
+  }
+}
+
+function exitHtmlDeckMode() {
+  document.body.classList.remove('html-deck-mode');
+  if (htmlDeckState.blobUrl) URL.revokeObjectURL(htmlDeckState.blobUrl);
+  htmlDeckState = { slug: null, paletteOriginal: {}, paletteOverride: {}, rawHtml: '', blobUrl: null };
+  // Quita el host de pickers si existe
+  const host = document.getElementById('html-deck-pickers');
+  if (host) host.remove();
+  const iframe = document.getElementById('html-deck-iframe');
+  if (iframe) iframe.remove();
+  // Restaura label original del botón Export
+  const expBtn = document.getElementById('btn-export');
+  if (expBtn) expBtn.textContent = 'Exportar';
+}
+
+function renderHtmlDeckPickers() {
+  const inputArea = document.querySelector('.input-area');
+  if (!inputArea) return;
+  let host = document.getElementById('html-deck-pickers');
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'html-deck-pickers';
+    host.className = 'html-deck-pickers';
+    inputArea.appendChild(host);
+  }
+  const colors = Object.entries(htmlDeckState.paletteOriginal)
+    .filter(([k, v]) => k !== 'description' && typeof v === 'string' && /^#[0-9a-f]{3,8}$/i.test(v));
+  const meta = htmlDeckState.slug;
+  host.innerHTML = `
+    <div class="picker-head">
+      <span>Paleta · ${escapeHtml(meta)}</span>
+      <a href="external-templates/templates/${escapeHtml(meta)}/template.html" target="_blank" rel="noopener">abrir original ↗</a>
+    </div>
+    ${colors.map(([key, orig]) => {
+      const cur = htmlDeckState.paletteOverride[key] || orig;
+      const label = key.replace(/_/g, ' ');
+      return `
+        <div class="picker-row">
+          <label class="swatch" style="background:${escapeHtml(cur)}">
+            <input type="color" value="${escapeHtml(cur)}" data-key="${escapeHtml(key)}" oninput="updateDeckColor(this)">
+          </label>
+          <div class="label">${escapeHtml(label)}<span class="key">${escapeHtml(orig)}</span></div>
+          <div class="hex">${escapeHtml(cur)}</div>
+        </div>`;
+    }).join('')}
+    <button type="button" class="picker-reset" onclick="resetDeckPalette()">restaurar paleta original</button>
+  `;
+}
+
+function updateDeckColor(input) {
+  const key = input.dataset.key;
+  const value = input.value;
+  htmlDeckState.paletteOverride[key] = value;
+  // Update swatch + hex label sin re-renderizar todo
+  const row = input.closest('.picker-row');
+  if (row) {
+    row.querySelector('.swatch').style.background = value;
+    row.querySelector('.hex').textContent = value;
+  }
+  renderHtmlDeckIframe();
+  // Sync textarea (para que savePieceNow + auto-save lo capture)
+  const ta = document.getElementById('content');
+  if (ta) {
+    ta.value = JSON.stringify(htmlDeckState.paletteOverride, null, 2);
+    markPieceDirty();
+  }
+}
+
+function resetDeckPalette() {
+  htmlDeckState.paletteOverride = {};
+  renderHtmlDeckPickers();
+  renderHtmlDeckIframe();
+  const ta = document.getElementById('content');
+  if (ta) { ta.value = '{}'; markPieceDirty(); }
+}
+
+function renderHtmlDeckIframe() {
+  const previewHost = document.getElementById('preview');
+  if (!previewHost) return;
+  let iframe = document.getElementById('html-deck-iframe');
+  if (!iframe) {
+    previewHost.innerHTML = '';
+    iframe = document.createElement('iframe');
+    iframe.id = 'html-deck-iframe';
+    iframe.className = 'html-deck-iframe';
+    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+    iframe.setAttribute('title', 'Vista previa del deck');
+    previewHost.appendChild(iframe);
+  }
+  // Compose final HTML applying palette override (only delta keys)
+  const finalHtml = applyPaletteToHtml(
+    htmlDeckState.rawHtml,
+    htmlDeckState.paletteOriginal,
+    htmlDeckState.paletteOverride,
+  );
+  if (htmlDeckState.blobUrl) URL.revokeObjectURL(htmlDeckState.blobUrl);
+  const blob = new Blob([finalHtml], { type: 'text/html' });
+  htmlDeckState.blobUrl = URL.createObjectURL(blob);
+  iframe.src = htmlDeckState.blobUrl;
+}
+
+// Export para html-deck: descarga el HTML customizado.
+function exportHtmlDeck() {
+  if (!htmlDeckState.slug) return;
+  const finalHtml = applyPaletteToHtml(
+    htmlDeckState.rawHtml,
+    htmlDeckState.paletteOriginal,
+    htmlDeckState.paletteOverride,
+  );
+  const blob = new Blob([finalHtml], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${htmlDeckState.slug}-magnify.html`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast('✓ HTML descargado · ábrelo y usa Print → PDF para exportar');
+}
 
 // ── TYPE DEFINITIONS ──
 const TYPE_META = {
@@ -4810,9 +5067,13 @@ function wireUploadZone() {
 
 // ── SIDEBAR / TYPE SELECTION ──
 function selectType(type) {
+  // Si veníamos en html-deck y cambiamos a otro tipo desde la sidebar, salir limpiamente
+  if (currentType === 'html-deck' && type !== 'html-deck') exitHtmlDeckMode();
   currentType = type;
   document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('on'));
-  document.querySelector(`[data-type="${type}"]`).classList.add('on');
+  // html-deck no tiene botón en la sidebar (entra solo vía wizard) — guardamos el ?.
+  const sidebarBtn = document.querySelector(`[data-type="${type}"]`);
+  if (sidebarBtn) sidebarBtn.classList.add('on');
 
   const meta = TYPE_META[type];
   document.getElementById('panel-title').textContent = meta.title;
@@ -10034,6 +10295,19 @@ function validateShape(raw) {
 }
 
 function generate() {
+  // html-deck mode: el iframe se actualiza automáticamente al cambiar colores. "Generar"
+  // aquí solo fuerza un redraw (útil tras editar el JSON manualmente en el textarea oculto).
+  if (currentType === 'html-deck' && htmlDeckState.slug) {
+    try {
+      const ta = document.getElementById('content');
+      const parsed = ta && ta.value.trim() ? JSON.parse(ta.value) : {};
+      htmlDeckState.paletteOverride = parsed && typeof parsed === 'object' ? parsed : {};
+    } catch (_) { /* JSON malformado, ignoramos */ }
+    renderHtmlDeckIframe();
+    renderHtmlDeckPickers();
+    document.getElementById('btn-export').disabled = false;
+    return;
+  }
   clearError();
   clearWarnings();
   clearStats();
@@ -10311,6 +10585,11 @@ function generateSig(raw, preview, renderC) {
 // ════════════════════════════════════════════
 
 async function exportAll() {
+  // html-deck: download HTML, no PPTX/PDF flow
+  if (currentType === 'html-deck' && htmlDeckState.slug) {
+    exportHtmlDeck();
+    return;
+  }
   if (renderedFrames.length === 0) {
     toast('No hay páginas renderizadas — pulsa Render antes de exportar');
     return;
