@@ -778,18 +778,64 @@
     background:var(--bg);
   }
   .t-shot .foot-area .cap {
-    font-family:var(--sans); font-size:22px; line-height:1.45;
-    color:rgba(250,250,250,0.82); max-width:920px; margin:0;
+    font-family:var(--sans); font-size:28px; line-height:1.4; font-weight:400;
+    color:rgba(250,250,250,0.92); max-width:920px; margin:0;
   }
   .t-shot .foot-area .meta {
     display:flex; justify-content:space-between; align-items:flex-end;
     border-top:1px solid rgba(255,255,255,0.1); padding-top:20px; margin-top:auto;
   }
   .t-shot .foot-area .meta .left .logo-svg.wm { height:36px; width:auto; display:block; margin-bottom:6px; }
-  .t-shot .foot-area .meta .left .url { font-family:var(--mono); font-size:14px; color:#999; letter-spacing:0.05em; }
+  .t-shot .foot-area .meta .left .url { font-family:var(--mono); font-size:18px; color:#999; letter-spacing:0.05em; }
   .t-shot .foot-area .meta .dots { display:flex; gap:8px; align-items:center; }
   .t-shot .foot-area .meta .dots .d { width:36px; height:4px; background:rgba(250,250,250,0.3); border-radius:2px; }
   .t-shot .foot-area .meta .dots .d.on { background:var(--yellow); }
+
+  /* ── CAROUSEL: DIAGRAMA plantilla ──
+     "Una hoja entera, sin texto, solo lo mínimo para conservar coherencia." Para diagramas,
+     gráficos, mapas conceptuales que tienen que verse SIN texto editorial encima. La imagen
+     ocupa todo. Mínimo chrome: eyebrow opcional minúsculo arriba (FIG. 03), wordmark al pie. */
+  .t-diagrama { height:100%; display:flex; flex-direction:column; background:#FAFAFA; }
+  .t-diagrama .head {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:32px 64px 0; min-height:48px;
+  }
+  .t-diagrama .head .eb {
+    font-family:var(--mono); font-size:14px; font-weight:600; letter-spacing:3px;
+    text-transform:uppercase; color:#0A0A0A; opacity:0.55;
+  }
+  .t-diagrama .head .pos {
+    font-family:var(--mono); font-size:12px; letter-spacing:2px; color:#0A0A0A; opacity:0.4;
+  }
+  .t-diagrama .stage {
+    flex:1; padding:24px 64px; display:flex; align-items:center; justify-content:center;
+    min-height:0; overflow:hidden;
+  }
+  .t-diagrama .stage img {
+    max-width:100%; max-height:100%; object-fit:contain; display:block;
+  }
+  .t-diagrama .stage.empty {
+    background:repeating-linear-gradient(45deg, #efefef 0 24px, #f5f5f5 24px 48px);
+    color:#888; font-family:var(--mono); font-size:18px; letter-spacing:0.1em; text-align:center;
+    border-radius:0;
+  }
+  .t-diagrama .stage.empty code {
+    color:#0A0A0A; background:rgba(255,214,0,0.4);
+    padding:2px 8px; border-radius:0; margin:0 .3em; font-size:18px;
+  }
+  .t-diagrama .foot {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:20px 64px 28px; border-top:1px solid rgba(0,0,0,0.08);
+  }
+  .t-diagrama .foot .left { display:flex; align-items:center; gap:14px; }
+  .t-diagrama .foot .left .logo-svg.ic { height:28px; width:auto; }
+  .t-diagrama .foot .left .url {
+    font-family:var(--mono); font-size:13px; color:#0A0A0A; opacity:0.55;
+    letter-spacing:0.04em;
+  }
+  .t-diagrama .foot .dots { display:flex; gap:6px; }
+  .t-diagrama .foot .dots .d { width:32px; height:3px; background:rgba(0,0,0,0.18); border-radius:2px; }
+  .t-diagrama .foot .dots .d.on { background:#0A0A0A; }
   /* T2 — Stats Grid */
   .t2 { padding:100px; display:flex; flex-direction:column; height:calc(100% - 80px); }
   .t2-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px; background:rgba(0,0,0,0.12); margin-top:48px; flex:1; border-radius:2px; overflow:hidden; }
@@ -3532,6 +3578,8 @@ Cada slide separado por <code>---</code><br><br>
 <code>plantilla: imagen</code> &nbsp; <code>imagen:</code> img1 (tras subirla arriba) &nbsp; <code>eyebrow:</code> opcional &nbsp; <code>titular:</code> caption<br><br>
 <strong>Slide screenshot (captura SERP/dashboard, con margen):</strong><br>
 <code>plantilla: screenshot</code> &nbsp; <code>imagen:</code> img1 &nbsp; <code>eyebrow:</code> · <code>titular:</code> · <code>caption:</code> opcional explica qué se ve. Aliases: <code>captura</code>, <code>serp</code>.<br><br>
+<strong>Slide diagrama (imagen entera, sin texto encima):</strong><br>
+<code>plantilla: diagrama</code> &nbsp; <code>imagen:</code> img1 (diagrama / gráfico / mapa) &nbsp; <code>eyebrow:</code> opcional minúsculo (FIG. 03). Sin titular, sin caption — la imagen manda. Aliases: <code>figura</code>, <code>grafico</code>.<br><br>
 <strong>Slide CTA (cierre):</strong><br>
 <code>plantilla: cta</code><br>
 <code>titular:</code> Mensaje / pregunta (arriba, serif)<br>
@@ -5734,6 +5782,32 @@ function renderCarouselImage(d, slideNum, totalSlides) {
     </div>
     <div class="dots">${dots}</div>
   </div>${ftrCDk()}</div>`;
+}
+
+// DIAGRAMA plantilla: para diagramas, gráficos, mapas conceptuales — la imagen ocupa
+// la página entera, sin texto editorial encima. Mínimo chrome: eyebrow opcional minúsculo
+// arriba ("FIG. 03"), número de slide, wordmark + URL al pie con dots. Surface clara para
+// que el diagrama (que típicamente es line-art o flowchart) se vea con buen contraste.
+function renderCarouselDiagrama(d, slideNum, totalSlides) {
+  const imgRef = (d.imagen || d.image || d.diagrama || d.figura || '').trim().toLowerCase();
+  const dataUrl = uploadedImages[imgRef];
+  const stageHtml = dataUrl
+    ? `<div class="stage"><img src="${dataUrl}" alt="${safeText(imgRef)}"></div>`
+    : `<div class="stage empty">Sin imagen — sube una y referénciala como <code>${imgRef || 'img1'}</code></div>`;
+  const dots = Array.from({ length: totalSlides }, (_, i) =>
+    `<div class="d${i + 1 === slideNum ? ' on' : ''}"></div>`
+  ).join('');
+  const eyebrowHtml = d.eyebrow ? `<span class="eb">${safeText(d.eyebrow)}</span>` : '<span></span>';
+  const posHtml = `<span class="pos">${String(slideNum).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}</span>`;
+  const url = brandUrlHtml();
+  return `<div class="frame cr lt"><div class="t-diagrama">
+    <div class="head">${eyebrowHtml}${posHtml}</div>
+    ${stageHtml}
+    <div class="foot">
+      <div class="left">${icon('#0A0A0A')}<span class="url">${url}</span></div>
+      <div class="dots">${dots}</div>
+    </div>
+  </div></div>`;
 }
 
 // SCREENSHOT plantilla: para enseñar capturas que tienen contenido legible (SERPs,
@@ -10228,9 +10302,9 @@ function validateRenderedCarousel(actualDiv, data, n, total) {
   }
 
   const tpl = (data.plantilla || '').toLowerCase().trim();
-  const tplsConImagen = ['imagen', 'image', 'foto', 'screenshot', 'captura', 'serp'];
+  const tplsConImagen = ['imagen', 'image', 'foto', 'screenshot', 'captura', 'serp', 'diagrama', 'figura', 'grafico'];
   if (tplsConImagen.includes(tpl)) {
-    const ref = (data.imagen || data.image || data.captura || '').trim().toLowerCase();
+    const ref = (data.imagen || data.image || data.captura || data.diagrama || data.figura || '').trim().toLowerCase();
     if (ref && !uploadedImages[ref]) {
       warnings.push(`Slide <code>${n}</code>: falta <code>${ref}</code> — <button type="button" class="warn-action" onclick="focusUploadZone()">subir imagen ↑</button>`);
     }
@@ -10471,6 +10545,8 @@ function generateCarousel(raw, preview, renderC) {
       html = renderCarouselCTA(data);
     } else if (plantilla === 'screenshot' || plantilla === 'captura' || plantilla === 'serp') {
       html = renderCarouselScreenshot(data, idx + 1, totalContent);
+    } else if (plantilla === 'diagrama' || plantilla === 'figura' || plantilla === 'grafico') {
+      html = renderCarouselDiagrama(data, idx + 1, totalContent);
     } else if (plantilla === 'imagen' || plantilla === 'image' || plantilla === 'foto') {
       html = renderCarouselImage(data, idx + 1, totalContent);
     } else if (plantilla === 'stat' || data.stat || data.numero) {

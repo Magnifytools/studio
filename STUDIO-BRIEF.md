@@ -434,7 +434,7 @@ Carousel vertical para LinkedIn Document Posts. Cada slide va separado por `---`
 | Campo | Tipo | Descripción |
 |---|---|---|
 | `slide` | opcional | Número informativo (1, 2, 3…). El renderer no lo usa — la posición del bloque manda. Útil como ayuda visual al editar. |
-| `plantilla` | opcional | Una de las 6 plantillas: `cover` (alias `portada`), `interior` (default), `imagen` (alias `image`/`foto` — foto hero fullbleed), `screenshot` (alias `captura`/`serp` — captura legible con margen), `stat`, `cta`. Si se omite, slide 0 → `cover`, resto → `interior`. |
+| `plantilla` | opcional | Una de las 7 plantillas: `cover` (alias `portada`), `interior` (default), `imagen` (alias `image`/`foto` — foto hero fullbleed), `screenshot` (alias `captura`/`serp` — captura legible con margen + caption), `diagrama` (alias `figura`/`grafico` — imagen entera sin texto editorial), `stat`, `cta`. Si se omite, slide 0 → `cover`, resto → `interior`. |
 
 > Reglas de plantilla:
 > - **Slide 0 siempre se renderiza como `cover`**, declares lo que declares (es la portada).
@@ -546,6 +546,29 @@ caption: AI Mode cita Factorial cuando la pregunta es genérica. Al concretar ("
 ```
 
 > **Pro-tip**: la captura se renderiza con `object-fit: contain` y sombra suave. Si tu screenshot es muy alto/largo (ej. SERP con scroll), recórtalo antes de subirlo a la zona crítica del slide — el contain conserva aspect pero limita altura útil ~770px.
+
+### `diagrama` — Imagen entera, sin texto editorial encima
+
+Para diagramas, gráficos, flowcharts, mapas conceptuales, infografías. La imagen ocupa la página entera. **Sin titular, sin caption, sin overlay**: lo único es un eyebrow minúsculo arriba ("FIG. 03"), número de slide pequeño a la derecha, y wordmark + URL al pie. La imagen manda. Aliases: `figura`, `grafico`.
+
+Cuándo usar:
+- Tu imagen es un diagrama de flujo, organigrama, framework visual, mapa, esquema, infografía. Cualquier cosa que ya **lleva su propia narrativa visual**.
+- El texto editorial Magnify (eyebrow + titular) iría en la SLIDE ANTERIOR (un `interior` que introduce el diagrama).
+- Diferencia con `screenshot`: screenshot tiene caption explicativo abajo (es evidencia que comentas); diagrama es autoexplicativo.
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `imagen` | requerido | ID de imagen subida. Aliases: `image`, `diagrama`, `figura`. |
+| `eyebrow` | opcional | Etiqueta minúscula arriba izquierda en mono uppercase (ej "FIG. 03", "FRAMEWORK"). |
+
+```yaml
+slide: 4
+plantilla: diagrama
+imagen: img3
+eyebrow: TRUST STAGE FRAMEWORK
+```
+
+> Surface por defecto clara `#FAFAFA` para que diagramas line-art / flowcharts se vean con buen contraste. Si tu diagrama es dark-on-dark, sube una versión adaptada o cambia a screenshot.
 
 ### `cta` — Cierre / call to action
 
