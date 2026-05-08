@@ -2684,6 +2684,188 @@
   }
   .opt-closing-body .foot .col .v { font-weight:700; font-size:26px; color:#F5F5F0; }
 
+  /* S2 · TOC */
+  .opt-toc-body { position:absolute; inset:116px 96px 70px 96px; display:grid; grid-template-columns:380px 1fr; gap:80px; }
+  .opt-toc-body h2 { font-weight:800; font-size:96px; letter-spacing:-0.04em; line-height:0.92; margin:0; color:#0A0A0A; }
+  .opt-toc-body h2 em { font-family:'Newsreader',Georgia,serif; font-style:italic; font-weight:400; }
+  .opt-toc-body h2 .yel { color:#FFD600; }
+  .opt-toc-body .lbl { font-family:'JetBrains Mono','SF Mono',monospace; font-size:24px; letter-spacing:0.18em; text-transform:uppercase; color:#888780; margin-bottom:22px; font-weight:600; }
+  .opt-toc-body .toc-list { display:flex; flex-direction:column; }
+  .opt-toc-body .toc-item { display:grid; grid-template-columns:80px 1fr 200px; align-items:center; gap:32px; padding:24px 0; border-bottom:1.5px solid #0A0A0A; }
+  .opt-toc-body .toc-item:first-child { border-top:1.5px solid #0A0A0A; }
+  .opt-toc-body .toc-item .num { font-weight:800; font-size:60px; letter-spacing:-0.04em; line-height:1; color:#0A0A0A; }
+  .opt-toc-body .toc-item .num .dot { color:#FFD600; }
+  .opt-toc-body .toc-item .ttl { font-weight:700; font-size:36px; letter-spacing:-0.02em; color:#0A0A0A; }
+  .opt-toc-body .toc-item .tc { font-family:'JetBrains Mono','SF Mono',monospace; font-size:22px; letter-spacing:0.18em; color:#888780; text-align:right; text-transform:uppercase; }
+  .opt-toc-body .toc-item.active .tc::before { content:'◆ '; color:#FFD600; }
+
+  /* S5 · BULLETS */
+  .opt-bullets-body { position:absolute; inset:116px 96px 70px 96px; display:grid; grid-template-columns:1fr 1.6fr; gap:96px; align-items:start; }
+  .opt-bullets-body .left .lbl { font-family:'JetBrains Mono','SF Mono',monospace; font-size:24px; letter-spacing:0.22em; text-transform:uppercase; color:#888780; margin-bottom:18px; font-weight:600; }
+  .opt-bullets-body .left h2 { font-weight:800; font-size:88px; letter-spacing:-0.04em; line-height:0.92; margin:0; color:#0A0A0A; }
+  .opt-bullets-body .left h2 em { font-family:'Newsreader',Georgia,serif; font-style:italic; font-weight:400; }
+  .opt-bullets-body .left p { font-family:'Newsreader',Georgia,serif; font-size:30px; line-height:1.45; color:#1C1B1B; margin-top:24px; }
+  .opt-bullets-body .b-list { display:flex; flex-direction:column; }
+  .opt-bullets-body .b-row { display:grid; grid-template-columns:80px 1fr; gap:32px; padding:26px 0; border-bottom:2px solid #0A0A0A; align-items:baseline; }
+  .opt-bullets-body .b-row:first-child { border-top:2px solid #0A0A0A; }
+  .opt-bullets-body .b-row .n { font-family:'JetBrains Mono','SF Mono',monospace; font-size:28px; letter-spacing:0.12em; color:#888780; font-weight:700; }
+  .opt-bullets-body .b-row .h { font-weight:700; font-size:38px; letter-spacing:-0.02em; line-height:1.15; margin:0 0 8px; color:#0A0A0A; }
+  .opt-bullets-body .b-row .h .yel { background:#FFD600; padding:0 8px; box-shadow:4px 4px 0 0 #0A0A0A; }
+  .opt-bullets-body .b-row .d { font-family:'Newsreader',Georgia,serif; font-size:28px; line-height:1.4; color:#1C1B1B; margin:0; }
+
+  /* S6 · TWO-COLUMN */
+  .opt-two-body { position:absolute; inset:116px 96px 70px 96px; display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:stretch; }
+  .opt-two-body .col .lbl { font-family:'JetBrains Mono','SF Mono',monospace; font-size:24px; letter-spacing:0.22em; text-transform:uppercase; color:#888780; margin-bottom:18px; font-weight:600; }
+  .opt-two-body .col h2 { font-weight:800; font-size:72px; letter-spacing:-0.03em; line-height:0.95; margin:0 0 24px; color:#0A0A0A; }
+  .opt-two-body .col em { font-family:'Newsreader',Georgia,serif; font-style:italic; font-weight:400; }
+  .opt-two-body .col p { font-family:'Newsreader',Georgia,serif; font-size:30px; line-height:1.5; color:#1C1B1B; margin:0 0 16px; }
+  .opt-two-body .col.right { background:#FBFBF6; border:1.5px solid #0A0A0A; padding:40px; }
+  .opt-two-body .col.right .lbl { color:#0A0A0A; }
+  .opt-two-body .col.right .pic { aspect-ratio:4/3; background:#0a0908; position:relative; overflow:hidden; margin-bottom:24px; border:1.5px solid #0A0A0A; display:flex; align-items:center; justify-content:center; }
+  .opt-two-body .col.right .pic .ph { color:rgba(245,245,240,0.55); font-family:'JetBrains Mono','SF Mono',monospace; font-size:20px; letter-spacing:0.22em; text-transform:uppercase; background-image:repeating-linear-gradient(45deg, transparent 0, transparent 12px, rgba(245,245,240,0.05) 12px, rgba(245,245,240,0.05) 13px); position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .opt-two-body .col.right .pic img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .opt-two-body .col.right p { font-family:'Newsreader',Georgia,serif; font-size:26px; color:#0A0A0A; margin:0; }
+
+  /* S7 · DATA */
+  .opt-data-body { position:absolute; inset:116px 80px 70px 80px; display:grid; grid-template-columns:1fr 1.4fr; gap:56px; align-items:stretch; }
+  .opt-data-body .left h2 { font-weight:800; font-size:68px; letter-spacing:-0.03em; line-height:0.95; margin:0 0 24px; color:#0A0A0A; }
+  .opt-data-body .left h2 .yel { background:#FFD600; padding:0 8px; }
+  .opt-data-body .left p { font-family:'Newsreader',Georgia,serif; font-size:26px; line-height:1.5; color:#1C1B1B; }
+  .opt-data-body .left .lbl-faint { font-family:'JetBrains Mono','SF Mono',monospace; font-size:24px; letter-spacing:0.22em; text-transform:uppercase; color:#888780; margin-bottom:14px; font-weight:600; }
+  .opt-data-body .left .stat-block { margin-top:32px; padding:28px 32px; border:2.5px solid #0A0A0A; display:flex; align-items:baseline; gap:24px; box-shadow:8px 8px 0 0 #FFD600, 8px 8px 0 2.5px #0A0A0A; }
+  .opt-data-body .left .stat-block .big { font-weight:800; font-size:88px; letter-spacing:-0.05em; line-height:0.85; color:#0A0A0A; }
+  .opt-data-body .left .stat-block .big sup { color:#FFD600; font-size:0.55em; }
+  .opt-data-body .left .stat-block .lbl { font-family:'JetBrains Mono','SF Mono',monospace; font-size:24px; letter-spacing:0.16em; text-transform:uppercase; color:#888780; line-height:1.4; }
+  .opt-data-body .chart { border:2.5px solid #0A0A0A; padding:28px; display:flex; flex-direction:column; box-shadow:8px 8px 0 0 #0A0A0A; }
+  .opt-data-body .chart .ch-head { display:flex; justify-content:space-between; font-family:'JetBrains Mono','SF Mono',monospace; font-size:22px; letter-spacing:0.18em; text-transform:uppercase; color:#888780; margin-bottom:24px; }
+  .opt-data-body .chart .ch-head strong { color:#0A0A0A; }
+  .opt-data-body .chart .ch-body { flex:1; position:relative; }
+  .opt-data-body .chart svg { width:100%; height:100%; display:block; }
+
+  /* S8 · DIAGRAM */
+  .opt-diagram-body { position:absolute; inset:116px 80px 70px 80px; display:grid; grid-template-columns:380px 1fr; gap:64px; min-height:0; }
+  .opt-diagram-body .left .lbl { font-family:'JetBrains Mono','SF Mono',monospace; font-size:24px; letter-spacing:0.22em; text-transform:uppercase; color:#888780; margin-bottom:18px; font-weight:600; }
+  .opt-diagram-body .left h2 { font-weight:800; font-size:60px; letter-spacing:-0.03em; line-height:0.95; margin:0 0 20px; color:#0A0A0A; }
+  .opt-diagram-body .left h2 em { font-family:'Newsreader',Georgia,serif; font-style:italic; font-weight:400; }
+  .opt-diagram-body .left p { font-family:'Newsreader',Georgia,serif; font-size:26px; line-height:1.5; color:#1C1B1B; }
+  .opt-diagram-body .left .legend { margin-top:28px; display:flex; flex-direction:column; gap:12px; }
+  .opt-diagram-body .left .legend .item { display:flex; align-items:baseline; gap:12px; font-family:'JetBrains Mono','SF Mono',monospace; font-size:20px; letter-spacing:0.14em; text-transform:uppercase; color:#0A0A0A; }
+  .opt-diagram-body .left .legend .item .dot { width:10px; height:10px; background:#0A0A0A; flex-shrink:0; }
+  .opt-diagram-body .left .legend .item.acc .dot { background:#FFD600; }
+  .opt-diagram-body .right { border:2.5px solid #0A0A0A; padding:32px; display:flex; align-items:center; justify-content:center; position:relative; background:#FBFBF6; min-height:0; overflow:hidden; box-shadow:8px 8px 0 0 #0A0A0A; }
+  .opt-diagram-body .right .label-tl { position:absolute; top:16px; left:20px; font-family:'JetBrains Mono','SF Mono',monospace; font-size:22px; letter-spacing:0.18em; color:#888780; text-transform:uppercase; }
+  .opt-diagram-body .right svg { width:100%; height:100%; max-width:720px; display:block; }
+
+  /* S9 · COMPARISON */
+  .opt-comp-body { position:absolute; inset:56px 0 56px 0; display:grid; grid-template-columns:1fr 1fr; height:auto; }
+  .opt-comp-body .col { padding:80px 64px; display:flex; flex-direction:column; }
+  .opt-comp-body .col.a { border-right:1.5px solid #0A0A0A; }
+  .opt-comp-body .col.b { background:#0a0908; color:#F5F5F0; }
+  .opt-comp-body .col .cap { font-family:'JetBrains Mono','SF Mono',monospace; font-size:24px; letter-spacing:0.22em; text-transform:uppercase; color:#888780; margin-bottom:24px; font-weight:600; }
+  .opt-comp-body .col.b .cap { color:#FFD600; }
+  .opt-comp-body .col h2 { font-weight:800; font-size:76px; letter-spacing:-0.03em; line-height:0.92; margin:0 0 28px; }
+  .opt-comp-body .col h2 em { font-family:'Newsreader',Georgia,serif; font-style:italic; font-weight:400; }
+  .opt-comp-body .col ul { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:14px; }
+  .opt-comp-body .col li { font-family:'Newsreader',Georgia,serif; font-size:28px; line-height:1.35; padding-left:32px; position:relative; }
+  .opt-comp-body .col li::before { content:''; position:absolute; left:0; top:16px; width:16px; height:1.5px; background:currentColor; }
+  .opt-comp-body .col .stamp { margin-top:auto; padding-top:32px; font-family:'JetBrains Mono','SF Mono',monospace; font-size:22px; letter-spacing:0.18em; text-transform:uppercase; }
+
+  /* S10 · CASE STUDY */
+  .opt-case-body { position:absolute; inset:116px 80px 70px 80px; display:grid; grid-template-rows:auto 1fr auto; gap:32px; }
+  .opt-case-body .head { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:32px; padding-bottom:24px; border-bottom:1.5px solid #0A0A0A; }
+  .opt-case-body .head .logo { width:80px; height:80px; border:1.5px solid #0A0A0A; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:28px; letter-spacing:-0.03em; color:#0A0A0A; }
+  .opt-case-body .head h2 { font-weight:800; font-size:60px; letter-spacing:-0.03em; line-height:1; margin:0; color:#0A0A0A; }
+  .opt-case-body .head .meta { font-family:'JetBrains Mono','SF Mono',monospace; font-size:22px; letter-spacing:0.18em; text-transform:uppercase; color:#888780; text-align:right; line-height:1.5; }
+  .opt-case-body .body { display:grid; grid-template-columns:1.4fr 1fr; gap:56px; align-items:stretch; }
+  .opt-case-body .body .pic { background:#0a0908; position:relative; overflow:hidden; border:1.5px solid #0A0A0A; display:flex; align-items:center; justify-content:center; }
+  .opt-case-body .body .pic img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .opt-case-body .body .pic .ph { color:rgba(245,245,240,0.55); font-family:'JetBrains Mono','SF Mono',monospace; font-size:20px; letter-spacing:0.22em; text-transform:uppercase; background-image:repeating-linear-gradient(45deg, transparent 0, transparent 12px, rgba(245,245,240,0.05) 12px, rgba(245,245,240,0.05) 13px); position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .opt-case-body .body .narrative { display:flex; flex-direction:column; gap:20px; }
+  .opt-case-body .body .narrative .blk .k { font-family:'JetBrains Mono','SF Mono',monospace; font-size:22px; letter-spacing:0.18em; text-transform:uppercase; color:#888780; margin-bottom:6px; font-weight:600; }
+  .opt-case-body .body .narrative .blk .v { font-family:'Newsreader',Georgia,serif; font-size:26px; line-height:1.4; color:#0A0A0A; }
+  .opt-case-body .results { display:grid; grid-template-columns:repeat(3, 1fr); gap:0; border-top:1.5px solid #0A0A0A; }
+  .opt-case-body .results .r { padding:18px 28px; border-right:1.5px solid #0A0A0A; }
+  .opt-case-body .results .r:last-child { border-right:none; }
+  .opt-case-body .results .r .num { font-weight:800; font-size:60px; letter-spacing:-0.04em; line-height:1; color:#0A0A0A; }
+  .opt-case-body .results .r .num .yel { background:#FFD600; padding:0 6px; }
+  .opt-case-body .results .r .lbl { font-family:'JetBrains Mono','SF Mono',monospace; font-size:18px; letter-spacing:0.18em; text-transform:uppercase; color:#888780; margin-top:8px; font-weight:600; }
+
+  /* S11 · CHECKLIST */
+  .opt-list-body { position:absolute; inset:116px 80px 70px 80px; display:grid; grid-template-columns:1fr 1.4fr; gap:80px; align-items:start; }
+  .opt-list-body .left .lbl { font-family:'JetBrains Mono','SF Mono',monospace; font-size:24px; letter-spacing:0.22em; text-transform:uppercase; color:#888780; margin-bottom:24px; font-weight:600; }
+  .opt-list-body .left h2 { font-weight:800; font-size:72px; letter-spacing:-0.04em; line-height:0.92; margin:0; color:#0A0A0A; }
+  .opt-list-body .left h2 em { font-family:'Newsreader',Georgia,serif; font-style:italic; font-weight:400; }
+  .opt-list-body .left p { font-family:'Newsreader',Georgia,serif; font-size:28px; line-height:1.45; color:#1C1B1B; margin-top:20px; }
+  .opt-list-body .checks { display:flex; flex-direction:column; }
+  .opt-list-body .check { display:grid; grid-template-columns:56px 1fr 120px; align-items:center; gap:24px; padding:22px 0; border-bottom:2px solid #0A0A0A; }
+  .opt-list-body .check:first-child { border-top:2px solid #0A0A0A; }
+  .opt-list-body .check .box { width:36px; height:36px; border:2.5px solid #0A0A0A; position:relative; box-shadow:4px 4px 0 0 #0A0A0A; }
+  .opt-list-body .check.done .box { background:#0A0A0A; }
+  .opt-list-body .check.done .box::after { content:'✓'; position:absolute; left:50%; top:50%; transform:translate(-50%, -50%); color:#FFD600; font-weight:800; font-size:22px; }
+  .opt-list-body .check h3 { font-weight:700; font-size:30px; letter-spacing:-0.015em; line-height:1.15; margin:0; color:#0A0A0A; }
+  .opt-list-body .check p { font-family:'Newsreader',Georgia,serif; font-size:24px; line-height:1.4; color:#1C1B1B; margin:6px 0 0; }
+  .opt-list-body .check .meta { font-family:'JetBrains Mono','SF Mono',monospace; font-size:22px; letter-spacing:0.14em; color:#888780; text-transform:uppercase; text-align:right; font-weight:700; }
+
+  /* S12 · PIPELINE */
+  .opt-pipe-body { position:absolute; inset:100px 64px 60px 64px; display:flex; flex-direction:column; }
+  .opt-pipe-body .head { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:40px; gap:32px; }
+  .opt-pipe-body h2 { font-weight:800; font-size:72px; letter-spacing:-0.03em; line-height:0.95; margin:0; color:#0A0A0A; }
+  .opt-pipe-body h2 em { font-family:'Newsreader',Georgia,serif; font-style:italic; font-weight:400; }
+  .opt-pipe-body .head .lbl { font-family:'JetBrains Mono','SF Mono',monospace; font-size:22px; letter-spacing:0.18em; text-transform:uppercase; color:#888780; font-weight:600; }
+  .opt-pipe-body .stations { display:grid; grid-template-columns:repeat(6, 1fr); gap:0; flex:1; max-height:540px; }
+  .opt-pipe-body .station { border:1.5px solid #0A0A0A; padding:22px 18px; display:flex; flex-direction:column; gap:10px; position:relative; margin-left:-1.5px; background:#F5F5F0; }
+  .opt-pipe-body .station:first-child { margin-left:0; }
+  .opt-pipe-body .station.active { background:#FFD600; }
+  .opt-pipe-body .station .num { font-family:'JetBrains Mono','SF Mono',monospace; font-size:18px; letter-spacing:0.18em; color:#888780; text-transform:uppercase; font-weight:700; }
+  .opt-pipe-body .station.active .num { color:#0A0A0A; }
+  .opt-pipe-body .station h3 { font-weight:700; font-size:28px; letter-spacing:-0.015em; line-height:1.05; margin:10px 0 6px; color:#0A0A0A; }
+  .opt-pipe-body .station p { font-family:'Newsreader',Georgia,serif; font-size:22px; line-height:1.35; color:#1C1B1B; margin:0; }
+  .opt-pipe-body .station::after { content:'→'; position:absolute; right:-10px; top:50%; transform:translateY(-50%); font-family:'JetBrains Mono','SF Mono',monospace; font-size:22px; background:#F5F5F0; padding:0 4px; color:#0A0A0A; z-index:2; }
+  .opt-pipe-body .station:last-child::after { display:none; }
+  .opt-pipe-body .station.active::after { background:#FFD600; }
+
+  /* S13 · SIGNALS / 3-UP */
+  .opt-signals-body { position:absolute; inset:116px 80px 70px 80px; display:flex; flex-direction:column; gap:40px; }
+  .opt-signals-body .top { display:flex; align-items:baseline; justify-content:space-between; }
+  .opt-signals-body .top .lbl { font-family:'JetBrains Mono','SF Mono',monospace; font-size:24px; letter-spacing:0.22em; text-transform:uppercase; color:#888780; font-weight:600; }
+  .opt-signals-body h2 { font-weight:800; font-size:76px; letter-spacing:-0.04em; line-height:0.92; margin:0; color:#0A0A0A; }
+  .opt-signals-body h2 em { font-family:'Newsreader',Georgia,serif; font-style:italic; font-weight:400; }
+  .opt-signals-body h2 .yel { background:#FFD600; padding:0 8px; }
+  .opt-signals-body .signal-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:0; flex:1; border-top:2.5px solid #0A0A0A; border-bottom:2.5px solid #0A0A0A; }
+  .opt-signals-body .signal { padding:36px 32px; border-right:2px solid #0A0A0A; display:flex; flex-direction:column; gap:18px; }
+  .opt-signals-body .signal:last-child { border-right:none; }
+  .opt-signals-body .signal .n { font-family:'JetBrains Mono','SF Mono',monospace; font-size:22px; letter-spacing:0.18em; text-transform:uppercase; color:#888780; font-weight:700; }
+  .opt-signals-body .signal h3 { font-weight:800; font-size:38px; letter-spacing:-0.02em; line-height:1.05; margin:0; color:#0A0A0A; }
+  .opt-signals-body .signal h3 em { font-family:'Newsreader',Georgia,serif; font-style:italic; font-weight:400; }
+  .opt-signals-body .signal p { font-family:'Newsreader',Georgia,serif; font-size:26px; line-height:1.4; color:#1C1B1B; margin:0; }
+  .opt-signals-body .signal .stat { margin-top:auto; padding-top:18px; border-top:2px solid #0A0A0A; display:flex; align-items:baseline; gap:14px; }
+  .opt-signals-body .signal .stat .big { font-weight:800; font-size:56px; letter-spacing:-0.04em; line-height:1; color:#0A0A0A; }
+  .opt-signals-body .signal .stat .big .yel { background:#FFD600; padding:0 6px; box-shadow:4px 4px 0 0 #0A0A0A; }
+  .opt-signals-body .signal .stat .lbl-s { font-family:'JetBrains Mono','SF Mono',monospace; font-size:20px; letter-spacing:0.14em; text-transform:uppercase; color:#888780; font-weight:600; }
+
+  /* S14 · Q&A */
+  .opt-qa-body { position:absolute; inset:116px 96px 70px 96px; display:flex; flex-direction:column; justify-content:center; }
+  .opt-qa-body .lbl { font-family:'JetBrains Mono','SF Mono',monospace; font-size:28px; letter-spacing:0.22em; text-transform:uppercase; color:#888780; margin-bottom:32px; font-weight:600; }
+  .opt-qa-body h2 { font-weight:800; font-size:280px; letter-spacing:-0.05em; line-height:0.9; margin:0; color:#0A0A0A; }
+  .opt-qa-body h2 .y { color:#FFD600; }
+  .opt-qa-body h2 em { font-family:'Newsreader',Georgia,serif; font-style:italic; font-weight:400; }
+  .opt-qa-body .sub { font-family:'Newsreader',Georgia,serif; font-size:34px; line-height:1.3; color:#1C1B1B; margin-top:32px; max-width:1100px; }
+  .opt-qa-body .channels { margin-top:48px; display:flex; gap:40px; font-family:'JetBrains Mono','SF Mono',monospace; font-size:22px; letter-spacing:0.18em; text-transform:uppercase; color:#888780; font-weight:600; }
+  .opt-qa-body .channels strong { color:#0A0A0A; font-weight:700; }
+
+  /* S16 · APPENDIX */
+  .opt-ref-body { position:absolute; inset:116px 80px 70px 80px; display:grid; grid-template-rows:auto 1fr; gap:32px; }
+  .opt-ref-body .head { display:flex; align-items:baseline; justify-content:space-between; padding-bottom:24px; border-bottom:1.5px solid #0A0A0A; }
+  .opt-ref-body .head h2 { font-weight:800; font-size:60px; letter-spacing:-0.03em; line-height:1; margin:0; color:#0A0A0A; }
+  .opt-ref-body .head em { font-family:'Newsreader',Georgia,serif; font-style:italic; font-weight:400; }
+  .opt-ref-body .head .lbl { font-family:'JetBrains Mono','SF Mono',monospace; font-size:22px; letter-spacing:0.18em; text-transform:uppercase; color:#888780; font-weight:600; }
+  .opt-ref-body .body { display:grid; grid-template-columns:repeat(2, 1fr); gap:0 56px; }
+  .opt-ref-body .ref { padding:18px 0; border-bottom:1.5px solid #C4C7C7; display:grid; grid-template-columns:60px 1fr 100px; gap:16px; align-items:baseline; }
+  .opt-ref-body .ref .num { font-family:'JetBrains Mono','SF Mono',monospace; font-size:22px; letter-spacing:0.18em; color:#888780; }
+  .opt-ref-body .ref .ttl { font-weight:700; font-size:24px; letter-spacing:-0.01em; color:#0A0A0A; }
+  .opt-ref-body .ref .ttl .meta { display:block; font-family:'Newsreader',Georgia,serif; font-style:italic; font-size:20px; font-weight:400; color:#1C1B1B; margin-top:4px; letter-spacing:0; }
+  .opt-ref-body .ref .src { font-family:'JetBrains Mono','SF Mono',monospace; font-size:22px; letter-spacing:0.16em; color:#888780; text-align:right; text-transform:uppercase; font-weight:600; }
+
   /* Print CSS for A4 */
   /* ── Print CSS for A4 ── */
   @media print {
@@ -4150,7 +4332,7 @@ url: magnify.ing` }
 
   'presentacion': [
     { id: 'outpost-keynote', name: 'Outpost Keynote',
-      desc: 'Charla en directo de Outpost — ligne claire technical. Layouts opt-* (4 disponibles: title, divider, statement, closing). Activa con marca: outpost.',
+      desc: 'Charla en directo de Outpost — ligne claire technical. 16 layouts opt-* (title, toc, divider, statement, bullets, two, data, diagram, comparison, case, checklist, pipeline, signals, qa, closing, appendix). Activa con marca: outpost.',
       example: `tipo: presentacion
 marca: outpost
 titulo: Marca primero, ranking después
@@ -4170,6 +4352,23 @@ sesion: 15.MAY
 titular: Marca [primero], ranking después.
 subtitulo: Un subtítulo editorial breve que enmarca el problema y promete una lectura.
 ---
+slide: opt-toc
+acto: AGENDA
+tiempo: 25 MIN · 5 BLOQUES
+lbl: CONTENIDOS
+titular: El recorrido en cinco paradas.
+item1_titulo: Contexto y diagnóstico.
+item1_tc: 00:00 — 04:00
+item2_titulo: Las tres señales clave.
+item2_tc: 04:00 — 11:00
+item2_activo: si
+item3_titulo: Caso de éxito aplicado.
+item3_tc: 11:00 — 17:00
+item4_titulo: Manual práctico (lunes 9h).
+item4_tc: 17:00 — 22:00
+item5_titulo: Preguntas y cierre.
+item5_tc: 22:00 — 25:00
+---
 slide: opt-divider
 acto: ACTO 02 · LECTURA
 tiempo: 04:00 — 11:00
@@ -4187,6 +4386,198 @@ cita: El SEO siempre fue el objetivo.
   es [la marca].
 autor: D. Carrasco · Outpost
 ---
+slide: opt-bullets
+acto: ACTO 02 · LECTURA
+lbl: PUNTO 02 · LECTURA
+titular: Lo que cambia en cinco movimientos.
+subtitulo: No son tendencias. Son cambios estructurales que ya están dentro de tu producto.
+item1_h: El click [deja] de ser el evento.
+item1_d: La decisión sigue ocurriendo en la respuesta generativa.
+item2_h: La marca pasa a ser la query.
+item2_d: Buscan "X de [marca]" antes de buscar "X". O ya no buscan.
+item3_h: El contenido vive una vez, se cita mil.
+item3_d: El long-form no muere; se transforma en fuente para LLMs.
+item4_h: La autoridad sustituye al ranking.
+item4_d: No importa la posición, importa quién te cita y por qué.
+item5_h: El CTR es un indicador de marca.
+item5_d: Cliquean lo que reconocen. El SEO se vuelve branding aplicado.
+---
+slide: opt-two
+acto: ACTO 02 · LECTURA
+lbl_l: CONTEXTO · LECTURA
+titular: El [mapa] cambió antes que el territorio.
+cuerpo: Llevamos tres años hablando de SEO como si todavía fuera el juego principal. No lo es.
+  El motor de descubrimiento se desplazó. Lo que antes era una página de resultados ahora es una respuesta. Y la respuesta no se hojea: se acepta.
+  Los equipos que entendieron esto en 2024 ya están construyendo activos distintos.
+lbl_r: EVIDENCIA
+imagen: img1
+cita: "En seis meses pasamos de optimizar para el ranking a optimizar para la cita. Es otro deporte." — equipo de producto, sector SaaS, Q1 2026.
+---
+slide: opt-data
+acto: SEÑAL 01 · ZERO-CLICK
+lbl: SEÑAL 01 / 03 · ZERO-CLICK
+titular: El click ya no es el [evento].
+cuerpo: Las consultas que terminaban en la primera página caen mientras las respuestas generativas absorben tráfico.
+stat: 14
+sufijo: %
+stat_lbl: de consultas SGE
+  sin click registrado
+  Q1 → Q2 2026
+chart_titulo: FIG. 01
+chart_sub: CONSULTAS CON CLICK (%) · LATAM/ES
+chart_periodo: 2022 → 2026
+val1: 85
+lbl1: 2022
+val2: 80
+lbl2: 2023
+val3: 71
+lbl3: 2024
+val4: 55
+lbl4: 2025
+val5: 35
+lbl5: 2026
+---
+slide: opt-diagram
+acto: SEÑAL 02 · MARCO
+lbl: FIG. 02 · MARCO
+titular: El nuevo [triángulo].
+cuerpo: Tres vértices que antes eran disciplinas separadas. Hoy se solapan en la misma respuesta.
+v1: DESCUBRIMIENTO
+v2: DECISIÓN
+v3: REPUTACIÓN
+center: la respuesta
+leg1: DESCUBRIMIENTO · SEO + LLM
+leg2: DECISIÓN · CRO + EVIDENCIA
+leg3: REPUTACIÓN · MARCA + CITAS
+leg3_acc: si
+fig: FIG. 02
+---
+slide: opt-comparison
+acto: SEÑAL 03 · ANTES → DESPUÉS
+cap_a: ANTES · 2020-2023
+titular_a: El SEO como [juego] de posición.
+a1: Optimizar para 10 enlaces azules.
+a2: Backlinks como moneda dura.
+a3: Long-tail · keywords masivas.
+a4: El click es el éxito.
+a5: La marca es secundaria.
+stamp_a: modelo legacy
+cap_b: AHORA · 2025-2026
+titular_b: El SEO como [materia] de la marca.
+b1: Optimizar para una respuesta única.
+b2: Citas · menciones · autoridad.
+b3: Pocas piezas · profundidad alta.
+b4: La cita es el éxito.
+b5: La marca es la condición.
+stamp_b: modelo Outpost
+---
+slide: opt-case
+acto: ACTO 03 · CASO
+tiempo: 11:00 — 17:00
+logo: CL
+titular: Cliente X — de ranking a referencia.
+meta: SECTOR · B2B SAAS
+  SESIÓN · 8 MESES
+imagen: img2
+contexto: Líder de categoría en su mercado, invisible en respuestas generativas. CTR cayendo 30% interanual.
+accion: Reescribir la home y 12 piezas pilar como fuente de cita. Estructura de evidencia, datos propios, lenguaje editorial.
+resultado: Citado en 7 LLMs distintos. Tráfico no-marca +18%. Pipeline desde búsqueda +34%.
+r1_num: [7]
+r1_lbl: LLMs que lo citan
+  (de 9 testeados)
+r2_num: +34[%]
+r2_lbl: Pipeline desde
+  búsqueda · 6 meses
+r3_num: −42[%]
+r3_lbl: CAC interanual
+  en marca propia
+---
+slide: opt-checklist
+acto: ACTO 04 · MANUAL
+tiempo: 17:00 — 22:00
+lbl: MANUAL · ACCIONABLE
+titular: El [lunes] por la mañana.
+cuerpo: Seis pasos. Ningún consejo abstracto. Si tu equipo puede ejecutarlos esta semana, esta sesión sirvió.
+c1_h: Auditar 3 respuestas en 3 LLMs distintos.
+c1_d: Pregunta por tu producto, tu categoría y tu competidor. Anota qué citan.
+c1_meta: 15 MIN
+c1_done: si
+c2_h: Identificar las 5 piezas pilar.
+c2_d: Las que llevan tráfico real. Marcarlas. No tocarlas todavía.
+c2_meta: 30 MIN
+c2_done: si
+c3_h: Reescribir el lead de la home.
+c3_d: Que diga qué eres antes de qué haces. La marca antes del beneficio.
+c3_meta: 2 H
+c4_h: Añadir un dato propio a cada pieza pilar.
+c4_d: Algo que solo tú puedas decir. Es lo que las LLMs van a citar.
+c4_meta: 1 SEMANA
+c5_h: Medir CTR de marca vs no-marca.
+c5_d: Antes de cualquier cambio. Es tu nueva línea base.
+c5_meta: 15 MIN
+c6_h: Programar la próxima auditoría a 30 días.
+c6_d: Esto no es un proyecto. Es un ritmo.
+c6_meta: 5 MIN
+---
+slide: opt-pipeline
+acto: ACTO 04 · MANUAL
+titular: El [pipeline]. De señal a producto.
+lbl: FIG. 03 · 6 ESTACIONES
+s1_etq: CAPTAR
+s1_h: Señal
+s1_d: Algo cambió en datos, conversación o producto.
+s2_etq: LEER
+s2_h: Lectura
+s2_d: ¿Qué significa? ¿Para quién? ¿Por qué ahora?
+s3_etq: MARCO
+s3_h: Marco
+s3_d: Un modelo simple que la audiencia se lleve a casa.
+s3_active: si
+s4_etq: EVIDENCIA
+s4_h: Datos
+s4_d: Algo medible que solo tú puedas decir.
+s5_etq: ACCIÓN
+s5_h: Manual
+s5_d: Pasos concretos. Lunes 9h.
+s6_etq: CIERRE
+s6_h: Cita
+s6_d: Una frase que se pueda repetir sin ti.
+---
+slide: opt-signals
+acto: RESUMEN BLOQUE 02
+titular: Tres [señales]. Una dirección.
+lbl: RESUMEN · BLOQUE 02
+s1_n: 01 · ZERO-CLICK
+s1_h: El click ya no es el [evento].
+s1_d: La consulta termina en la respuesta, no en la página.
+s1_big: 14%
+s1_lbl: SGE sin click
+  Q1→Q2 2026
+s2_n: 02 · CITA
+s2_h: La cita vale más que el [ranking].
+s2_d: Las LLMs reorganizan la jerarquía. Citan a quien tiene autoridad.
+s2_big: 7/9
+s2_lbl: LLMs citando
+  marcas top
+s3_n: 03 · MARCA
+s3_h: La marca vuelve a ser la [query].
+s3_d: Buscan el nombre antes que la categoría.
+s3_big: +38%
+s3_lbl: Búsqueda marca
+  YoY 2026
+---
+slide: opt-qa
+acto: ACTO 05 · CIERRE
+tiempo: 22:00 — 25:00
+lbl: — ABRO TURNO DE PREGUNTAS
+titular: Q
+amp: &
+titular2: A
+subtitulo: Levanta la mano, escribe en el chat o quédate después de la sesión. La pregunta más rara suele ser la mejor.
+ch1: EN VIVO · LEVANTA LA MANO
+ch2: CHAT · #OUTPOST
+ch3: DESPUÉS · OUTPOST.SHOW
+---
 slide: opt-closing
 acto: ACTO 05 · CIERRE
 tiempo: 22:00 — 25:00
@@ -4195,7 +4586,45 @@ titular: Sigue las señales. Construye [marca].
 sub: Lo que viene no se predice — se observa. Mantén un puesto adelantado y comparte lo que veas.
 web: outpost.show
 youtube: /@outpost
-edicion: D. Carrasco P.` },
+edicion: D. Carrasco P.
+---
+slide: opt-appendix
+acto: APÉNDICE
+tiempo: FUENTES · LECTURAS
+titular: Apéndice — fuentes y lecturas.
+lbl: v1.0 · MAY 2026
+ref1_n: [01]
+ref1_t: SerpAPI · Zero-Click Report 2026
+ref1_meta: Análisis trimestral · LATAM/ES
+ref1_src: DATOS
+ref2_n: [02]
+ref2_t: Google · Search Quality Evaluator Guidelines
+ref2_meta: v15.4 · Diciembre 2025
+ref2_src: DOC
+ref3_n: [03]
+ref3_t: DC Analysis · LLM Citation Audit
+ref3_meta: 9 modelos · 240 categorías
+ref3_src: PROPIO
+ref4_n: [04]
+ref4_t: Outpost · Manifiesto editorial
+ref4_meta: outpost.show/manifiesto
+ref4_src: WEB
+ref5_n: [05]
+ref5_t: Marca como query · estudio Magnify
+ref5_meta: B2B SaaS · 12 meses
+ref5_src: PROPIO
+ref6_n: [06]
+ref6_t: Outpost EP_03 · IA, SEO y marca
+ref6_meta: 15 MAY 2026 · 27:34
+ref6_src: PODCAST
+ref7_n: [07]
+ref7_t: Newsletter · Señales semanales
+ref7_meta: Lunes 06:00 · ES
+ref7_src: EMAIL
+ref8_n: [08]
+ref8_t: Charla · Marca primero, ranking después
+ref8_meta: D.C.P. · MAR 2026
+ref8_src: VIDEO` },
     { id: 'diagnostico-marca', name: 'Diagnóstico de marca',
       desc: 'Deck interno/cliente con hallazgos y recomendaciones.',
       example: `tipo: presentacion
@@ -8184,9 +8613,21 @@ const PS_RENDERERS = {
   // Outpost Keynote (sub-variante para marca: outpost) — primer batch de 4 layouts.
   // Ver §6.outpost del BRIEF para schema completo.
   'opt-title': renderPsOptTitle,
+  'opt-toc': renderPsOptToc,
   'opt-divider': renderPsOptDivider,
   'opt-statement': renderPsOptStatement,
+  'opt-bullets': renderPsOptBullets,
+  'opt-two': renderPsOptTwo,
+  'opt-data': renderPsOptData,
+  'opt-diagram': renderPsOptDiagram,
+  'opt-comparison': renderPsOptComparison,
+  'opt-case': renderPsOptCase,
+  'opt-checklist': renderPsOptChecklist,
+  'opt-pipeline': renderPsOptPipeline,
+  'opt-signals': renderPsOptSignals,
+  'opt-qa': renderPsOptQa,
   'opt-closing': renderPsOptClosing,
+  'opt-appendix': renderPsOptAppendix,
 };
 
 // ── OUTPOST KEYNOTE RENDERERS ──────────────────────────────────────────────
@@ -8334,6 +8775,418 @@ function renderPsOptClosing(d, g, n, tot) {
         <div class="col"><div class="k">Web</div><div class="v">${web}</div></div>
         <div class="col"><div class="k">YouTube</div><div class="v">${youtube}</div></div>
         <div class="col"><div class="k">Edición</div><div class="v">${edicion}</div></div>
+      </div>
+    </div>
+    ${optRailBot(g, n, tot)}
+  </div></div>`;
+}
+
+// ── Outpost · BATCH 2: TOC, Bullets, Two-col, Data, Diagram, Comparison, Case,
+// Checklist, Pipeline, Signals, Q&A, Appendix. Mismo patrón: usan optHL para
+// brackets, optRailTop/Bot para chrome, leen campos numerados (item1_h, etc).
+
+function renderPsOptToc(d, g, n, tot) {
+  const items = [];
+  for (let i = 1; i <= 8; i++) {
+    if (d[`item${i}_titulo`] || d[`item${i}_t`] || d[`item${i}_ttl`]) {
+      items.push({
+        num: d[`item${i}_num`] || String(i).padStart(2, '0'),
+        ttl: d[`item${i}_titulo`] || d[`item${i}_t`] || d[`item${i}_ttl`] || '',
+        tc: d[`item${i}_tc`] || d[`item${i}_tiempo`] || '',
+        active: !!d[`item${i}_activo`] || d.activo === String(i),
+      });
+    }
+  }
+  const titular = optHL(d.titular || 'El recorrido en cinco paradas.');
+  return `<div class="frame ps"><div class="opt-slide">
+    ${optRailTop(d, g, false)}
+    <div class="opt-toc-body">
+      <div>
+        <div class="lbl">${safeText(d.lbl || 'CONTENIDOS')}</div>
+        <h2>${titular}</h2>
+      </div>
+      <div class="toc-list">
+        ${items.map(it => `<div class="toc-item${it.active ? ' active' : ''}">
+          <span class="num">${safeText(it.num)}<span class="dot">.</span></span>
+          <span class="ttl">${safeText(it.ttl)}</span>
+          <span class="tc">${safeText(it.tc)}</span>
+        </div>`).join('')}
+      </div>
+    </div>
+    ${optRailBot(g, n, tot)}
+  </div></div>`;
+}
+
+function renderPsOptBullets(d, g, n, tot) {
+  const rows = [];
+  for (let i = 1; i <= 8; i++) {
+    if (d[`item${i}_h`] || d[`item${i}_titulo`]) {
+      rows.push({
+        n: d[`item${i}_n`] || String(i).padStart(2, '0'),
+        h: d[`item${i}_h`] || d[`item${i}_titulo`] || '',
+        d: d[`item${i}_d`] || d[`item${i}_desc`] || '',
+      });
+    }
+  }
+  return `<div class="frame ps"><div class="opt-slide">
+    ${optRailTop(d, g, false)}
+    <div class="opt-bullets-body">
+      <div class="left">
+        <div class="lbl">${safeText(d.lbl || d.eyebrow || '')}</div>
+        <h2>${optHL(d.titular || '')}</h2>
+        ${d.subtitulo ? `<p>${safeText(d.subtitulo)}</p>` : ''}
+      </div>
+      <div class="b-list">
+        ${rows.map(r => `<div class="b-row">
+          <span class="n">${safeText(r.n)}</span>
+          <div>
+            <h3 class="h">${optHL(r.h)}</h3>
+            ${r.d ? `<p class="d">${optHL(r.d)}</p>` : ''}
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>
+    ${optRailBot(g, n, tot)}
+  </div></div>`;
+}
+
+function renderPsOptTwo(d, g, n, tot) {
+  const imgRef = (d.imagen || d.img || '').toString().trim().toLowerCase();
+  const imgUrl = uploadedImages[imgRef];
+  const picHtml = imgUrl
+    ? `<img src="${imgUrl}" alt="">`
+    : `<span class="ph">${imgRef ? 'falta ' + imgRef : 'screenshot · captura · gráfico'}</span>`;
+  const cuerpo = (d.cuerpo || '').split(/\n+/).filter(Boolean);
+  return `<div class="frame ps"><div class="opt-slide">
+    ${optRailTop(d, g, false)}
+    <div class="opt-two-body">
+      <div class="col left">
+        <div class="lbl">${safeText(d.lbl_l || d.eyebrow || 'CONTEXTO')}</div>
+        <h2>${optHL(d.titular || '')}</h2>
+        ${cuerpo.map(p => `<p>${optHL(p)}</p>`).join('')}
+      </div>
+      <div class="col right">
+        <div class="lbl">${safeText(d.lbl_r || 'EVIDENCIA')}</div>
+        <div class="pic">${picHtml}</div>
+        ${d.cita ? `<p>${optHL(d.cita)}</p>` : ''}
+      </div>
+    </div>
+    ${optRailBot(g, n, tot)}
+  </div></div>`;
+}
+
+function renderPsOptData(d, g, n, tot) {
+  // Chart: barras con 5 valores (val1..val5) y 5 etiquetas (lbl1..lbl5)
+  const bars = [];
+  for (let i = 1; i <= 6; i++) {
+    if (d[`val${i}`]) bars.push({ v: parseFloat(d[`val${i}`]) || 0, lbl: d[`lbl${i}`] || '' });
+  }
+  const maxV = Math.max(1, ...bars.map(b => b.v));
+  const barWidth = 100;
+  const xStart = 100;
+  const xStep = 140;
+  const chartHeight = 380;
+  const yBase = 420;
+  const stat = safeText(d.stat || '14');
+  const sufijo = safeText(d.sufijo || '%');
+  return `<div class="frame ps"><div class="opt-slide">
+    ${optRailTop(d, g, false)}
+    <div class="opt-data-body">
+      <div class="left">
+        <div class="lbl-faint">${safeText(d.lbl || 'DATO')}</div>
+        <h2>${optHL(d.titular || '')}</h2>
+        ${d.cuerpo ? `<p>${optHL(d.cuerpo)}</p>` : ''}
+        <div class="stat-block">
+          <div class="big">${stat}<sup>${sufijo}</sup></div>
+          <div class="lbl">${safeText(d.stat_lbl || d.stat_label || '').replace(/\n/g, '<br>')}</div>
+        </div>
+      </div>
+      <div class="chart">
+        <div class="ch-head">
+          <span><strong>${safeText(d.chart_titulo || 'FIG. 01')}</strong>${d.chart_sub ? ' · ' + safeText(d.chart_sub) : ''}</span>
+          <span>${safeText(d.chart_periodo || '')}</span>
+        </div>
+        <div class="ch-body">
+          <svg viewBox="0 0 800 460" preserveAspectRatio="none">
+            <g stroke="#C4C7C7" stroke-width="0.75">
+              <line x1="60" y1="40" x2="780" y2="40"/>
+              <line x1="60" y1="140" x2="780" y2="140"/>
+              <line x1="60" y1="240" x2="780" y2="240"/>
+              <line x1="60" y1="340" x2="780" y2="340"/>
+              <line x1="60" y1="420" x2="780" y2="420"/>
+            </g>
+            <line x1="60" y1="40" x2="60" y2="420" stroke="#0A0A0A" stroke-width="1.5"/>
+            <line x1="60" y1="420" x2="780" y2="420" stroke="#0A0A0A" stroke-width="1.5"/>
+            ${bars.map((b, i) => {
+              const h = (b.v / maxV) * chartHeight;
+              const y = yBase - h;
+              const x = xStart + i * xStep;
+              const isLast = i === bars.length - 1;
+              return `<rect x="${x}" y="${y}" width="${barWidth}" height="${h}" fill="${isLast ? '#FFD600' : '#0A0A0A'}"${isLast ? ' stroke="#0A0A0A" stroke-width="1.5"' : ''}/>`;
+            }).join('')}
+            <g font-family="JetBrains Mono, monospace" font-size="18" fill="#888780" text-anchor="middle">
+              ${bars.map((b, i) => `<text x="${xStart + i * xStep + barWidth/2}" y="445">${safeText(b.lbl)}</text>`).join('')}
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+    ${optRailBot(g, n, tot)}
+  </div></div>`;
+}
+
+function renderPsOptDiagram(d, g, n, tot) {
+  // Triángulo con 3 vértices nombrados. v1/v2/v3 con etiquetas top/left/right.
+  // Center label opcional.
+  const v1 = safeText(d.v1 || 'DESCUBRIMIENTO');
+  const v2 = safeText(d.v2 || 'DECISIÓN');
+  const v3 = safeText(d.v3 || 'REPUTACIÓN');
+  const center = safeText(d.center || 'la respuesta');
+  const items = [];
+  for (let i = 1; i <= 5; i++) {
+    if (d[`leg${i}`]) items.push({ txt: d[`leg${i}`], acc: d[`leg${i}_acc`] === 'si' || i === 3 });
+  }
+  return `<div class="frame ps"><div class="opt-slide">
+    ${optRailTop(d, g, false)}
+    <div class="opt-diagram-body">
+      <div class="left">
+        <div class="lbl">${safeText(d.lbl || 'FIG. 02 · MARCO')}</div>
+        <h2>${optHL(d.titular || 'El nuevo triángulo.')}</h2>
+        ${d.cuerpo ? `<p>${optHL(d.cuerpo)}</p>` : ''}
+        ${items.length ? `<div class="legend">
+          ${items.map(it => `<div class="item${it.acc ? ' acc' : ''}"><span class="dot"></span><span>${safeText(it.txt)}</span></div>`).join('')}
+        </div>` : ''}
+      </div>
+      <div class="right">
+        <span class="label-tl">${safeText(d.fig || 'FIG. 02')}</span>
+        <svg viewBox="0 100 700 540" preserveAspectRatio="xMidYMid meet">
+          <polygon points="350,220 600,560 100,560" fill="none" stroke="#0A0A0A" stroke-width="2"/>
+          <line x1="350" y1="220" x2="350" y2="560" stroke="#C4C7C7" stroke-width="0.75" stroke-dasharray="4 4"/>
+          <line x1="100" y1="560" x2="600" y2="560" stroke="#C4C7C7" stroke-width="0.75" stroke-dasharray="4 4"/>
+          <circle cx="350" cy="220" r="14" fill="#0A0A0A"/>
+          <circle cx="100" cy="560" r="14" fill="#0A0A0A"/>
+          <circle cx="600" cy="560" r="14" fill="#FFD600" stroke="#0A0A0A" stroke-width="2"/>
+          <text x="350" y="180" text-anchor="middle" font-family="Inter, sans-serif" font-size="26" font-weight="800">${v1}</text>
+          <text x="100" y="610" text-anchor="middle" font-family="Inter, sans-serif" font-size="26" font-weight="800">${v2}</text>
+          <text x="600" y="610" text-anchor="middle" font-family="Inter, sans-serif" font-size="26" font-weight="800">${v3}</text>
+          <text x="350" y="400" text-anchor="middle" font-family="Newsreader, serif" font-style="italic" font-size="26" fill="#888780">${center}</text>
+        </svg>
+      </div>
+    </div>
+    ${optRailBot(g, n, tot)}
+  </div></div>`;
+}
+
+function renderPsOptComparison(d, g, n, tot) {
+  const itemsA = [], itemsB = [];
+  for (let i = 1; i <= 8; i++) {
+    if (d[`a${i}`]) itemsA.push(d[`a${i}`]);
+    if (d[`b${i}`]) itemsB.push(d[`b${i}`]);
+  }
+  return `<div class="frame ps"><div class="opt-slide">
+    ${optRailTop(d, g, false)}
+    <div class="opt-comp-body">
+      <div class="col a">
+        <span class="cap">${safeText(d.cap_a || 'ANTES')}</span>
+        <h2>${optHL(d.titular_a || d.titulo_a || '')}</h2>
+        <ul>${itemsA.map(i => `<li>${optHL(i)}</li>`).join('')}</ul>
+        ${d.stamp_a ? `<span class="stamp">— ${safeText(d.stamp_a)}</span>` : ''}
+      </div>
+      <div class="col b">
+        <span class="cap">${safeText(d.cap_b || 'AHORA')}</span>
+        <h2>${optHL(d.titular_b || d.titulo_b || '')}</h2>
+        <ul>${itemsB.map(i => `<li>${optHL(i)}</li>`).join('')}</ul>
+        ${d.stamp_b ? `<span class="stamp" style="color:#FFD600;">— ${safeText(d.stamp_b)}</span>` : ''}
+      </div>
+    </div>
+    ${optRailBot(g, n, tot)}
+  </div></div>`;
+}
+
+function renderPsOptCase(d, g, n, tot) {
+  const imgRef = (d.imagen || '').toString().trim().toLowerCase();
+  const imgUrl = uploadedImages[imgRef];
+  const picHtml = imgUrl ? `<img src="${imgUrl}" alt="">` : `<span class="ph">${imgRef ? 'falta ' + imgRef : 'screenshot · before/after'}</span>`;
+  const results = [];
+  for (let i = 1; i <= 3; i++) {
+    if (d[`r${i}_num`]) results.push({ num: d[`r${i}_num`], lbl: d[`r${i}_lbl`] || '' });
+  }
+  return `<div class="frame ps"><div class="opt-slide">
+    ${optRailTop(d, g, false)}
+    <div class="opt-case-body">
+      <div class="head">
+        <div class="logo">${safeText(d.logo || 'CL')}</div>
+        <h2>${optHL(d.titular || '')}</h2>
+        <div class="meta">${safeText(d.meta || '').replace(/\n/g, '<br>')}</div>
+      </div>
+      <div class="body">
+        <div class="pic">${picHtml}</div>
+        <div class="narrative">
+          ${d.contexto ? `<div class="blk"><div class="k">Contexto</div><div class="v">${optHL(d.contexto)}</div></div>` : ''}
+          ${d.accion ? `<div class="blk"><div class="k">Acción</div><div class="v">${optHL(d.accion)}</div></div>` : ''}
+          ${d.resultado ? `<div class="blk"><div class="k">Resultado</div><div class="v">${optHL(d.resultado)}</div></div>` : ''}
+        </div>
+      </div>
+      <div class="results">
+        ${results.map(r => `<div class="r"><div class="num">${optHL(r.num)}</div><div class="lbl">${safeText(r.lbl).replace(/\n/g, '<br>')}</div></div>`).join('')}
+      </div>
+    </div>
+    ${optRailBot(g, n, tot)}
+  </div></div>`;
+}
+
+function renderPsOptChecklist(d, g, n, tot) {
+  const checks = [];
+  for (let i = 1; i <= 8; i++) {
+    if (d[`c${i}_h`]) {
+      checks.push({
+        done: d[`c${i}_done`] === 'si',
+        h: d[`c${i}_h`],
+        d: d[`c${i}_d`] || '',
+        meta: d[`c${i}_meta`] || '',
+      });
+    }
+  }
+  return `<div class="frame ps"><div class="opt-slide">
+    ${optRailTop(d, g, false)}
+    <div class="opt-list-body">
+      <div class="left">
+        <div class="lbl">${safeText(d.lbl || 'MANUAL · ACCIONABLE')}</div>
+        <h2>${optHL(d.titular || '')}</h2>
+        ${d.cuerpo ? `<p>${optHL(d.cuerpo)}</p>` : ''}
+      </div>
+      <div class="checks">
+        ${checks.map(c => `<div class="check${c.done ? ' done' : ''}">
+          <span class="box"></span>
+          <div>
+            <h3>${optHL(c.h)}</h3>
+            ${c.d ? `<p>${optHL(c.d)}</p>` : ''}
+          </div>
+          <span class="meta">${safeText(c.meta)}</span>
+        </div>`).join('')}
+      </div>
+    </div>
+    ${optRailBot(g, n, tot)}
+  </div></div>`;
+}
+
+function renderPsOptPipeline(d, g, n, tot) {
+  const stations = [];
+  for (let i = 1; i <= 8; i++) {
+    if (d[`s${i}_h`]) {
+      stations.push({
+        num: d[`s${i}_num`] || `0${i} · ${d[`s${i}_etq`] || ''}`,
+        h: d[`s${i}_h`],
+        d: d[`s${i}_d`] || '',
+        active: d[`s${i}_active`] === 'si' || d.activo === String(i),
+      });
+    }
+  }
+  return `<div class="frame ps"><div class="opt-slide">
+    ${optRailTop(d, g, false)}
+    <div class="opt-pipe-body">
+      <div class="head">
+        <h2>${optHL(d.titular || '')}</h2>
+        <span class="lbl">${safeText(d.lbl || 'FIG. 03 · ' + stations.length + ' ESTACIONES')}</span>
+      </div>
+      <div class="stations">
+        ${stations.map(s => `<div class="station${s.active ? ' active' : ''}">
+          <span class="num">${safeText(s.num)}</span>
+          <h3>${optHL(s.h)}</h3>
+          <p>${optHL(s.d)}</p>
+        </div>`).join('')}
+      </div>
+    </div>
+    ${optRailBot(g, n, tot)}
+  </div></div>`;
+}
+
+function renderPsOptSignals(d, g, n, tot) {
+  const signals = [];
+  for (let i = 1; i <= 3; i++) {
+    if (d[`s${i}_h`] || d[`s${i}_titulo`]) {
+      signals.push({
+        n: d[`s${i}_n`] || `0${i}`,
+        h: d[`s${i}_h`] || d[`s${i}_titulo`] || '',
+        d: d[`s${i}_d`] || d[`s${i}_desc`] || '',
+        big: d[`s${i}_big`] || d[`s${i}_stat`] || '',
+        lbl: d[`s${i}_lbl`] || '',
+      });
+    }
+  }
+  return `<div class="frame ps"><div class="opt-slide">
+    ${optRailTop(d, g, false)}
+    <div class="opt-signals-body">
+      <div class="top">
+        <h2>${optHL(d.titular || '')}</h2>
+        <span class="lbl">${safeText(d.lbl || 'RESUMEN')}</span>
+      </div>
+      <div class="signal-grid">
+        ${signals.map(s => `<div class="signal">
+          <span class="n">${safeText(s.n)}</span>
+          <h3>${optHL(s.h)}</h3>
+          ${s.d ? `<p>${optHL(s.d)}</p>` : ''}
+          ${s.big ? `<div class="stat"><div class="big"><span class="yel">${safeText(s.big)}</span></div><div class="lbl-s">${safeText(s.lbl).replace(/\n/g, '<br>')}</div></div>` : ''}
+        </div>`).join('')}
+      </div>
+    </div>
+    ${optRailBot(g, n, tot)}
+  </div></div>`;
+}
+
+function renderPsOptQa(d, g, n, tot) {
+  const channels = [];
+  for (let i = 1; i <= 4; i++) {
+    if (d[`ch${i}`]) channels.push(d[`ch${i}`]);
+  }
+  return `<div class="frame ps"><div class="opt-slide">
+    ${optRailTop(d, g, false)}
+    <div class="opt-qa-body">
+      <div class="lbl">${safeText(d.lbl || '— ABRO TURNO DE PREGUNTAS')}</div>
+      <h2>${safeText(d.titular || 'Q')}<span class="y">${safeText(d.amp || '&amp;')}</span>${safeText(d.titular2 || 'A')}<span style="color:#FFD600;">.</span></h2>
+      ${d.subtitulo ? `<p class="sub">${optHL(d.subtitulo)}</p>` : ''}
+      ${channels.length ? `<div class="channels">
+        ${channels.map(c => {
+          const m = c.match(/^([^·]+)·(.+)$/);
+          if (m) return `<span><strong>${safeText(m[1].trim())}</strong> · ${safeText(m[2].trim())}</span>`;
+          return `<span>${safeText(c)}</span>`;
+        }).join('')}
+      </div>` : ''}
+    </div>
+    ${optRailBot(g, n, tot)}
+  </div></div>`;
+}
+
+function renderPsOptAppendix(d, g, n, tot) {
+  const refs = [];
+  for (let i = 1; i <= 12; i++) {
+    if (d[`ref${i}_t`] || d[`ref${i}_titulo`]) {
+      refs.push({
+        num: d[`ref${i}_n`] || `[${String(i).padStart(2, '0')}]`,
+        ttl: d[`ref${i}_t`] || d[`ref${i}_titulo`] || '',
+        meta: d[`ref${i}_meta`] || '',
+        src: d[`ref${i}_src`] || '',
+      });
+    }
+  }
+  const half = Math.ceil(refs.length / 2);
+  const colA = refs.slice(0, half);
+  const colB = refs.slice(half);
+  const renderRef = (r) => `<div class="ref">
+    <span class="num">${safeText(r.num)}</span>
+    <div class="ttl">${safeText(r.ttl)}${r.meta ? `<span class="meta">${safeText(r.meta)}</span>` : ''}</div>
+    <span class="src">${safeText(r.src)}</span>
+  </div>`;
+  return `<div class="frame ps"><div class="opt-slide">
+    ${optRailTop(d, g, false)}
+    <div class="opt-ref-body">
+      <div class="head">
+        <h2>${optHL(d.titular || 'Apéndice — fuentes y lecturas.')}</h2>
+        <span class="lbl">${safeText(d.lbl || 'v1.0')}</span>
+      </div>
+      <div class="body">
+        <div>${colA.map(renderRef).join('')}</div>
+        <div>${colB.map(renderRef).join('')}</div>
       </div>
     </div>
     ${optRailBot(g, n, tot)}
