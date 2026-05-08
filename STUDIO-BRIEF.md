@@ -99,7 +99,7 @@ La marca usa `.ing-ap` como acento amarillo: `magnify.ing`, `prioritiz.ing`, `di
 | `case-study-longform` | Dossier (longform) | Editorial A4 16-20pp con divisores, TL;DR, visuals | PDF | [§5](#5-schema-yaml--dossier-longform-case-study-longform) |
 | `propuesta` | Propuesta | Propuesta comercial A4 multi-página | PDF | [§4.bis](#4bis-schema-yaml--propuesta-comercial-propuesta) |
 | `report-cover` | Portada Informe | Cover A4 standalone (794×1123) | PNG | [§3.sext](#3sext-schema-yaml--report-cover-portada-de-informe-a4) |
-| `presentacion` | Presentación | Slides 16:9 (1920×1080), 3 sub-variantes nativas | PPTX | [§6](#6-schema-yaml--presentación-charla--keynote) |
+| `presentacion` | Presentación | Slides 16:9 (1920×1080), 3 sub-variantes Magnify nativas + **Outpost Keynote** (16 layouts opt-* con `marca: outpost`) | PPTX | [§6](#6-schema-yaml--presentación-charla--keynote) · [§6.outpost](#6outpost-schema-yaml--outpost-keynote-sub-variante-de-presentacion-para-marca-outpost) |
 | `documento` | Documento (MD) | Markdown estándar formateado a A4 editorial | PDF | [§6.ter](#6ter-schema-markdown--documento-markdown-a-a4-editorial) |
 | `email-sig` | Firma Email | Bloque HTML 600px para firma de email | HTML inline | [§3.sept](#3sept-schema-yaml--email-sig-firma-de-email) |
 | `html-deck` | Deck HTML (plantilla externa) | 32 plantillas HTML curadas (zarazhangrui/beautiful-html-templates). NO usa YAML, customiza paleta sobre HTML | HTML | [§3.beta](#3beta-tipo-html-deck--plantillas-externas) |
@@ -1551,6 +1551,252 @@ paginacion: no       # no = sin contador, default = paginación XX/XX
 8. **Crescendo invertido del amarillo en charla**: a diferencia del dossier (donde el amarillo solo cierra), en charla el amarillo abre los 3 actos. Sigue siendo una decisión estructural, no decorativa.
 9. **Las letras griegas marker (Α/Β/Γ) sobre amarillo van en gris oscuro `#444444`**, no en negro puro. Es el contraste editorial que diferencia un Magnify de un PowerPoint corporate.
 10. **Texto sobre oscuro a `#F0F0F0`, NUNCA `#FFFFFF`**. La diferencia es sutil pero clave para que la pantalla no queme.
+
+---
+
+## 6.outpost Schema YAML — Outpost Keynote (sub-variante de presentacion para `marca: outpost`)
+
+> Sub-variante editorial para charlas en directo de Outpost. Tono **ligne claire technical** / cómic europeo + Magnify. 16 layouts con prefijo `opt-*`, distintos a los slides nativos de presentación Magnify. Activa automáticamente cuando el frontmatter declara `marca: outpost`. Frame 1920×1080. Export PPTX (best-effort) + PDF (recomendado para fidelidad de SVG y tipografía).
+
+### Bloque global
+
+```yaml
+tipo: presentacion
+marca: outpost
+titulo: Marca primero, ranking después
+autor: D. Carrasco P.
+fecha: 15 MAY 2026
+canal: OUTPOST.SHOW
+```
+
+| Campo | Notas |
+|---|---|
+| `marca: outpost` | **Requerido** para activar el sistema visual Outpost (Inter + Newsreader + JetBrains Mono, paper crema #F5F5F0, faro como ilustración). Alias deprecado `proyecto: outpost` también acepta. |
+| `titulo` | Título del deck. Lo usan opt-title como fallback del titular y los rails. |
+| `autor` | Speaker. Default en opt-title.speaker y opt-closing.edicion. |
+| `fecha` | Fecha de la sesión. Aparece en rails y opt-title.specs. |
+| `canal` | Canal/URL en el footer. Default `OUTPOST.SHOW`. |
+
+### Chrome común (todos los slides)
+
+Cada slide lleva 2 rails fijos generados automáticamente:
+- **rail-top** (56px): wordmark Outpost (mark + UTPOST) · `acto:` (eyebrow yellow en dark) · `tiempo:` o `fecha:` (right).
+- **rail-bot** (56px): "UN CANAL DE MAGNIFY" · `canal:` global · paginación NN/TT.
+
+Campos comunes que cualquier slide opt-* puede declarar:
+- `acto:` — etiqueta del rail-top (ej. "ACTO 02 · LECTURA"). Si vacío, fallback "KEYNOTE".
+- `tiempo:` — tiempo del rail-top (ej. "04:00 — 11:00"). Fallback `fecha`.
+
+Brackets `[palabra]` en titulares y cuerpos → highlight amarillo (vía `optHL`). Sin chip-de-mayúsculas como en Outpost normal — en charla queremos el highlight editorial siempre.
+
+### `opt-title` — Cover (S1)
+
+Cover con crop marks + grid 1.4fr/1fr. Izquierda: meta strip + h1 (156px) + subtítulo serif. Derecha: pane bordered con badge top, lighthouse frame + specs grid 4 campos.
+
+| Campo | Notas |
+|---|---|
+| `acto`, `formato_etq` | Pills meta arriba ("DECK 01", "[KEYNOTE]"). |
+| `fecha` | Tercer pill meta. |
+| `serial` | Badge top del pane derecho ("SERIAL_NO 01-26"). |
+| `duracion`, `formato`, `speaker`, `sesion` | 4 specs del pane derecho. Defaults razonables. |
+| `titular` | h1 156px. Brackets `[palabra]` → highlight amarillo con shadow. |
+| `subtitulo` | Serif 30px. |
+
+### `opt-toc` — Agenda (S2)
+
+Grid 380px / 1fr. Izquierda: lbl mono + h2 96px. Derecha: lista 5-8 items con num/título/tiempo, bordes 1.5px.
+
+| Campo | Notas |
+|---|---|
+| `lbl` | Etiqueta mono uppercase ("CONTENIDOS"). |
+| `titular` | h2 grande. |
+| `itemN_titulo` | Texto del bullet (N de 1 a 8). |
+| `itemN_tc` | Tiempo a la derecha ("00:00 — 04:00"). |
+| `itemN_activo` | `si` resalta esa fila con ◆ amarillo. |
+
+### `opt-divider` — Section divider dark (S3)
+
+Surface oscura `#0a0908` con faro full-bleed izquierda + gradiente fade. Body posicionado a la derecha.
+
+| Campo | Notas |
+|---|---|
+| `top` | Eyebrow yellow ("SECCIÓN 02 · ACTO 02"). |
+| `titular` | h2 220px (sí, gigante). Brackets aplican. |
+| `sub` | Serif italic 38px tenue debajo. |
+
+### `opt-statement` — Quote / lectura editorial (S4)
+
+Surface paper. Blockquote serif 92px con cita central, opcional cite mono.
+
+| Campo | Notas |
+|---|---|
+| `open` | Eyebrow mono "— MOMENTO 13:34 · LECTURA EDITORIAL". |
+| `cita` | Texto de la cita. Saltos de línea preservados. Brackets `[palabra]` → bg amarillo grande. Para "tachado" usa una variante futura (no implementada en v1). |
+| `autor` | Cite al pie ("— D. Carrasco · Outpost"). |
+
+### `opt-bullets` — 5 movimientos / principios (S5)
+
+Grid 1fr / 1.6fr. Izquierda: meta + h2 + descripción. Derecha: 8 rows max con num + h + d.
+
+| Campo | Notas |
+|---|---|
+| `lbl` | Eyebrow mono. |
+| `titular`, `subtitulo` | h2 + descripción. |
+| `itemN_h` | Headline del bullet (sans bold 38px). Brackets aplican. |
+| `itemN_d` | Descripción serif 28px. |
+
+### `opt-two` — Two-column con foto (S6)
+
+Grid 1fr / 1fr. Izquierda: editorial (lbl + h2 + cuerpo). Derecha: card paper-cool con pic + cita.
+
+| Campo | Notas |
+|---|---|
+| `lbl_l`, `lbl_r` | Eyebrows izq/dcha. |
+| `titular` | h2 izquierdo. |
+| `cuerpo` | Párrafos serif (saltos de línea separan). |
+| `imagen` | ID de upload (img1, img2…). Si falta, placeholder con stripe. |
+| `cita` | Pull-quote derecho debajo de la pic. |
+
+### `opt-data` — Stat block + chart de barras (S7)
+
+Grid 1fr / 1.4fr. Izquierda: stat-block grande (88px) con shadow amarilla. Derecha: chart SVG dinámico con 5-6 barras.
+
+| Campo | Notas |
+|---|---|
+| `lbl` | Eyebrow mono ("SEÑAL 01 / 03 · ZERO-CLICK"). |
+| `titular` | h2 68px. Brackets como `<span class="yel">` con bg amarillo. |
+| `cuerpo` | Párrafo serif. |
+| `stat`, `sufijo` | Big stat (ej. `14`, `%`). El sufijo va elevado en amarillo. |
+| `stat_lbl` | Etiqueta debajo de la stat (mono multilínea con `\n`). |
+| `chart_titulo`, `chart_sub`, `chart_periodo` | Header del chart. |
+| `valN`, `lblN` | Hasta 6 barras con valor numérico + etiqueta debajo. La última barra sale amarilla automáticamente. |
+
+### `opt-diagram` — Triángulo SVG (S8)
+
+Grid 380px / 1fr. Izquierda: meta + leyenda 3-5 items. Derecha: card paper-cool con triángulo SVG (3 vértices nombrables, center label opcional).
+
+| Campo | Notas |
+|---|---|
+| `lbl`, `titular`, `cuerpo` | Editorial izquierdo. |
+| `v1`, `v2`, `v3` | Etiquetas de los tres vértices (top, bottom-left, bottom-right). El v3 sale amarillo. |
+| `center` | Etiqueta central serif italic ("la respuesta"). |
+| `legN` | Items de la leyenda izquierda (1-5). |
+| `legN_acc` | `si` marca ese item como acento amarillo (default: leg3 si existe). |
+| `fig` | Etiqueta "FIG. 02" arriba izq del card. |
+
+### `opt-comparison` — Antes / Después (S9)
+
+Grid 1fr / 1fr. Col A clara, col B oscura.
+
+| Campo | Notas |
+|---|---|
+| `cap_a`, `cap_b` | Eyebrows mono ("ANTES · 2020-2023" / "AHORA · 2025-2026"). |
+| `titular_a`, `titular_b` | h2 76px por columna. |
+| `aN`, `bN` | Hasta 8 items por columna (lista con guión). |
+| `stamp_a`, `stamp_b` | Stamp final mono ("modelo legacy"). El stamp B sale amarillo. |
+
+### `opt-case` — Caso de estudio (S10)
+
+Grid auto / 1fr / auto. Head con logo + titular + meta · body con pic + narrative · 3 results.
+
+| Campo | Notas |
+|---|---|
+| `logo` | Iniciales del cliente en cuadro 80×80 ("CL"). |
+| `titular` | h2 60px. |
+| `meta` | Texto multilínea derecho ("SECTOR · B2B SAAS"). |
+| `imagen` | ID del screenshot/before-after. |
+| `contexto`, `accion`, `resultado` | 3 bloques narrativa serif con eyebrow mono. |
+| `rN_num`, `rN_lbl` | Hasta 3 resultados. Brackets en num → amarillo (ej. `[7]`, `+34[%]`). |
+
+### `opt-checklist` — Manual accionable (S11)
+
+Grid 1fr / 1.4fr. Izquierda: meta + h2 + descripción. Derecha: 6-8 checks con box (done/pending) + h + d + meta tiempo.
+
+| Campo | Notas |
+|---|---|
+| `lbl`, `titular`, `cuerpo` | Editorial izquierdo. |
+| `cN_h` | Headline del check. |
+| `cN_d` | Descripción serif. |
+| `cN_meta` | Tiempo derecho ("15 MIN", "1 SEMANA"). |
+| `cN_done` | `si` rellena el box en negro con ✓ amarillo. |
+
+### `opt-pipeline` — 6 estaciones (S12)
+
+Header con titular + lbl. 6 estaciones horizontales con num+h+d, flecha entre cada una. La activa va amarilla.
+
+| Campo | Notas |
+|---|---|
+| `titular`, `lbl` | Header. |
+| `sN_etq` | Etiqueta del num ("CAPTAR", "LEER"). El renderer prefija "0N · ". |
+| `sN_h` | Headline serif/sans 32px. |
+| `sN_d` | Descripción serif. |
+| `sN_active` | `si` marca esa estación como amarilla (alternativa: `activo: 3` en el slide global). |
+
+### `opt-signals` — 3-up grid (S13)
+
+Header (h2 + lbl) + grid de 3 columnas con n / h / d / stat-big + lbl-s.
+
+| Campo | Notas |
+|---|---|
+| `titular`, `lbl` | Header. |
+| `sN_n` | Eyebrow mono ("01 · ZERO-CLICK"). |
+| `sN_h` | h3 38px. |
+| `sN_d` | Descripción serif. |
+| `sN_big` | Stat dominante (ej. "14%") — sale en amarillo con shadow. |
+| `sN_lbl` | Etiqueta multilínea (sans mono uppercase). |
+
+### `opt-qa` — Q&A (S14)
+
+h2 280px gigante con `&` amarillo en el medio. Sub serif + 3 channels mono.
+
+| Campo | Notas |
+|---|---|
+| `lbl` | Eyebrow ("— ABRO TURNO DE PREGUNTAS"). |
+| `titular`, `amp`, `titular2` | Default `Q` + `&` + `A`. Cambiar si quieres ("Pre" + `&` + "guntas"). |
+| `subtitulo` | Serif. |
+| `chN` | 1-4 channels formato `"EN VIVO · LEVANTA LA MANO"`. El `·` separa label/desc; el label sale en bold. |
+
+### `opt-closing` — Sign-off (S15)
+
+Surface oscura. Top eyebrow yellow + h2 168px + sub italic + foot grid 4 cols.
+
+| Campo | Notas |
+|---|---|
+| `top` | Eyebrow yellow ("— CIERRE · TAKE-AWAYS"). |
+| `titular` | h2 168px. Brackets aplican. |
+| `sub` | Serif italic. |
+| `web`, `youtube`, `edicion` | 3 cols del footer (defaults razonables). |
+
+### `opt-appendix` — Refs / fuentes (S16)
+
+Head con titular + lbl + body 2 cols con refs (num + ttl + meta + src).
+
+| Campo | Notas |
+|---|---|
+| `titular`, `lbl` | Header. |
+| `refN_n` | Numeración ("[01]"). |
+| `refN_t` | Título de la referencia. |
+| `refN_meta` | Meta italic serif debajo. |
+| `refN_src` | Etiqueta tipo (DATOS, DOC, PROPIO, WEB, PODCAST, EMAIL, VIDEO). |
+
+### Reglas operativas
+
+- **Asset ilustración**: el faro vive en `projects/outpost/illustrations/lighthouse-comic.png` (vendoreado del design tool). Aparece en opt-title (35% opacity, mix-blend multiply) y opt-divider (45% opacity full-bleed).
+- **Tipografías**: se cargan vía `loadBrandFontsCss` cuando `marca: outpost` está activa. Inter (sans), Newsreader (serif italic), JetBrains Mono. Con marca Magnify activa, fallback Helvetica/Georgia/SF Mono.
+- **Crop marks** solo en opt-title (es la portada). Resto sin crop marks.
+- **Surface dark** en opt-divider y opt-closing — son los dos momentos de cambio narrativo (entrada de bloque + cierre). Resto paper crema.
+- **Highlights `[palabra]`** funcionan en cualquier titular o cuerpo dentro de opt-*. NO funciona la heurística de mayúsculas-como-chip de Outpost normal — en charla queremos siempre highlight editorial.
+- **Composición tipo**: title → toc → 2-3 actos (cada uno divider + statement + bullets/two/data/diagram + comparison + case + checklist) → signals (resumen) → qa → closing → appendix opcional. ~14-18 slides para charla de 25 min.
+- **Crescendo amarillo**: el yellow se reserva para títulos clave, stat dominante, accent en diagrama y stamps. NO usar como background general (eso hace los slides comerciales, no editoriales).
+
+### Workflow para generar un deck Outpost
+
+1. Decide la estructura del bloque (acto 01, 02, …) y el reparto de tiempos.
+2. Pega un YAML con el frontmatter global (marca: outpost) + slides en orden.
+3. Sube el faro si quieres ver opt-title/opt-divider con la ilustración (ya está vendoreada en `projects/outpost/illustrations/`).
+4. Cualquier imagen específica del deck (screenshots para opt-two, opt-case) la subes a la zona de uploads y referencias como `imagen: img1`, etc.
+5. **Generar Preview** → revisa cada slide.
+6. **Exportar** → PDF para fidelidad visual; PPTX si necesitas editabilidad de texto en PowerPoint (los SVG del diagram y chart se rasterizan).
 
 ---
 
