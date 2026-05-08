@@ -2506,6 +2506,184 @@
   .ps-slide.lt .ps-std .body-xl, .ps-slide.yl .ps-std .body-xl { color:var(--bg); }
   .ps-std em { font-style:italic; }
 
+  /* ── OUTPOST KEYNOTE (sub-variante de presentacion para marca: outpost) ──
+     16:9 1920×1080. Tono "ligne claire technical" — paper crema, ink negro, accent amarillo,
+     rails con metadata mono, crop marks en title. Tipografía: Inter (sans), Newsreader (serif),
+     JetBrains Mono. Portado del design de claude.ai/design (deck-master 16 layouts).
+     Esta primera tanda implementa 4: opt-title, opt-divider, opt-statement, opt-closing. */
+  .opt-slide {
+    position:absolute; inset:0; box-sizing:border-box;
+    background:#F5F5F0; color:#0A0A0A;
+    font-family:'Inter','Helvetica Neue',Arial,sans-serif;
+    overflow:hidden;
+  }
+  .opt-slide.dk { background:#0a0908; color:#F5F5F0; }
+  .opt-rail-top, .opt-rail-bot {
+    position:absolute; left:0; right:0; height:56px;
+    display:flex; align-items:center; padding:0 64px; gap:32px;
+    font-family:'JetBrains Mono','SF Mono',monospace; font-size:24px;
+    letter-spacing:0.16em; text-transform:uppercase; color:#888780;
+  }
+  .opt-rail-top { top:0; border-bottom:1.5px solid #0A0A0A; }
+  .opt-rail-bot { bottom:0; border-top:1.5px solid #0A0A0A; }
+  .opt-slide.dk .opt-rail-top { border-bottom-color:rgba(245,245,240,0.4); color:rgba(245,245,240,0.65); }
+  .opt-slide.dk .opt-rail-bot { border-top-color:rgba(245,245,240,0.4); color:rgba(245,245,240,0.5); }
+  .opt-rail-top .wm, .opt-rail-bot .mag {
+    display:inline-flex; align-items:center; gap:10px;
+    font-weight:900; font-size:32px; letter-spacing:-0.04em;
+    text-transform:none; color:#0A0A0A;
+  }
+  .opt-slide.dk .opt-rail-top .wm { color:#F5F5F0; }
+  .opt-rail-top .ep { color:#0A0A0A; font-weight:600; }
+  .opt-slide.dk .opt-rail-top .ep { color:#FFD600; }
+  .opt-rail-top .right, .opt-rail-bot .right { margin-left:auto; }
+  .opt-rail-top .right strong, .opt-rail-bot .pn, .opt-rail-bot .ch { color:#0A0A0A; font-weight:700; }
+  .opt-slide.dk .opt-rail-top .right strong, .opt-slide.dk .opt-rail-bot .pn, .opt-slide.dk .opt-rail-bot .ch { color:#F5F5F0; }
+  .opt-rail-bot .mag { font-size:24px; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; }
+  .opt-rail-bot .mag strong { font-weight:900; letter-spacing:-0.04em; text-transform:none; font-size:28px; }
+  .opt-mark-svg { width:40px; height:40px; flex-shrink:0; }
+  /* Crop marks (title only) */
+  .opt-crop { position:absolute; width:24px; height:24px; pointer-events:none; }
+  .opt-crop::before, .opt-crop::after { content:''; position:absolute; background:#0A0A0A; }
+  .opt-crop.tl { top:16px; left:16px; }
+  .opt-crop.tl::before { width:24px; height:1px; top:0; left:0; }
+  .opt-crop.tl::after { width:1px; height:24px; top:0; left:0; }
+  .opt-crop.tr { top:16px; right:16px; }
+  .opt-crop.tr::before { width:24px; height:1px; top:0; right:0; }
+  .opt-crop.tr::after { width:1px; height:24px; top:0; right:0; }
+  .opt-crop.bl { bottom:16px; left:16px; }
+  .opt-crop.bl::before { width:24px; height:1px; bottom:0; left:0; }
+  .opt-crop.bl::after { width:1px; height:24px; bottom:0; left:0; }
+  .opt-crop.br { bottom:16px; right:16px; }
+  .opt-crop.br::before { width:24px; height:1px; bottom:0; right:0; }
+  .opt-crop.br::after { width:1px; height:24px; bottom:0; right:0; }
+
+  /* S1 · TITLE */
+  .opt-title-body {
+    position:absolute; inset:80px 96px 80px 96px;
+    display:grid; grid-template-columns:1.4fr 1fr; gap:80px; align-items:center;
+  }
+  .opt-title-body .lh-bg {
+    position:absolute; right:-96px; bottom:-80px; width:55%; height:78%; pointer-events:none;
+    background-image:url('projects/outpost/illustrations/lighthouse-comic.png');
+    background-size:cover; background-position:center right;
+    opacity:0.30; mix-blend-mode:multiply;
+  }
+  .opt-title-body .left { z-index:2; }
+  .opt-title-body .meta {
+    font-family:'JetBrains Mono','SF Mono',monospace; font-size:24px;
+    letter-spacing:0.18em; text-transform:uppercase; color:#888780;
+    margin-bottom:32px; display:flex; gap:28px; align-items:center;
+  }
+  .opt-title-body .meta .ser { background:#FFD600; color:#0A0A0A; padding:6px 14px; font-weight:700; font-size:24px; }
+  .opt-title-body h1 { font-weight:800; font-size:156px; letter-spacing:-0.045em; line-height:0.86; margin:0; color:#0A0A0A; }
+  .opt-title-body h1 em { font-family:'Newsreader',Georgia,serif; font-style:italic; font-weight:400; letter-spacing:-0.02em; }
+  .opt-title-body h1 .yel { position:relative; }
+  .opt-title-body h1 .yel::after { content:''; position:absolute; left:-4px; right:-4px; bottom:6px; height:26px; background:#FFD600; z-index:-1; box-shadow:4px 4px 0 0 #0A0A0A; }
+  .opt-title-body .subtitle {
+    font-family:'Newsreader',Georgia,serif; font-size:30px; line-height:1.4;
+    color:#1C1B1B; margin-top:36px; max-width:720px;
+  }
+  .opt-title-body .right-pane {
+    z-index:2; border:2.5px solid #0A0A0A; padding:32px;
+    aspect-ratio:4/5; display:flex; flex-direction:column; justify-content:space-between;
+    background:#FBFBF6; position:relative; box-shadow:10px 10px 0 0 #0A0A0A;
+  }
+  .opt-title-body .right-pane .badge-top {
+    position:absolute; top:-1.5px; left:-1.5px; background:#0A0A0A; color:#F5F5F0;
+    padding:8px 16px; font-family:'JetBrains Mono','SF Mono',monospace; font-size:24px;
+    letter-spacing:0.16em; text-transform:uppercase;
+  }
+  .opt-title-body .right-pane .lh-frame {
+    flex:1; margin:8px 0; background:#0a0908; position:relative; overflow:hidden;
+  }
+  .opt-title-body .right-pane .lh-frame img {
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:right center;
+  }
+  .opt-title-body .right-pane .specs { display:grid; grid-template-columns:1fr 1fr; gap:14px 32px; }
+  .opt-title-body .right-pane .specs .k {
+    font-family:'JetBrains Mono','SF Mono',monospace; font-size:24px;
+    letter-spacing:0.14em; color:#888780; text-transform:uppercase;
+  }
+  .opt-title-body .right-pane .specs .v { font-weight:700; font-size:28px; margin-top:4px; color:#0A0A0A; }
+
+  /* S3 · DIVIDER (DARK) */
+  .opt-divider-body {
+    position:absolute; inset:56px 96px 56px 96px;
+    display:flex; flex-direction:column; justify-content:center;
+  }
+  .opt-divider-body .lh-bg {
+    position:absolute; left:-96px; top:-56px; width:60%; height:calc(100% + 112px);
+    background-image:url('projects/outpost/illustrations/lighthouse-comic.png');
+    background-size:cover; background-position:right center; opacity:0.45; pointer-events:none;
+  }
+  .opt-divider-body .lh-fade {
+    position:absolute; left:-96px; top:-56px; width:calc(100% + 192px); height:calc(100% + 112px);
+    background:linear-gradient(90deg, rgba(10,9,8,0.4) 0%, rgba(10,9,8,0.85) 55%, rgba(10,9,8,1) 80%);
+    pointer-events:none;
+  }
+  .opt-divider-body .body { position:relative; z-index:2; max-width:1500px; margin-left:auto; }
+  .opt-divider-body .top {
+    font-family:'JetBrains Mono','SF Mono',monospace; font-size:28px;
+    letter-spacing:0.22em; text-transform:uppercase; color:#FFD600; margin-bottom:40px;
+  }
+  .opt-divider-body h2 { font-weight:800; font-size:220px; letter-spacing:-0.05em; line-height:0.85; margin:0; color:#F5F5F0; }
+  .opt-divider-body h2 .yel { color:#FFD600; }
+  .opt-divider-body h2 em { font-family:'Newsreader',Georgia,serif; font-style:italic; font-weight:400; }
+  .opt-divider-body .sub {
+    font-family:'Newsreader',Georgia,serif; font-style:italic; font-size:38px; line-height:1.3;
+    color:rgba(245,245,240,0.7); margin-top:40px; max-width:1100px;
+  }
+
+  /* S4 · STATEMENT */
+  .opt-statement-body {
+    position:absolute; inset:132px 140px 96px 140px;
+    display:flex; flex-direction:column; justify-content:center;
+  }
+  .opt-statement-body .open {
+    font-family:'JetBrains Mono','SF Mono',monospace; font-size:26px;
+    letter-spacing:0.22em; text-transform:uppercase; color:#888780; margin-bottom:32px;
+  }
+  .opt-statement-body blockquote {
+    font-family:'Newsreader',Georgia,serif; font-size:92px; line-height:1.06;
+    letter-spacing:-0.02em; margin:0; font-weight:400; color:#0A0A0A;
+  }
+  .opt-statement-body blockquote em { font-style:italic; }
+  .opt-statement-body blockquote .yel { background:#FFD600; padding:0 14px; }
+  .opt-statement-body blockquote .strike { text-decoration:line-through; text-decoration-thickness:4px; color:#888780; }
+  .opt-statement-body cite {
+    display:block; margin-top:40px; font-family:'JetBrains Mono','SF Mono',monospace;
+    font-size:24px; letter-spacing:0.18em; text-transform:uppercase; color:#888780; font-style:normal;
+  }
+
+  /* S15 · CLOSING */
+  .opt-closing-body {
+    position:absolute; inset:80px 96px 80px 96px;
+    display:grid; grid-template-rows:auto 1fr auto; gap:40px;
+  }
+  .opt-closing-body .top {
+    font-family:'JetBrains Mono','SF Mono',monospace; font-size:28px;
+    letter-spacing:0.22em; text-transform:uppercase; color:#FFD600;
+  }
+  .opt-closing-body .body h2 { font-weight:800; font-size:168px; letter-spacing:-0.05em; line-height:0.9; margin:0; color:#F5F5F0; }
+  .opt-closing-body .body h2 em { font-family:'Newsreader',Georgia,serif; font-style:italic; font-weight:400; }
+  .opt-closing-body .body h2 .yel { color:#FFD600; }
+  .opt-closing-body .body .sub {
+    font-family:'Newsreader',Georgia,serif; font-style:italic; font-size:36px; line-height:1.3;
+    color:rgba(245,245,240,0.75); margin-top:24px; max-width:1300px;
+  }
+  .opt-closing-body .foot {
+    display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:32px; align-items:end;
+    padding-top:28px; border-top:1.5px solid rgba(245,245,240,0.4);
+  }
+  .opt-closing-body .foot .channel { display:flex; align-items:center; gap:16px; }
+  .opt-closing-body .foot .channel .wm { font-weight:900; font-size:40px; letter-spacing:-0.04em; line-height:1; color:#F5F5F0; }
+  .opt-closing-body .foot .col .k {
+    font-family:'JetBrains Mono','SF Mono',monospace; font-size:24px;
+    letter-spacing:0.18em; text-transform:uppercase; color:rgba(245,245,240,0.5); margin-bottom:6px;
+  }
+  .opt-closing-body .foot .col .v { font-weight:700; font-size:26px; color:#F5F5F0; }
+
   /* Print CSS for A4 */
   /* ── Print CSS for A4 ── */
   @media print {
@@ -3971,6 +4149,53 @@ url: magnify.ing` }
   ],
 
   'presentacion': [
+    { id: 'outpost-keynote', name: 'Outpost Keynote',
+      desc: 'Charla en directo de Outpost — ligne claire technical. Layouts opt-* (4 disponibles: title, divider, statement, closing). Activa con marca: outpost.',
+      example: `tipo: presentacion
+marca: outpost
+titulo: Marca primero, ranking después
+autor: D. Carrasco P.
+fecha: 15 MAY 2026
+canal: OUTPOST.SHOW
+---
+slide: opt-title
+acto: DECK 01
+formato_etq: [KEYNOTE]
+fecha: 15 MAY 2026
+serial: SERIAL_NO 01-26
+duracion: 25 min
+formato: Charla
+speaker: D.C.P.
+sesion: 15.MAY
+titular: Marca [primero], ranking después.
+subtitulo: Un subtítulo editorial breve que enmarca el problema y promete una lectura.
+---
+slide: opt-divider
+acto: ACTO 02 · LECTURA
+tiempo: 04:00 — 11:00
+top: SECCIÓN 02 · ACTO 02
+titular: Tres señales del [presente].
+sub: Lo que vemos en datos, conversaciones y producto.
+---
+slide: opt-statement
+acto: ACTO 02 · LECTURA
+tiempo: 04:00 — 11:00
+open: — MOMENTO 13:34 · LECTURA EDITORIAL
+cita: El SEO siempre fue el objetivo.
+  Era el síntoma. La causa,
+  desde el principio,
+  es [la marca].
+autor: D. Carrasco · Outpost
+---
+slide: opt-closing
+acto: ACTO 05 · CIERRE
+tiempo: 22:00 — 25:00
+top: — CIERRE · TAKE-AWAYS
+titular: Sigue las señales. Construye [marca].
+sub: Lo que viene no se predice — se observa. Mantén un puesto adelantado y comparte lo que veas.
+web: outpost.show
+youtube: /@outpost
+edicion: D. Carrasco P.` },
     { id: 'diagnostico-marca', name: 'Diagnóstico de marca',
       desc: 'Deck interno/cliente con hallazgos y recomendaciones.',
       example: `tipo: presentacion
@@ -7955,8 +8180,165 @@ const PS_RENDERERS = {
   'citas-grid': renderPsCitasGrid,
   'recursos': renderPsRecursos,
   'recursos-agrupados': renderPsRecursos,
-  'cierre': renderPsCierre
+  'cierre': renderPsCierre,
+  // Outpost Keynote (sub-variante para marca: outpost) — primer batch de 4 layouts.
+  // Ver §6.outpost del BRIEF para schema completo.
+  'opt-title': renderPsOptTitle,
+  'opt-divider': renderPsOptDivider,
+  'opt-statement': renderPsOptStatement,
+  'opt-closing': renderPsOptClosing,
 };
+
+// ── OUTPOST KEYNOTE RENDERERS ──────────────────────────────────────────────
+// Portado del design tool (claude.ai/design — handoff bundle). Tono ligne claire technical:
+// paper crema, ink negro, accent amarillo, rails con metadata mono, Inter+Newsreader+JBM.
+// Solo se renderiza bonito si la marca activa es outpost (las fuentes se cargan lazy ahí);
+// con marca magnify usará fallback Helvetica/Georgia.
+
+// SVG mark del Outpost (lens + dot) — copia inline para html2canvas.
+function optMarkSvg(color) {
+  const c = color || '#0A0A0A';
+  return `<svg class="opt-mark-svg" viewBox="0 0 320 320" aria-hidden="true">
+    <g transform="translate(160 160)" stroke="${c}" stroke-width="14" fill="none" stroke-linecap="round">
+      <ellipse cx="-10.4" cy="6.5" rx="124.8" ry="122.2" transform="rotate(-8 -10.4 6.5)"></ellipse>
+      <ellipse cx="11.7" cy="-7.8" rx="122.2" ry="124.8" transform="rotate(10 11.7 -7.8)"></ellipse>
+      <ellipse cx="5.2" cy="11.7" rx="123.5" ry="120.9" transform="rotate(18 5.2 11.7)"></ellipse>
+      <ellipse cx="-6.5" cy="-10.4" rx="120.9" ry="123.5" transform="rotate(-16 -6.5 -10.4)"></ellipse>
+    </g>
+    <circle cx="252" cy="58" r="22" fill="${c}"></circle>
+    <circle cx="24" cy="8" r="2.6" fill="#FFD600"/>
+  </svg>`;
+}
+
+// Highlight inline para opt-* (respeta brackets [palabra] como amarillo bg). Igual que
+// applyHighlights pero sin la heurística de outpost-uppercase-chip (en charla queremos
+// el highlight editorial siempre, no el chip).
+function optHL(text) {
+  if (!text) return '';
+  return safeText(text).replace(/\[([^\]]+)\]([.,;:!?]*)/g, '<span class="yel">$1$2</span>');
+}
+
+function optRailTop(d, g, dark) {
+  const wmColor = dark ? '#F5F5F0' : '#0A0A0A';
+  const ep = safeText(d.acto || g.acto || 'KEYNOTE');
+  const right = safeText(d.tiempo || d.fecha || g.fecha || '');
+  return `<div class="opt-rail-top">
+    <div class="wm">${optMarkSvg(wmColor)}<span>UTPOST</span></div>
+    <span class="ep">${ep}</span>
+    <span class="right">${right ? '<strong>' + right + '</strong>' : ''}</span>
+  </div>`;
+}
+
+function optRailBot(g, n, tot) {
+  const ch = safeText(g.canal || 'OUTPOST.SHOW');
+  const totStr = String(tot).padStart(2, '0');
+  const nStr = String(n).padStart(2, '0');
+  return `<div class="opt-rail-bot">
+    <span class="mag">UN CANAL DE&nbsp;<strong>MAGNIFY</strong></span>
+    <span class="ch">${ch}</span>
+    <span class="right"><span class="pn">${nStr}</span> / ${totStr}</span>
+  </div>`;
+}
+
+function renderPsOptTitle(d, g, n, tot) {
+  const meta = [
+    d.acto || 'DECK 01',
+    d.formato_etq || '[KEYNOTE]',
+    '·',
+    d.fecha || g.fecha || '',
+  ].filter(Boolean);
+  const titular = optHL(d.titular || g.titulo || 'Título de la charla');
+  const subtitulo = safeText(d.subtitulo || '');
+  return `<div class="frame ps"><div class="opt-slide">
+    <span class="opt-crop tl"></span><span class="opt-crop tr"></span>
+    <span class="opt-crop bl"></span><span class="opt-crop br"></span>
+    ${optRailTop(d, g, false)}
+    <div class="opt-title-body">
+      <div class="lh-bg"></div>
+      <div class="left">
+        <div class="meta">
+          ${meta.map((m, i) => i === 0 ? `<span class="ser">${safeText(m)}</span>` : `<span>${safeText(m)}</span>`).join('')}
+        </div>
+        <h1>${titular}</h1>
+        ${subtitulo ? `<p class="subtitle">${subtitulo}</p>` : ''}
+      </div>
+      <div class="right-pane">
+        <div class="badge-top">${safeText(d.serial || 'SERIAL_NO 01-26')}</div>
+        <div class="lh-frame"><img src="projects/outpost/illustrations/lighthouse-comic.png" alt=""/></div>
+        <div class="specs">
+          <div><div class="k">Duración</div><div class="v">${safeText(d.duracion || '25 min')}</div></div>
+          <div><div class="k">Formato</div><div class="v">${safeText(d.formato || 'Charla')}</div></div>
+          <div><div class="k">Speaker</div><div class="v">${safeText(d.speaker || g.autor || 'D.C.P.')}</div></div>
+          <div><div class="k">Sesión</div><div class="v">${safeText(d.sesion || g.fecha || '15.MAY')}</div></div>
+        </div>
+      </div>
+    </div>
+    ${optRailBot(g, n, tot)}
+  </div></div>`;
+}
+
+function renderPsOptDivider(d, g, n, tot) {
+  const top = safeText(d.top || d.eyebrow || `SECCIÓN ${String(n).padStart(2, '0')}`);
+  const titular = optHL(d.titular || d.titulo || '');
+  const sub = safeText(d.sub || d.subtitulo || '');
+  return `<div class="frame ps"><div class="opt-slide dk">
+    ${optRailTop(d, g, true)}
+    <div class="opt-divider-body">
+      <div class="lh-bg"></div>
+      <div class="lh-fade"></div>
+      <div class="body">
+        <div class="top">${top}</div>
+        <h2>${titular}</h2>
+        ${sub ? `<p class="sub">${sub}</p>` : ''}
+      </div>
+    </div>
+    ${optRailBot(g, n, tot)}
+  </div></div>`;
+}
+
+function renderPsOptStatement(d, g, n, tot) {
+  const open = safeText(d.open || d.eyebrow || '— LECTURA EDITORIAL');
+  const cita = optHL((d.cita || d.titular || '').replace(/\n/g, '<br/>'));
+  const autor = safeText(d.autor || d.atribucion || g.autor || '');
+  return `<div class="frame ps"><div class="opt-slide">
+    ${optRailTop(d, g, false)}
+    <div class="opt-statement-body">
+      <div class="open">${open}</div>
+      <blockquote>${cita}</blockquote>
+      ${autor ? `<cite>— ${autor}</cite>` : ''}
+    </div>
+    ${optRailBot(g, n, tot)}
+  </div></div>`;
+}
+
+function renderPsOptClosing(d, g, n, tot) {
+  const top = safeText(d.top || '— CIERRE · TAKE-AWAYS');
+  const titular = optHL(d.titular || 'Sigue las señales.');
+  const sub = safeText(d.sub || d.subtitulo || '');
+  const web = safeText(d.web || g.canal || 'outpost.show');
+  const youtube = safeText(d.youtube || '/@outpost');
+  const edicion = safeText(d.edicion || g.autor || 'D. Carrasco P.');
+  return `<div class="frame ps"><div class="opt-slide dk">
+    ${optRailTop(d, g, true)}
+    <div class="opt-closing-body">
+      <div class="top">${top}</div>
+      <div class="body">
+        <h2>${titular}</h2>
+        ${sub ? `<p class="sub">${sub}</p>` : ''}
+      </div>
+      <div class="foot">
+        <div class="channel">
+          ${optMarkSvg('#F5F5F0')}
+          <div class="wm">UTPOST</div>
+        </div>
+        <div class="col"><div class="k">Web</div><div class="v">${web}</div></div>
+        <div class="col"><div class="k">YouTube</div><div class="v">${youtube}</div></div>
+        <div class="col"><div class="k">Edición</div><div class="v">${edicion}</div></div>
+      </div>
+    </div>
+    ${optRailBot(g, n, tot)}
+  </div></div>`;
+}
 
 // ════════════════════════════════════════════
 // PRESENTACION — PPTX BUILDERS
