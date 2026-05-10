@@ -516,10 +516,13 @@
 
   /* Stats Hero color variants: the big numeral keeps yellow on dark/light but flips to black on yellow surface (yellow-on-yellow would vanish). Supporting text inverts accordingly. */
   .frame.lt .t3 .t3-desc { color:var(--bg); }
-  .frame.lt .t3 .t3-meta { color:rgba(0,0,0,0.5); }
+  .frame.lt .t3 .t3-meta { color:rgba(0,0,0,0.78); }
   .frame.yl .t3 .t3-num { color:var(--bg); }
+  /* En surface yellow el sufijo `sup` heredaba opacity 0.65 sobre tinta negra,
+     resultando olive ilegible. Forzamos opacidad 1 — sólido sobre amarillo. */
+  .frame.yl .t3 .t3-num sup { opacity:1; color:var(--bg); }
   .frame.yl .t3 .t3-desc { color:var(--bg); }
-  .frame.yl .t3 .t3-meta { color:rgba(0,0,0,0.55); }
+  .frame.yl .t3 .t3-meta { color:rgba(0,0,0,0.85); }
 
   /* Framework color variants: row dividers and text need to follow the surface. Yellow numbers are preserved on dark/light, but on yellow surface they flip to black (legibility). */
   .frame.dk .t4 h2 { color:var(--h1); }
