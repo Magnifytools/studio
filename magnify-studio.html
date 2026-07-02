@@ -791,7 +791,7 @@
   .t6 { display:flex; height:calc(100% - 96px); position:relative; }
   .t6-col { flex:1; padding:72px 72px; display:flex; flex-direction:column; }
   .t6-div { width:2px; background:linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.18) 20%, var(--yellow) 50%, rgba(255,255,255,0.18) 80%, transparent 100%); }
-  .t6-title { font-family:var(--serif); font-size:44px; font-weight:400; line-height:1.08; letter-spacing:-0.6px; margin:0 0 10px; max-width:520px; color:var(--h2); }
+  .t6-title { font-family:var(--serif); font-size:52px; font-weight:400; line-height:1.08; letter-spacing:-0.6px; margin:0 0 10px; max-width:520px; color:var(--h2); }
   .t6-sub { font-family:var(--serif); font-style:italic; font-size:24px; line-height:1.32; margin:0 0 22px; max-width:520px; color:rgba(250,250,250,0.78); }
   .frame.lt .t6-title { color:var(--bg); }
   .frame.lt .t6-sub { color:var(--body-lt); }
@@ -2980,7 +2980,7 @@
   .opt-comp-body .col.b { background:#0a0908; color:#F5F5F0; }
   .opt-comp-body .col .cap { font-family:'JetBrains Mono','SF Mono',monospace; font-size:24px; letter-spacing:0.22em; text-transform:uppercase; color:#888780; margin-bottom:24px; font-weight:600; }
   .opt-comp-body .col.b .cap { color:#FFD600; }
-  .opt-comp-body .col h2 { font-weight:800; font-size:112px; letter-spacing:-0.03em; line-height:0.92; margin:0 0 28px; }
+  .opt-comp-body .col h2 { font-weight:800; font-size:96px; letter-spacing:-0.03em; line-height:0.92; margin:0 0 28px; }
   .opt-comp-body .col h2 em { font-family:'DM Serif Display',Georgia,serif; font-style:italic; font-weight:400; }
   .opt-comp-body .col ul { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:14px; }
   .opt-comp-body .col li { font-family:'DM Serif Display',Georgia,serif; font-size:34px; line-height:1.3; padding-left:32px; position:relative; }
@@ -11479,7 +11479,7 @@ function buildPptxOptComparison(pptx, d, g, n, tot) {
   const padX = 0.444, padTop = 0.95;
   s.addText(stripBrackets(d.cap_a || 'ANTES').toUpperCase(),
     { x: padX, y: padTop, w: colW - padX * 2, h: 0.28, fontFace: FONT_SANS, fontSize: 12, color: OPT_INK_FAINT, charSpacing: 4, bold: true });
-  s.addText(optRichWithHighlights(d.titular_a || '', { fontFace: FONT_SANS, fontSize: 56, color: OPT_INK, bold: true, charSpacing: -2 }, 'light'),
+  s.addText(optRichWithHighlights(d.titular_a || '', { fontFace: FONT_SANS, fontSize: 48, color: OPT_INK, bold: true, charSpacing: -2 }, 'light'),
     { x: padX, y: padTop + 0.4, w: colW - padX * 2, h: 2.0, valign: 'top' });
   // bullets a
   const aBullets = [];
@@ -11497,7 +11497,7 @@ function buildPptxOptComparison(pptx, d, g, n, tot) {
   const xB = colW + padX;
   s.addText(stripBrackets(d.cap_b || 'DESPUÉS').toUpperCase(),
     { x: xB, y: padTop, w: colW - padX * 2, h: 0.28, fontFace: FONT_SANS, fontSize: 12, color: COLOR_YELLOW, charSpacing: 4, bold: true });
-  s.addText(optRichWithHighlights(d.titular_b || '', { fontFace: FONT_SANS, fontSize: 56, color: OPT_PAPER, bold: true, charSpacing: -2 }, 'dark'),
+  s.addText(optRichWithHighlights(d.titular_b || '', { fontFace: FONT_SANS, fontSize: 48, color: OPT_PAPER, bold: true, charSpacing: -2 }, 'dark'),
     { x: xB, y: padTop + 0.4, w: colW - padX * 2, h: 2.0, valign: 'top' });
   const bBullets = [];
   for (let i = 1; i <= 8; i++) if (d[`b${i}`]) bBullets.push(d[`b${i}`]);
